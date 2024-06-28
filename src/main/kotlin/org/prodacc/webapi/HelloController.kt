@@ -1,13 +1,17 @@
 package org.prodacc.webapi
 
+import org.prodacc.webapi.models.Employee
+import org.prodacc.webapi.repositories.EmployeeRepository
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-class HelloController {
+class HelloController (
+    private val employeeRepository: EmployeeRepository
+){
     @GetMapping("/hello")
-    fun hello(): String {
-        return "Hello World!"
+    fun hello(): Iterable<Employee> {
+        return employeeRepository.findAll()
     }
 }
