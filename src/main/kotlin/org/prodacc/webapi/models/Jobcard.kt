@@ -14,7 +14,7 @@ open class Jobcard {
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
     @Column(name = "\"JobID\"", nullable = false)
-    open var id: UUID? = null
+    open var job_id: UUID? = null
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
@@ -51,13 +51,13 @@ open class Jobcard {
     @Column(name = "\"serviceAdvisorReport\"", nullable = false, length = 1000)
     open var serviceAdvisorReport: String? = null
 
-    @Column(name = "\"technicianDiagnosticReport\"", length = 1000)
+    @Column(name = "\"technician_diagnostic_report\"", length = 1000)
     open var technicianDiagnosticReport: String? = null
 
-    @Column(name = "\"supervisorReport\"", length = 1000)
+    @Column(name = "\"supervisor_report\"", length = 1000)
     open var supervisorReport: String? = null
 
-    @Column(name = "\"jobCardStatus\"", nullable = false, length = 1000)
+    @Column(name = "\"job_card_status\"", nullable = false, length = 1000)
     open var jobCardStatus: String? = null
 
     @Column(name = "\"jobCardName\"", nullable = false, length = 1000)

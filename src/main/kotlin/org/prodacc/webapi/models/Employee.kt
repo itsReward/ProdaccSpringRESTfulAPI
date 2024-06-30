@@ -10,7 +10,7 @@ open class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "\"employeeID\"", nullable = false)
-    open var id: UUID? = null
+    open var employee_id: UUID? = null
 
     @ColumnDefault("unknown")
     @Column(name = "\"employeeName\"", nullable = false, length = 50)

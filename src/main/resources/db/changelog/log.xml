@@ -10,7 +10,7 @@
             </not>
         </preConditions>
         <createTable tableName="employees">
-            <column name="employeeid" type="uuid">
+            <column name="employee_id" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="employee_name" type="varchar(50)" defaultValue="unknown">
@@ -35,6 +35,46 @@
         </createTable>
     </changeSet>
 
+
+
+
+    <changeSet id="4" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column name="id" type="uuid" defaultValue="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(100)"/>
+            <column name="user_role" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="employee_id" type="uuid">
+                <constraints
+                        foreignKeyName="employee_id"
+                        referencedTableName="employees"
+                        referencedColumnNames="employee_id"
+                        nullable="false"
+                        deleteCascade="true"
+                />
+            </column>
+        </createTable>
+    </changeSet>
+
+
+
+
+
+
     <changeSet id="2" author="itsReward">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -55,8 +95,11 @@
             <column name="address" type="varchar(100)" defaultValue=""/>
 
         </createTable>
-
     </changeSet>
+
+
+
+
 
     <changeSet id="3" author="itsReward">
         <preConditions onFail="MARK_RAN">
@@ -85,40 +128,13 @@
 
 
         </createTable>
+    </changeSet>
 
-    </changeSet>
-    
-    <changeSet id="4" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="users"/>
-            </not>
-        </preConditions>
-        <createTable tableName="users">
-            <column name="id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="username" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="password" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email" type="varchar(100)"/>
-            <column name="user_role" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_id" type="uuid">
-                <constraints
-                    foreignKeyName="employee_id"
-                    referencedTableName="employees"
-                    referencedColumnNames="employeeid"
-                    nullable="false"
-                    deleteCascade="true"
-                    />
-            </column>
-        </createTable>
-    </changeSet>
+
+
+
+
+
 
     <changeSet id="5" author="itsReward">
         <preConditions onFail="MARK_RAN">
@@ -127,20 +143,79 @@
             </not>
         </preConditions>
         <createTable tableName="jobcards">
-            <column name="jobid" type="uuid" defaultValue="gen_random_uuid()">
+
+            <column name="job_id" type="uuid" defaultValue="gen_random_uuid()">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
-            <column name="vehicle_reference_id" type="uuid"/>
-            <column name="customer_reference_id" type="uuid"/>
+            <column name="vehicle_reference_id" type="uuid">
+                <constraints
+                    foreignKeyName="vehicle_reference_id"
+                    referencedTableName="vehicles"
+                    referencedColumnNames="vehicle_id"
+                    nullable="false"
+                    />
+            </column>
 
-            <column name="service_advisor" type="uuid"/>
-            <column name="supervisor" type="uuid"/>
-            <column name="technician" type="uuid"/>
+            <column name="customer_reference_id" type="uuid">
+                <constraints
+                    foreignKeyName="customer_reference_id"
+                    referencedTableName="clients"
+                    referencedColumnNames="client_id"
+                    nullable="false"
+                    />
+            </column>
+
+            <column name="service_advisor" type="uuid">
+                <constraints
+                    foreignKeyName="service_advisor"
+                    referencedTableName="employees"
+                    referencedColumnNames="employee_id"
+                    nullable="false"
+                    />
+            </column>
+
+            <column name="supervisor" type="uuid">
+                <constraints
+                    foreignKeyName="supervisor"
+                    referencedTableName="employees"
+                    referencedColumnNames="employee_id"
+                    nullable="false"
+                    />
+            </column>
+
+            <column name="technician" type="uuid">
+                <constraints
+                    foreignKeyName="technician"
+                    referencedTableName="employees"
+                    referencedColumnNames="employee_id"
+                    nullable="false"
+                    />
+            </column>
+
+            <column name="date_and_time_in" type="datetime"/>
+            <column name="estimated_time_of_completion" type="datetime"/>
+            <column name="job_card_deadline" type="datetime"/>
+            <column name="date_and_time_frozen" type="datetime"/>
+            <column name="date_and_time_closed" type="datetime"/>
+            <column name="service_advisor_report" type="varchar"/>
+            <column name="technician_diagnostic_report" type="varchar"/>
+            <column name="supervisor_report" type="varchar"/>
+            <column name="job_card_status" type="varchar"/>
+            <column name="job_card_name" type="varchar"/>
+            <column name="job_card_number" type="int" autoIncrement="true"/>
+            <column name="priority" type="boolean" defaultValue="false"/>
+            <column name="work_done" type="varchar"/>
+            <column name="additional_work_done" type="varchar"/>
+
 
         </createTable>
 
     </changeSet>
+
+
+
+
 
     <changeSet id="6" author="itsReward">
         <preConditions onFail="MARK_RAN">
@@ -165,6 +240,106 @@
 
 
 
+
+
+    <changeSet id="7" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="vehicle_control_checklists"/>
+            </not>
+        </preConditions>
+        <createTable tableName="vehicle_control_checklists">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="job_card_id" type="uuid">
+                <constraints
+                    foreignKeyName="job_card_id"
+                    referencedTableName="jobcards"
+                    referencedColumnNames="job_id"
+                    nullable="false"
+                    />
+            </column>
+            <column name="technician" type="uuid">
+                <constraints
+                    foreignKeyName="technician"
+                    referencedTableName="employees"
+                    referencedColumnNames="employee_id"
+                    nullable="false"
+                    />
+            </column>
+            <column name="created" type="datetime"/>
+            <column name="checklist" type="jsonb"/>
+        </createTable>
+    </changeSet>
+
+
+
+
+
+    <changeSet id="8" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="vehicle_state_checklists"/>
+            </not>
+        </preConditions>
+        <createTable tableName="vehicle_state_checklists">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="job_card_id" type="uuid">
+                <constraints
+                        foreignKeyName="job_card_id"
+                        referencedTableName="jobcards"
+                        referencedColumnNames="job_id"
+                        nullable="false"
+                />
+            </column>
+            <column name="millage_in" type="varchar(50)"/>
+            <column name="millage_out" type="varchar(50)"/>
+            <column name="fuel_level_in" type="varchar(20)"/>
+            <column name="fuel_level_out" type="varchar(20)"/>
+            <column name="created" type="datetime"/>
+            <column name="checklist" type="jsonb"/>
+        </createTable>
+    </changeSet>
+
+
+
+
+
+    <changeSet id="9" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="timesheets"/>
+            </not>
+        </preConditions>
+        <createTable tableName="timesheets">
+            <column name="timesheet_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="job_card_id" type="uuid">
+                <constraints
+                        foreignKeyName="job_card_id"
+                        referencedTableName="jobcards"
+                        referencedColumnNames="job_id"
+                        nullable="false"
+                />
+            </column>
+            <column name="employee_id" type="uuid">
+                <constraints
+                        foreignKeyName="employee_id"
+                        referencedTableName="employees"
+                        referencedColumnNames="employee_id"
+                        nullable="false"
+                />
+            </column>
+            <column name="clock_in_date_and_time" type="datetime"/>
+            <column name="clock_out_date_and_time" type="datetime"/>
+            <column name="sheet_title" type="varchar(500)"/>
+            <column name="report" type="varchar"/>
+        </createTable>
+    </changeSet>
 
 
 </databaseChangeLog>

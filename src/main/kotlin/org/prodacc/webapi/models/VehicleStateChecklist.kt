@@ -12,7 +12,7 @@ import java.util.*
 open class VehicleStateChecklist {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false)
+    @Column(name = "job_id", nullable = false)
     open var id: UUID? = null
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
