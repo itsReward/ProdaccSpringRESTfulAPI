@@ -6,19 +6,19 @@ import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.type.SqlTypes
-import java.time.LocalDate
+import java.time.Instant
 import java.util.*
 
 @Entity
-@Table(name = "vehiclecontrolchecklists")
-open class Vehiclecontrolchecklist {
+@Table(name = "vehicleServiceChecklists")
+open class VehicleServiceChecklist {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
     open var id: UUID? = null
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "\"jobCardId\"", nullable = false)
     open var jobCard: Jobcard? = null
 
@@ -27,9 +27,9 @@ open class Vehiclecontrolchecklist {
     @JoinColumn(name = "technician", nullable = false)
     open var technician: Employee? = null
 
-    @ColumnDefault("2024-05-01")
+    @ColumnDefault("2024-05-01 16:23:48.215561")
     @Column(name = "created", nullable = false)
-    open var created: LocalDate? = null
+    open var created: Instant? = null
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "checklist", nullable = false)

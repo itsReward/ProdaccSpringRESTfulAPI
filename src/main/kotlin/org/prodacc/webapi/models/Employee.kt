@@ -50,11 +50,11 @@ open class Employee {
     open var jobcardsTechnician: org.prodacc.webapi.models.Jobcard? = null
 
     @OneToOne(mappedBy = "technician")
-    open var servicechecklists: org.prodacc.webapi.models.Servicechecklist? = null
+    open var servicechecklists: org.prodacc.webapi.models.VehicleServiceChecklist? = null
 
     @OneToOne(mappedBy = "employee")
     open var timesheets: org.prodacc.webapi.models.Timesheet? = null
 
     @OneToOne(mappedBy = "technician")
-    open var vehiclecontrolchecklists: org.prodacc.webapi.models.Vehiclecontrolchecklist? = null
+    open var vehiclecontrolchecklists: org.prodacc.webapi.models.VehicleControlChecklist? = null
 }

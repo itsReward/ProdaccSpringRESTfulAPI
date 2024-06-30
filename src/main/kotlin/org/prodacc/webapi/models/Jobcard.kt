@@ -85,14 +85,14 @@ open class Jobcard {
     open var additionalWorkDone: String? = null
 
     @OneToOne(mappedBy = "jobCard")
-    open var servicechecklists: org.prodacc.webapi.models.Servicechecklist? = null
+    open var servicechecklists: org.prodacc.webapi.models.VehicleServiceChecklist? = null
 
     @OneToMany(mappedBy = "jobCardUUID")
     open var timesheets: MutableSet<org.prodacc.webapi.models.Timesheet> = mutableSetOf()
 
     @OneToOne(mappedBy = "jobCard")
-    open var vehiclechecklists: org.prodacc.webapi.models.Vehiclechecklist? = null
+    open var vehiclechecklists: org.prodacc.webapi.models.VehicleStateChecklist? = null
 
     @OneToOne(mappedBy = "jobCard")
-    open var vehiclecontrolchecklists: org.prodacc.webapi.models.Vehiclecontrolchecklist? = null
+    open var vehiclecontrolchecklists: org.prodacc.webapi.models.VehicleControlChecklist? = null
 }

@@ -2,6 +2,8 @@ package org.prodacc.webapi.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.util.*
 
 @Entity
@@ -25,6 +27,12 @@ open class User {
     open var email: String? = null
 
     @ColumnDefault("administrator")
-    @Column(name = "userrole", nullable = false, length = 15)
-    open var userrole: String? = null
+    @Column(name = "userRole", nullable = false, length = 15)
+    open var userRole: String? = null
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.SET_DEFAULT)
+    @JoinColumn(name = "\"employeeId\"", nullable = false)
+    open var employeeId: Employee? = null
+
 }
