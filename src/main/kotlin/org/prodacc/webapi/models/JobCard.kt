@@ -5,12 +5,11 @@ import java.util.UUID
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import org.prodacc.webapi.models.*
 import java.time.Instant
 
 @Entity
 @Table(name = "jobcards")
-data class Jobcard(
+data class JobCard(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")

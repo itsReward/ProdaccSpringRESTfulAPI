@@ -36,7 +36,7 @@ data class Client (
     var address: String = "not_set",
 
     @OneToMany(mappedBy = "customerReference")
-    var jobcards: List<Jobcard> = listOf(),
+    var jobCards: List<JobCard> = listOf(),
 
     @OneToMany(mappedBy = "clientReference")
     var vehicles: List<Vehicle> = listOf()

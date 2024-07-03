@@ -29,7 +29,7 @@ data class Timesheet (
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "\"job_card_id\"", nullable = false)
-    var jobCardUUID: Jobcard? = null,
+    var jobCardUUID: JobCard? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)

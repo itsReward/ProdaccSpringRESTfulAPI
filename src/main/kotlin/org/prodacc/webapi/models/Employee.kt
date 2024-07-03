@@ -2,7 +2,6 @@ package org.prodacc.webapi.models
 
 import jakarta.persistence.*
 import java.util.UUID
-import org.hibernate.annotations.ColumnDefault
 
 @Entity
 @Table(name = "employees")
@@ -19,7 +18,7 @@ data class Employee(
     var employeeSurname: String = "unassigned",
 
     @Column(name = "rating", nullable = false)
-    var rating: Float = 0.0f ,
+    var rating: Float = 0.0f,
 
     @Column(name = "\"employee_role\"", nullable = false, length = 50)
     var employeeRole: String = "unassigned",
@@ -34,13 +33,13 @@ data class Employee(
     var homeAddress: String = "unassigned",
 
     @OneToMany(mappedBy = "serviceAdvisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var jobcardsServiceAdvisor: List<Jobcard> = mutableListOf(),
+    var jobcardsServiceAdvisor: List<JobCard> = mutableListOf(),
 
     @OneToMany(mappedBy = "supervisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var jobcardsSupervisor: List<Jobcard> = mutableListOf(),
+    var jobcardsSupervisor: List<JobCard> = mutableListOf(),
 
     @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var jobcardsTechnician: List<Jobcard> = mutableListOf(),
+    var jobcardsTechnician: List<JobCard> = mutableListOf(),
 
     @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var servicechecklists: List<VehicleServiceChecklist> = mutableListOf(),

@@ -36,5 +36,5 @@ data class Vehicle (
     var clientReference: Client? = null,
 
     @OneToOne(mappedBy = "vehicleReference")
-    var jobcards: Jobcard? = null
+    var jobcards: JobCard? = null
 )

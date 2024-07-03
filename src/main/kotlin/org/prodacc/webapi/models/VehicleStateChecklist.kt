@@ -18,7 +18,7 @@ data class VehicleStateChecklist (
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "\"job_card_id\"", nullable = false)
-    var jobCard: Jobcard? = null,
+    var jobCard: JobCard? = null,
 
     @Column(name = "\"millage_in\"", nullable = false, length = 50)
     var millageIn: String? = null,

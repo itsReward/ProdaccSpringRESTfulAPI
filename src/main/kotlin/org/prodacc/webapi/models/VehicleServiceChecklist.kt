@@ -20,7 +20,7 @@ data class VehicleServiceChecklist (
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "\"job_card_id\"", nullable = false)
-    var jobCard: Jobcard? = null,
+    var jobCard: JobCard? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
