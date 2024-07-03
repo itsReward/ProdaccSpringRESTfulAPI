@@ -1,60 +1,53 @@
 package org.prodacc.webapi.models
 
 import jakarta.persistence.*
+import java.util.UUID
 import org.hibernate.annotations.ColumnDefault
-import java.util.*
 
 @Entity
 @Table(name = "employees")
-open class Employee {
+data class Employee(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "\"employeeID\"", nullable = false)
-    open var employee_id: UUID? = null
+    @Column(name = "\"employee_id\"", nullable = false)
+    var employeeId: UUID? = null,
 
-    @ColumnDefault("unknown")
-    @Column(name = "\"employeeName\"", nullable = false, length = 50)
-    open var employeeName: String? = null
+    @Column(name = "\"employee_name\"", nullable = false, length = 50)
+    var employeeName: String = "unassigned",
 
-    @ColumnDefault("unknown")
-    @Column(name = "\"employeeSurname\"", nullable = false, length = 50)
-    open var employeeSurname: String? = null
+    @Column(name = "\"employee_surname\"", nullable = false, length = 50)
+    var employeeSurname: String = "unassigned",
 
-    @ColumnDefault("0.0")
     @Column(name = "rating", nullable = false)
-    open var rating: Float? = null
+    var rating: Float = 0.0f ,
 
-    @ColumnDefault("unassigned")
-    @Column(name = "\"employeeRole\"", nullable = false, length = 50)
-    open var employeeRole: String? = null
+    @Column(name = "\"employee_role\"", nullable = false, length = 50)
+    var employeeRole: String = "unassigned",
 
-    @ColumnDefault("department")
-    @Column(name = "\"employeeDepartment\"", nullable = false, length = 80)
-    open var employeeDepartment: String? = null
+    @Column(name = "\"employee_department\"", nullable = false, length = 80)
+    var employeeDepartment: String = "unassigned",
 
-    @ColumnDefault("")
-    @Column(name = "\"phoneNumber\"", length = 500)
-    open var phoneNumber: String? = null
+    @Column(name = "\"phone_number\"", length = 500)
+    var phoneNumber: String = "not_entered",
 
-    @ColumnDefault("home address")
-    @Column(name = "\"Home Address\"", nullable = false, length = 500)
-    open var homeAddress: String? = null
+    @Column(name = "\"home_address\"", nullable = false, length = 500)
+    var homeAddress: String = "unassigned",
 
-    @OneToOne(mappedBy = "serviceAdvisor")
-    open var jobcardsServiceAdvisor: org.prodacc.webapi.models.Jobcard? = null
+    @OneToMany(mappedBy = "serviceAdvisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var jobcardsServiceAdvisor: List<Jobcard> = mutableListOf(),
 
-    @OneToOne(mappedBy = "supervisor")
-    open var jobcardsSupervisor: org.prodacc.webapi.models.Jobcard? = null
+    @OneToMany(mappedBy = "supervisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var jobcardsSupervisor: List<Jobcard> = mutableListOf(),
 
-    @OneToOne(mappedBy = "technician")
-    open var jobcardsTechnician: org.prodacc.webapi.models.Jobcard? = null
+    @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var jobcardsTechnician: List<Jobcard> = mutableListOf(),
 
-    @OneToOne(mappedBy = "technician")
-    open var servicechecklists: org.prodacc.webapi.models.VehicleServiceChecklist? = null
+    @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var servicechecklists: List<VehicleServiceChecklist> = mutableListOf(),
 
-    @OneToOne(mappedBy = "employee")
-    open var timesheets: org.prodacc.webapi.models.Timesheet? = null
+    @OneToMany(mappedBy = "employee", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var timesheets: List<Timesheet> = mutableListOf(),
 
-    @OneToOne(mappedBy = "technician")
-    open var vehiclecontrolchecklists: org.prodacc.webapi.models.VehicleControlChecklist? = null
-}
+    @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var vehiclecontrolchecklists: List<VehicleControlChecklist> = mutableListOf()
+)

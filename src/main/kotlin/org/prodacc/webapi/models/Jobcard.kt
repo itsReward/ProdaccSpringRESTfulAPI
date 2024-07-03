@@ -1,98 +1,100 @@
 package org.prodacc.webapi.models
 
 import jakarta.persistence.*
+import java.util.UUID
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
+import org.prodacc.webapi.models.*
 import java.time.Instant
-import java.util.*
 
 @Entity
 @Table(name = "jobcards")
-open class Jobcard {
+data class Jobcard(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
-    @Column(name = "\"JobID\"", nullable = false)
-    open var job_id: UUID? = null
+    @Column(name = "\"job_id\"", nullable = false)
+    var job_id: UUID? = null,
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
-    @JoinColumn(name = "\"vehicleReferenceId\"", nullable = false)
-    open var vehicleReference: org.prodacc.webapi.models.Vehicle? = null
+    @JoinColumn(name = "\"vehicle_reference_id\"", nullable = false)
+    var vehicleReference: Vehicle? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
-    @JoinColumn(name = "\"customerReferenceId\"", nullable = false)
-    open var customerReference: Client? = null
+    @JoinColumn(name = "\"customer_reference_id\"", nullable = false)
+    var customerReference: Client? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
-    @JoinColumn(name = "\"serviceAdvisor\"", nullable = false)
-    open var serviceAdvisor: Employee? = null
+    @JoinColumn(name = "\"service_advisor\"", nullable = false)
+    var serviceAdvisor: Employee? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "supervisor", nullable = false)
-    open var supervisor: Employee? = null
+    var supervisor: Employee? = null,
 
     @ColumnDefault("2024-04-21 09:21:35.510973")
-    @Column(name = "\"dateAndTimeIn\"", nullable = false)
-    open var dateAndTimeIn: Instant? = null
+    @Column(name = "\"date_and_time_in\"", nullable = false)
+    var dateAndTimeIn: Instant? = null,
 
-    @Column(name = "\"estimatedTimeOfCompletion\"")
-    open var estimatedTimeOfCompletion: Instant? = null
+    @Column(name = "\"estimated_time_of_completion\"")
+    var estimatedTimeOfCompletion: Instant? = null,
 
-    @Column(name = "\"dateAndTimeFrozen\"")
-    open var dateAndTimeFrozen: Instant? = null
+    @Column(name = "\"date_and_time_frozen\"")
+    var dateAndTimeFrozen: Instant? = null,
 
-    @Column(name = "\"dateAndTimeClosed\"")
-    open var dateAndTimeClosed: Instant? = null
+    @Column(name = "\"date_and_time_closed\"")
+    var dateAndTimeClosed: Instant? = null,
 
-    @Column(name = "\"serviceAdvisorReport\"", nullable = false, length = 1000)
-    open var serviceAdvisorReport: String? = null
+    @Column(name = "\"service_advisor_report\"", nullable = false, length = 1000)
+    var serviceAdvisorReport: String? = null,
 
     @Column(name = "\"technician_diagnostic_report\"", length = 1000)
-    open var technicianDiagnosticReport: String? = null
+    var technicianDiagnosticReport: String? = null,
 
     @Column(name = "\"supervisor_report\"", length = 1000)
-    open var supervisorReport: String? = null
+    var supervisorReport: String? = null,
 
     @Column(name = "\"job_card_status\"", nullable = false, length = 1000)
-    open var jobCardStatus: String? = null
+    var jobCardStatus: String? = null,
 
-    @Column(name = "\"jobCardName\"", nullable = false, length = 1000)
-    open var jobCardName: String? = null
+    @Column(name = "\"job_card_name\"", nullable = false, length = 1000)
+    var jobCardName: String? = null,
 
-    @Column(name = "\"jobCardNumber\"", nullable = false)
-    open var jobCardNumber: Int? = null
+    @Column(name = "\"job_card_number\"", nullable = false)
+    var jobCardNumber: Int? = null,
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
     @JoinColumn(name = "technician")
-    open var technician: Employee? = null
+    var technician: Employee? = null,
 
     @ColumnDefault("false")
     @Column(name = "priority")
-    open var priority: Boolean? = null
+    var priority: Boolean? = null,
 
-    @Column(name = "\"jobCardDeadline\"")
-    open var jobCardDeadline: Instant? = null
+    @Column(name = "\"job_card_deadline\"")
+    var jobCardDeadline: Instant? = null,
 
-    @Column(name = "\"workDone\"", length = 5000)
-    open var workDone: String? = null
+    @Column(name = "\"work_done\"", length = 5000)
+    var workDone: String? = null,
 
-    @Column(name = "\"additionalWorkDone\"", length = 5000)
-    open var additionalWorkDone: String? = null
+    @Column(name = "\"additional_work_done\"", length = 5000)
+    var additionalWorkDone: String? = null,
 
     @OneToOne(mappedBy = "jobCard")
-    open var servicechecklists: org.prodacc.webapi.models.VehicleServiceChecklist? = null
+    var servicechecklists: VehicleServiceChecklist? = null,
 
     @OneToMany(mappedBy = "jobCardUUID")
-    open var timesheets: MutableSet<org.prodacc.webapi.models.Timesheet> = mutableSetOf()
+    var timesheets: MutableSet<Timesheet> = mutableSetOf(),
 
     @OneToOne(mappedBy = "jobCard")
-    open var vehiclechecklists: org.prodacc.webapi.models.VehicleStateChecklist? = null
+    var vehiclechecklists: VehicleStateChecklist? = null,
 
     @OneToOne(mappedBy = "jobCard")
-    open var vehiclecontrolchecklists: org.prodacc.webapi.models.VehicleControlChecklist? = null
+    var vehiclecontrolchecklists: VehicleControlChecklist? = null
+) {
 }

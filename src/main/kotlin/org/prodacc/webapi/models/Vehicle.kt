@@ -8,33 +8,33 @@ import java.util.*
 
 @Entity
 @Table(name = "vehicles")
-open class Vehicle {
+data class Vehicle (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
-    @Column(name = "\"vehicleId\"", nullable = false)
-    open var id: UUID? = null
+    @Column(name = "\"vehicle_id\"", nullable = false)
+    var id: UUID? = null,
 
     @Column(name = "model", nullable = false, length = 100)
-    open var model: String? = null
+    var model: String? = null,
 
-    @Column(name = "\"regNumber\"", length = 100)
-    open var regNumber: String? = null
+    @Column(name = "\"reg_number\"", length = 100)
+    var regNumber: String? = null,
 
     @Column(name = "make", nullable = false, length = 100)
-    open var make: String? = null
+    var make: String? = null,
 
     @Column(name = "color", nullable = false, length = 100)
-    open var color: String? = null
+    var color: String? = null,
 
-    @Column(name = "\"chassisNumber\"", length = 100)
-    open var chassisNumber: String? = null
+    @Column(name = "\"chassis_number\"", length = 100)
+    var chassisNumber: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "\"clientReferenceId\"", nullable = false)
-    open var clientReference: Client? = null
+    @JoinColumn(name = "\"client_reference_id\"", nullable = false)
+    var clientReference: Client? = null,
 
     @OneToOne(mappedBy = "vehicleReference")
-    open var jobcards: Jobcard? = null
-}
+    var jobcards: Jobcard? = null
+)

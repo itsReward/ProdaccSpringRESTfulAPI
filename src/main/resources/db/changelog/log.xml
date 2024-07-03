@@ -10,26 +10,26 @@
             </not>
         </preConditions>
         <createTable tableName="employees">
-            <column name="employee_id" type="uuid">
+            <column name="employeeId" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="employee_name" type="varchar(50)" defaultValue="unknown">
+            <column name="employeeName" type="varchar(50)" defaultValue="unknown">
                 <constraints nullable="false"/>
             </column>
-            <column name="employee_surname" type="varchar(50)" defaultValue="unknown">
+            <column name="employeeSurname" type="varchar(50)" defaultValue="unknown">
                 <constraints nullable="false"/>
             </column>
             <column name="rating" type="real" defaultValueNumeric="0.0">
                 <constraints nullable="false"/>
             </column>
-            <column name="employee_role" type="varchar(50)" defaultValue="unassigned">
+            <column name="employeeRole" type="varchar(50)" defaultValue="unassigned">
                 <constraints nullable="false"/>
             </column>
             <column name="employee_department" type="varchar(80)" defaultValue="department">
                 <constraints nullable="false"/>
             </column>
-            <column name="phone_number" type="varchar(500)" defaultValue=""/>
-            <column name="home_address" type="varchar(500)" defaultValue="home address">
+            <column name="phoneNumber" type="varchar(500)" defaultValue=""/>
+            <column name="homeAddress" type="varchar(500)" defaultValue="home address">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -38,7 +38,7 @@
 
 
 
-    <changeSet id="4" author="itsReward">
+    <changeSet id="2" author="itsReward">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="users"/>
@@ -62,7 +62,7 @@
                 <constraints
                         foreignKeyName="employee_id"
                         referencedTableName="employees"
-                        referencedColumnNames="employee_id"
+                        referencedColumnNames="employeeId"
                         nullable="false"
                         deleteCascade="true"
                 />
@@ -75,7 +75,7 @@
 
 
 
-    <changeSet id="2" author="itsReward">
+    <changeSet id="3" author="itsReward">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="clients"/>
@@ -101,7 +101,7 @@
 
 
 
-    <changeSet id="3" author="itsReward">
+    <changeSet id="4" author="itsReward">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="vehicles"/>
@@ -170,7 +170,7 @@
                 <constraints
                     foreignKeyName="service_advisor"
                     referencedTableName="employees"
-                    referencedColumnNames="employee_id"
+                    referencedColumnNames="employeeId"
                     nullable="false"
                     />
             </column>
@@ -179,7 +179,7 @@
                 <constraints
                     foreignKeyName="supervisor"
                     referencedTableName="employees"
-                    referencedColumnNames="employee_id"
+                    referencedColumnNames="employeeId"
                     nullable="false"
                     />
             </column>
@@ -188,7 +188,7 @@
                 <constraints
                     foreignKeyName="technician"
                     referencedTableName="employees"
-                    referencedColumnNames="employee_id"
+                    referencedColumnNames="employeeId"
                     nullable="false"
                     />
             </column>
@@ -223,7 +223,7 @@
                 <tableExists tableName="vehicle_service_checklists"/>
             </not>
         </preConditions>
-        <createTable tableName="service_checklists">
+        <createTable tableName="vehicle_service_checklists">
             <column name="id" type="uuid" defaultValue="gen_random_uuid()">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -264,7 +264,7 @@
                 <constraints
                     foreignKeyName="technician"
                     referencedTableName="employees"
-                    referencedColumnNames="employee_id"
+                    referencedColumnNames="employeeId"
                     nullable="false"
                     />
             </column>
@@ -330,7 +330,7 @@
                 <constraints
                         foreignKeyName="employee_id"
                         referencedTableName="employees"
-                        referencedColumnNames="employee_id"
+                        referencedColumnNames="employeeId"
                         nullable="false"
                 />
             </column>

@@ -8,31 +8,31 @@ import java.util.*
 
 @Entity
 @Table(name = "timesheets")
-open class Timesheet {
+data class Timesheet (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "\"timesheetId\"", nullable = false)
-    open var id: UUID? = null
+    @Column(name = "\"timesheet_id\"", nullable = false)
+    var id: UUID? = null,
 
-    @Column(name = "\"clockInDateAndTime\"", nullable = false)
-    open var clockInDateAndTime: Instant? = null
+    @Column(name = "\"clock_in_date_and_time\"", nullable = false)
+    var clockInDateAndTime: Instant? = null,
 
-    @Column(name = "\"sheetTitle\"", nullable = false, length = 500)
-    open var sheetTitle: String? = null
+    @Column(name = "\"sheet_title\"", nullable = false, length = 500)
+    var sheetTitle: String? = null,
 
     @Column(name = "report", length = 2000)
-    open var report: String? = null
+    var report: String? = null,
 
-    @Column(name = "\"clockOutDateAndTime\"")
-    open var clockOutDateAndTime: Instant? = null
+    @Column(name = "\"clock_out_date_and_time\"")
+    var clockOutDateAndTime: Instant? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "\"jobCardUUID\"", nullable = false)
-    open var jobCardUUID: Jobcard? = null
+    @JoinColumn(name = "\"job_card_id\"", nullable = false)
+    var jobCardUUID: Jobcard? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "\"employeeId\"", nullable = false)
-    open var employee: Employee? = null
-}
+    @JoinColumn(name = "\"employee_id\"", nullable = false)
+    var employee: Employee? = null
+)

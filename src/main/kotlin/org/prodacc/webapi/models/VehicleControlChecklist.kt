@@ -10,28 +10,28 @@ import java.time.LocalDate
 import java.util.*
 
 @Entity
-@Table(name = "vehicleControlChecklists")
-open class VehicleControlChecklist {
+@Table(name = "vehicle_control_checklists")
+data class VehicleControlChecklist (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    open var id: UUID? = null
+    var id: UUID? = null,
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "\"jobCardId\"", nullable = false)
-    open var jobCard: Jobcard? = null
+    @JoinColumn(name = "\"job_card_id\"", nullable = false)
+    var jobCard: Jobcard? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "technician", nullable = false)
-    open var technician: Employee? = null
+    var technician: Employee? = null,
 
-    @ColumnDefault("2024-05-01")
+    @ColumnDefault("")
     @Column(name = "created", nullable = false)
-    open var created: LocalDate? = null
+    var created: LocalDate? = null,
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "checklist", nullable = false)
-    open var checklist: MutableMap<String, Any>? = null
-}
+    var checklist: MutableMap<String, Any>? = null
+)

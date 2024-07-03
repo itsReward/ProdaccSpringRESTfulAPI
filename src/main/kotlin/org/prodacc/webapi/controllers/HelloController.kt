@@ -1,4 +1,4 @@
-package org.prodacc.webapi
+package org.prodacc.webapi.controllers
 
 import org.prodacc.webapi.models.Employee
 import org.prodacc.webapi.repositories.EmployeeRepository

@@ -5,39 +5,39 @@ import java.util.*
 
 @Entity
 @Table(name = "clients")
-open class Client {
+data class Client (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "\"clientId\"", nullable = false)
-    open var id: UUID? = null
+    var id: UUID? = null,
 
     @Column(name = "\"clientName\"", nullable = false, length = 100)
-    open var clientName: String? = null
+    var clientName: String = "not_set",
 
     @Column(name = "\"clientSurname\"", nullable = false, length = 100)
-    open var clientSurname: String? = null
+    var clientSurname: String = "not_set",
 
     @Column(name = "gender", nullable = false, length = 100)
-    open var gender: String? = null
+    var gender: String = "not_set",
 
     @Column(name = "\"jobTitle\"", nullable = false, length = 100)
-    open var jobTitle: String? = null
+    var jobTitle: String = "not_set",
 
     @Column(name = "company", nullable = false, length = 100)
-    open var company: String? = null
+    var company: String = "not_set",
 
     @Column(name = "phone", nullable = false, length = 100)
-    open var phone: String? = null
+    var phone: String = "not_set",
 
     @Column(name = "email", nullable = false, length = 100)
-    open var email: String? = null
+    var email: String = "not@set",
 
     @Column(name = "address", nullable = false, length = 100)
-    open var address: String? = null
+    var address: String = "not_set",
 
-    @OneToOne(mappedBy = "customerReference")
-    open var jobcards: org.prodacc.webapi.models.Jobcard? = null
+    @OneToMany(mappedBy = "customerReference")
+    var jobcards: List<Jobcard> = listOf(),
 
     @OneToMany(mappedBy = "clientReference")
-    open var vehicles: MutableSet<org.prodacc.webapi.models.Vehicle> = mutableSetOf()
-}
+    var vehicles: List<Vehicle> = listOf()
+)
