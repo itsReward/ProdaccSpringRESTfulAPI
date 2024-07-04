@@ -1,6 +1,7 @@
 package org.prodacc.webapi.models.dataTransferObjects
 
 import org.prodacc.webapi.models.*
+import java.util.*
 
 data class JobCardWithAllEntities(
     var jobCard: JobCard? = null,
