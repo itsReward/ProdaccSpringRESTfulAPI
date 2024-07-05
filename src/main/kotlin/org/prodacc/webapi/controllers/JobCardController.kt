@@ -148,6 +148,7 @@ class JobCardController(
         val serviceChecklist = serviceChecklistRepository.getVehicleServiceChecklistByJobCard(savedJobCard)
         val controlChecklist = controlChecklistRepository.findVehicleControlChecklistByJobCard(savedJobCard)
         val stateChecklist = vehicleStateRepository.findVehicleStateChecklistByJobCard(savedJobCard)
+
         return ViewJobCard(
             jobCardName = savedJobCard.jobCardName!!,
             jobCardNumber = savedJobCard.jobCardNumber!!,
