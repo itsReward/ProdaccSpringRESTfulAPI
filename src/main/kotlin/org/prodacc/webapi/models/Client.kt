@@ -35,6 +35,10 @@ data class Client (
     @Column(name = "address", nullable = false, length = 100)
     var address: String = "not_set",
 
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long? = 0,
+
     @OneToMany(mappedBy = "customerReference")
     var jobCards: List<JobCard> = listOf(),
 

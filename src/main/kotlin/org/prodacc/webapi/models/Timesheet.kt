@@ -34,5 +34,11 @@ data class Timesheet (
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "\"employee_id\"", nullable = false)
-    var employee: Employee? = null
+    var employee: Employee? = null,
+
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long? = 0,
+
+
 )

@@ -33,6 +33,10 @@ data class User (
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
     @JoinColumn(name = "\"employee_id\"", nullable = false)
-    var employeeId: Employee? = null
+    var employeeId: Employee? = null,
+
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long? = 0,
 
 )

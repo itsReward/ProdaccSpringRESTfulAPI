@@ -32,6 +32,10 @@ data class Employee(
     @Column(name = "\"home_address\"", nullable = false, length = 500)
     var homeAddress: String = "unassigned",
 
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long? = 0,
+
     @OneToMany(mappedBy = "serviceAdvisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var jobcardsServiceAdvisor: List<JobCard> = mutableListOf(),
 

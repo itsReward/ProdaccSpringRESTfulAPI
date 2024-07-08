@@ -33,5 +33,9 @@ data class VehicleControlChecklist (
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "checklist", nullable = false)
-    var checklist: MutableMap<String, Any>? = null
+    var checklist: MutableMap<String, Any>? = null,
+
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long? = 0,
 )

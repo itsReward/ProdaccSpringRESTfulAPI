@@ -94,6 +94,10 @@ data class JobCard(
     var vehiclechecklists: VehicleStateChecklist? = null,
 
     @OneToOne(mappedBy = "jobCard")
-    var vehiclecontrolchecklists: VehicleControlChecklist? = null
+    var vehiclecontrolchecklists: VehicleControlChecklist? = null,
+
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long? = 0,
 ) {
 }
