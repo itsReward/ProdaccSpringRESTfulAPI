@@ -5,6 +5,7 @@ import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.type.SqlTypes
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -31,6 +32,9 @@ data class VehicleStateChecklist (
 
     @Column(name = "\"fuel_level_out\"", nullable = false, length = 50)
     var fuelLevelOut: String? = null,
+
+    @Column(name = "\"created\"", nullable = false)
+    var created: LocalDateTime? = null,
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "checklist", nullable = false)
