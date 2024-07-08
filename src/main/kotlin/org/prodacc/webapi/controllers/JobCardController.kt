@@ -168,6 +168,63 @@ class JobCardController(
         )
     }
 
+    @PutMapping("/update/{id}")
+    fun updateJobCard(@PathVariable id: UUID, @RequestBody newJobCard: NewJobCard): ViewJobCard{
+        val oldJobCard = jobCardRepository.findById(id).get()
+        val vehicle = vehicleRepository.findById(newJobCard.vehicleId)
+        val client = clientRepository.findClientByVehiclesContaining(vehicle.get())
+        val supervisor = employeeRepository.findById(newJobCard.supervisorId)
+        val serviceAdvisor = employeeRepository.findById(newJobCard.serviceAdvisorId)
+        val technician = newJobCard.technicianId?.let { employeeRepository.findById(it) }
+
+        val jobCard = oldJobCard.copy(
+            vehicleReference = vehicle.get(),
+            customerReference = client,
+            serviceAdvisor = serviceAdvisor.get(),
+            supervisor = supervisor.get(),
+            dateAndTimeIn = Instant.now(),
+            serviceAdvisorReport = newJobCard.serviceAdvisorReport ?: "",
+            jobCardStatus = newJobCard.jobCardStatus,
+            estimatedTimeOfCompletion = newJobCard.estimatedTimeOfCompletion?.toInstant(ZoneId.systemDefault().rules.getOffset(newJobCard.estimatedTimeOfCompletion)),
+            dateAndTimeFrozen = newJobCard.dateAndTimeFrozen?.toInstant(ZoneId.systemDefault().rules.getOffset(newJobCard.dateAndTimeFrozen)),
+            dateAndTimeClosed = newJobCard.dateAndTimeClosed?.toInstant(ZoneId.systemDefault().rules.getOffset(newJobCard.dateAndTimeClosed)),
+            jobCardDeadline = newJobCard.jobCardDeadline?.toInstant(ZoneId.systemDefault().rules.getOffset(newJobCard.jobCardDeadline)),
+            technician = if (technician?.isPresent == true) technician.get() else null,
+            priority = newJobCard.priority,
+            workDone = newJobCard.workDone,
+            additionalWorkDone = newJobCard.additionalWorkDone,
+            jobCardName = "${client.clientName.first()} ${client.clientSurname}'s ${vehicle.get().model}",
+            jobCardNumber = (1..1989809802).random()
+
+        )
+
+        val savedJobCard = jobCardRepository.save(jobCard)
+
+        val timesheet = timesheetRepository.getTimesheetsByJobCardUUID(savedJobCard)
+        val serviceChecklist = serviceChecklistRepository.getVehicleServiceChecklistByJobCard(savedJobCard)
+        val controlChecklist = controlChecklistRepository.findVehicleControlChecklistByJobCard(savedJobCard)
+        val stateChecklist = vehicleStateRepository.findVehicleStateChecklistByJobCard(savedJobCard)
+
+        return ViewJobCard(
+            jobCardName = savedJobCard.jobCardName!!,
+            jobCardNumber = savedJobCard.jobCardNumber!!,
+            vehicleId = vehicle.get().id!!,
+            vehicleName = vehicle.get().model!!,
+            clientId = client.id!!,
+            clientName = client.clientName + client.clientSurname,
+            serviceAdvisorId = serviceAdvisor.get().employeeId!!,
+            serviceAdvisorName = serviceAdvisor.get().employeeName + serviceAdvisor.get().employeeSurname,
+            serviceAdvisorReport = savedJobCard.serviceAdvisorReport ?: "",
+            supervisorId = supervisor.get().employeeId!!,
+            supervisorName = supervisor.get().employeeName + supervisor.get().employeeSurname,
+            timesheets = timesheet,
+            serviceChecklistId = if (serviceChecklist.isPresent) serviceChecklist.get().id else null,
+            controlChecklistId = if (controlChecklist.isPresent) controlChecklist.get().id else null,
+            stateChecklistId = if (stateChecklist.isPresent) stateChecklist.get().id else null,
+        )
+    }
+
+
     @DeleteMapping("/delete/{jobCardId}")
     fun deleteJobCard(@PathVariable jobCardId: UUID): ResponseEntity<String> {
         return if (jobCardRepository.existsById(jobCardId)) {
