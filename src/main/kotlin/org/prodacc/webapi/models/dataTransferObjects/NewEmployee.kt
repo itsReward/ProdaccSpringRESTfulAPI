@@ -1,6 +1,6 @@
 package org.prodacc.webapi.models.dataTransferObjects
 
-data class UpdateEmployee(
+data class NewEmployee(
     var employeeName: String? = null,
     var employeeSurname: String? = null,
     var rating: Float? = null,

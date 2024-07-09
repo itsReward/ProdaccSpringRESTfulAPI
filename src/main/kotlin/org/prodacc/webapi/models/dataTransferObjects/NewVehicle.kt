@@ -1,12 +1,12 @@
 package org.prodacc.webapi.models.dataTransferObjects
 
-import java.util.*
+import java.util.UUID
 
 data class NewVehicle(
-    var model: String? = null,
-    var regNumber: String? = null,
-    var make: String? = null,
-    var color: String? = null,
-    var chassisNumber: String? = null,
-    var clientReference: UUID? = null
+    val model : String? = null,
+    val regNumber : String? = null,
+    val make : String? = null,
+    val color : String? = null,
+    val chassisNumber : String? = null,
+    val clientReference : UUID? = null
 )
