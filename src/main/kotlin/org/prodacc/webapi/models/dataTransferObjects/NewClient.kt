@@ -1,6 +1,6 @@
 package org.prodacc.webapi.models.dataTransferObjects
 
-data class UpdateClient(
+data class NewClient(
     val clientName: String? = null,
     val clientSurname: String? = null,
     val gender: String? = null,

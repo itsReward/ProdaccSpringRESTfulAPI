@@ -20,20 +20,20 @@ data class Client (
     @Column(name = "gender", nullable = false, length = 100)
     var gender: String = "not_set",
 
-    @Column(name = "\"jobTitle\"", nullable = false, length = 100)
-    var jobTitle: String = "not_set",
+    @Column(name = "\"jobTitle\"", nullable = true, length = 100)
+    var jobTitle: String? = "not_set",
 
-    @Column(name = "company", nullable = false, length = 100)
-    var company: String = "not_set",
+    @Column(name = "company", nullable = true, length = 100)
+    var company: String? = "not_set",
 
     @Column(name = "phone", nullable = false, length = 100)
     var phone: String = "not_set",
 
-    @Column(name = "email", nullable = false, length = 100)
-    var email: String = "not@set",
+    @Column(name = "email", nullable = true, length = 100)
+    var email: String? = "not@set",
 
-    @Column(name = "address", nullable = false, length = 100)
-    var address: String = "not_set",
+    @Column(name = "address", nullable = true, length = 100)
+    var address: String? = "not_set",
 
     @Version
     @Column(name = "version", nullable = false)

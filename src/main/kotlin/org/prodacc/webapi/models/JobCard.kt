@@ -16,7 +16,7 @@ data class JobCard(
     @Column(name = "\"job_id\"", nullable = false)
     var job_id: UUID? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)
     @JoinColumn(name = "\"vehicle_reference_id\"", nullable = false)
     var vehicleReference: Vehicle? = null,

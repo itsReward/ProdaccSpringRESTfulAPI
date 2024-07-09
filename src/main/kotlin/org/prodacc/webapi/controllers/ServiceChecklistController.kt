@@ -12,7 +12,7 @@ import java.time.ZoneId
 import java.util.UUID
 
 @RestController
-@RequestMapping("/v1/api/checklist")
+@RequestMapping("/v1/api/service-checklist")
 class ServiceChecklistController (
     private val vehicleServiceChecklistRepository: ServiceChecklistRepository,
     private val jobCardRepository: JobCardRepository,

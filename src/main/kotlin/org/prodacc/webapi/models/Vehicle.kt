@@ -35,12 +35,12 @@ data class Vehicle (
     @JoinColumn(name = "\"client_reference_id\"", nullable = false)
     var clientReference: Client? = null,
 
-    @OneToOne(mappedBy = "vehicleReference")
-    var jobcards: JobCard? = null,
+    @OneToMany(mappedBy = "vehicleReference")
+    var jobcards: List<JobCard> = listOf(),
 
     @Version
     @Column(name = "version", nullable = false)
     var version: Long? = 0,
 
 
-)
+    )
