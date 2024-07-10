@@ -100,7 +100,7 @@ class TimeSheetService(
         .let {
             if (it != null) {
                 jobCardRepository.findById(it)
-                    .orElseThrow { EntityNotFoundException("JobCard with Id: ${this.jobCardUUID?.job_id}") }
+                    .orElseThrow { EntityNotFoundException("JobCard with Id: ${this.jobCardUUID?.job_id} not found") }
             } else {
                 throw NullPointerException("Timesheet must be associated with a JobCard!!, enter jobCard id")
             }
