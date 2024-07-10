@@ -6,7 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.type.SqlTypes
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -29,7 +29,7 @@ data class VehicleControlChecklist (
 
     @ColumnDefault("")
     @Column(name = "created", nullable = false)
-    var created: LocalDate? = null,
+    var created: LocalDateTime? = null,
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "checklist", nullable = false)

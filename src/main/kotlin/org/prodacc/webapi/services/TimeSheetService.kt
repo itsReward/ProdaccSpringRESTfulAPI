@@ -2,11 +2,11 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.Timesheet
-import org.prodacc.webapi.services.dataTransferObjects.NewTimesheet
-import org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.TimesheetRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewTimesheet
+import org.prodacc.webapi.services.dataTransferObjects.ResponseTimesheetWithJobCard
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,25 +23,25 @@ class TimeSheetService(
 ) {
     private val logger = LoggerFactory.getLogger(TimeSheetService::class.java)
 
-    fun getAllTimesheets(): Iterable<org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName> {
+    fun getAllTimesheets(): Iterable<ResponseTimesheetWithJobCard> {
         logger.info("Fetching all timesheets")
         return timesheetRepository.findAll().map { it.toTimeSheetWithJobCardIdAndName() }
     }
 
-    fun getTimesheetByJobCardId(id: UUID): Iterable<org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName?> {
+    fun getTimesheetByJobCardId(id: UUID): Iterable<ResponseTimesheetWithJobCard?> {
         logger.info("Fetching timesheet by job card id: $id")
         val jobCard = jobCardRepository.findById(id).orElseThrow { EntityNotFoundException("Job card not found with id: $id") }
         return timesheetRepository.getTimesheetsByJobCardUUID(jobCard).map { it.toTimeSheetWithJobCardIdAndName() }
     }
 
-    fun getTimesheetById( id: UUID): org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
+    fun getTimesheetById( id: UUID): ResponseTimesheetWithJobCard {
         logger.info("Fetching timesheet by id: $id")
         val timesheet  = timesheetRepository.findById(id).orElseThrow { EntityNotFoundException("Timesheet not found with id: $id") }
         return timesheet.toTimeSheetWithJobCardIdAndName()
     }
 
     @Transactional
-    fun addTimesheet(newTimesheet: org.prodacc.webapi.services.dataTransferObjects.NewTimesheet): org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
+    fun addTimesheet(newTimesheet: NewTimesheet): ResponseTimesheetWithJobCard {
         logger.info("Adding New Timesheet")
         val jobCard = newTimesheet.jobCardId?.let {
             jobCardRepository.findById(it).orElseThrow {EntityNotFoundException("Job card not found with id: ${newTimesheet.jobCardId}")}
@@ -64,7 +64,7 @@ class TimeSheetService(
 
 
     @Transactional
-    fun updateTimesheet(id: UUID, newTimesheet: org.prodacc.webapi.services.dataTransferObjects.NewTimesheet): org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
+    fun updateTimesheet(id: UUID, newTimesheet: NewTimesheet): ResponseTimesheetWithJobCard {
         logger.info("Updating timesheet with id: $id")
         val oldTimesheet = timesheetRepository.findById(id).orElseThrow { EntityNotFoundException("Timesheet not found with id: $id") }
         val technician = newTimesheet.employeeId?.let {
@@ -95,7 +95,7 @@ class TimeSheetService(
     }
 
 
-    private fun Timesheet.toTimeSheetWithJobCardIdAndName() : org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
+    private fun Timesheet.toTimeSheetWithJobCardIdAndName() : ResponseTimesheetWithJobCard {
         val jobCard = this.jobCardUUID?.job_id
         .let {
             if (it != null) {
@@ -114,7 +114,7 @@ class TimeSheetService(
             }
         } ?: throw NullPointerException("Timesheet must be associated with a technician!!, enter employee id")
 
-        return org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName(
+        return ResponseTimesheetWithJobCard(
             id = this.id!!,
             sheetTitle = this.sheetTitle!!,
             report = this.report!!,

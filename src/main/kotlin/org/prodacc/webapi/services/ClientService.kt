@@ -2,11 +2,10 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.Client
-import org.prodacc.webapi.models.dataTransferObjects.ClientWithVehiclesNameAndId
-import org.prodacc.webapi.models.dataTransferObjects.NewClient
-import org.prodacc.webapi.models.dataTransferObjects.VehicleWithIdAndName
 import org.prodacc.webapi.repositories.ClientRepository
 import org.prodacc.webapi.repositories.VehicleRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewClient
+import org.prodacc.webapi.services.dataTransferObjects.ResponseClientWithVehicles
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,22 +21,22 @@ class ClientService (
 {
     private val logger = LoggerFactory.getLogger(ClientService::class.java)
 
-    fun getAll(): Iterable<ClientWithVehiclesNameAndId> {
+    fun getAll(): Iterable<ResponseClientWithVehicles> {
         logger.info("Getting all clients")
         return clientRepository.findAll().map { it.toClientWithVehicleNameAndId()
         }
     }
 
-    fun getClientById( id: UUID): ClientWithVehiclesNameAndId {
+    fun getClientById( id: UUID): ResponseClientWithVehicles {
         logger.info("Getting client with id: $id")
         return clientRepository.findById(id)
             .map { it.toClientWithVehicleNameAndId() }
-            .orElseThrow { EntityNotFoundException("Client with id: ${id} not found") }
+            .orElseThrow { EntityNotFoundException("Client with id: $id not found") }
     }
 
 
     @Transactional
-    fun createClient( client: NewClient): ClientWithVehiclesNameAndId {
+    fun createClient( client: NewClient): ResponseClientWithVehicles {
         logger.info("Creating new client")
         val newClient = try {
             Client(
@@ -57,7 +56,7 @@ class ClientService (
     }
 
     @Transactional
-    fun updateClient(updatedClient: NewClient, id: UUID): ClientWithVehiclesNameAndId {
+    fun updateClient(updatedClient: NewClient, id: UUID): ResponseClientWithVehicles {
         logger.info("Updating client with id: $id")
         val existingClient = clientRepository.findById(id).orElseThrow { EntityNotFoundException("Client with id: $id not found") }
         val updated = existingClient.copy(
@@ -85,17 +84,17 @@ class ClientService (
     }
 
 
-    private fun Client.toClientWithVehicleNameAndId(): ClientWithVehiclesNameAndId {
+    private fun Client.toClientWithVehicleNameAndId(): ResponseClientWithVehicles {
         val vehiclesWithIdAndNameList = this.vehicles.map { vehicle ->
             vehicleRepository.findById(vehicle.id!!).map {
-                VehicleWithIdAndName(
+                org.prodacc.webapi.services.dataTransferObjects.VehicleWithIdAndName(
                     id = it.id,
                     make = it.make,
                     model = it.model
                 )
             }.orElseThrow { EntityNotFoundException("Vehicle with id: ${vehicle.id} not found") }
         }
-        return ClientWithVehiclesNameAndId(
+        return ResponseClientWithVehicles(
             id = this.id,
             clientName = this.clientName,
             clientSurname = this.clientSurname,

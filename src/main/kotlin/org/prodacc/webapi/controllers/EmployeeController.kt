@@ -1,8 +1,8 @@
 package org.prodacc.webapi.controllers
 
-import org.prodacc.webapi.models.dataTransferObjects.EmployeeWithJobCardIdAndName
-import org.prodacc.webapi.models.dataTransferObjects.NewEmployee
 import org.prodacc.webapi.services.EmployeeService
+import org.prodacc.webapi.services.dataTransferObjects.NewEmployee
+import org.prodacc.webapi.services.dataTransferObjects.ResponseEmployeeWithJobCards
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -15,20 +15,20 @@ class EmployeeController(
 ) {
 
     @GetMapping("/all")
-    fun getEmployees (): Iterable<EmployeeWithJobCardIdAndName> = employeeService.getEmployees()
+    fun getEmployees (): Iterable<ResponseEmployeeWithJobCards> = employeeService.getEmployees()
 
 
     @GetMapping("/get/{id}")
-    fun getEmployeeById(@PathVariable id: UUID): EmployeeWithJobCardIdAndName = employeeService.getEmployeeById(id)
+    fun getEmployeeById(@PathVariable id: UUID): ResponseEmployeeWithJobCards = employeeService.getEmployeeById(id)
 
 
     @PostMapping("/new")
-    fun createNewEmployee(@RequestBody employee: NewEmployee): EmployeeWithJobCardIdAndName =
+    fun createNewEmployee(@RequestBody employee: NewEmployee): ResponseEmployeeWithJobCards =
         employeeService.createNewEmployee(employee)
 
 
     @PutMapping("/update/{id}")
-    fun updateEmployee(@PathVariable id: UUID, @RequestBody updatedEmployee: NewEmployee): EmployeeWithJobCardIdAndName =
+    fun updateEmployee(@PathVariable id: UUID, @RequestBody updatedEmployee: NewEmployee): ResponseEmployeeWithJobCards =
         employeeService.updateEmployee(id, updatedEmployee)
 
 

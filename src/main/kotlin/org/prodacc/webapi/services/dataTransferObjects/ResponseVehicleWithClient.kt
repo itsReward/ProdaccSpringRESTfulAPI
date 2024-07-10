@@ -2,7 +2,7 @@ package org.prodacc.webapi.services.dataTransferObjects
 
 import java.util.*
 
-data class VehicleWithClientIdAndName(
+data class ResponseVehicleWithClient(
     var id: UUID? = null,
     var model: String? = null,
     var regNumber: String? = null,

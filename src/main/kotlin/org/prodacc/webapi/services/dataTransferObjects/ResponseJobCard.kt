@@ -1,10 +1,9 @@
 package org.prodacc.webapi.services.dataTransferObjects
 
-import org.prodacc.webapi.models.Timesheet
 import java.time.LocalDateTime
 import java.util.*
 
-class ViewJobCard (
+class ResponseJobCard (
     var id: UUID,
     var jobCardName: String,
     var jobCardNumber: Int,

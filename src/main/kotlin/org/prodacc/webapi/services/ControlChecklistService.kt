@@ -2,11 +2,11 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.VehicleControlChecklist
-import org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist
-import org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist
 import org.prodacc.webapi.repositories.ControlChecklistRepository
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist
+import org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,14 +21,14 @@ class ControlChecklistService(
 ) {
     private val logger = LoggerFactory.getLogger(ControlChecklistService::class.java)
 
-    fun getChecklists() : Iterable<org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist> {
+    fun getChecklists() : Iterable<ResponseControlChecklist> {
         logger.info("Getting all control checklists")
         return controlChecklistRepository.findAll().map { it.toResponseControlChecklist() }
     }
 
 
 
-    fun getChecklistByJobCardId(id: UUID): org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist {
+    fun getChecklistByJobCardId(id: UUID): ResponseControlChecklist {
         logger.info("Getting control checklist by Job Card id: $id")
         val jobCard = jobCardRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Job Card not found with id: $id") }
@@ -37,14 +37,14 @@ class ControlChecklistService(
             .toResponseControlChecklist()
     }
 
-    fun getChecklistById(id: UUID): org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist {
+    fun getChecklistById(id: UUID): ResponseControlChecklist {
         logger.info("Getting control checklist by id: $id")
         return controlChecklistRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Control Checklist with id $id not found") }
             .toResponseControlChecklist()
     }
 
-    fun newChecklist( checklist: org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist): org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist {
+    fun newChecklist( checklist: NewControlChecklist): ResponseControlChecklist {
         logger.info("Creating new control checklist")
         val jobCard = checklist.jobCardId?.let {
             jobCardRepository.findById(it)
@@ -65,7 +65,7 @@ class ControlChecklistService(
         ).toResponseControlChecklist()
     }
 
-    fun updateChecklist(id: UUID,checklist: org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist): org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist {
+    fun updateChecklist(id: UUID,checklist: NewControlChecklist): ResponseControlChecklist {
         logger.info("Updating checklist with id: $id")
         val oldChecklist = controlChecklistRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Control Checklist not found with id: $id") }
@@ -97,7 +97,7 @@ class ControlChecklistService(
         }
     }
 
-    private fun VehicleControlChecklist.toResponseControlChecklist(): org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist {
+    private fun VehicleControlChecklist.toResponseControlChecklist(): ResponseControlChecklist {
         val jobCard = this.jobCard?.job_id?.let {
             jobCardRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("JobCard with id $it not found") }
@@ -106,7 +106,7 @@ class ControlChecklistService(
             employeeRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("Employee with id $it not found") }
         } ?: throw IllegalArgumentException("Employee can not be null")
-        return org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist(
+        return ResponseControlChecklist(
             id = this.id,
             jobCardId = jobCard.job_id,
             jobCardName = jobCard.jobCardName,

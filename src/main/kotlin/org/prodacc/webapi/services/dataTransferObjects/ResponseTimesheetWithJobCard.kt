@@ -3,7 +3,7 @@ package org.prodacc.webapi.services.dataTransferObjects
 import java.time.LocalDateTime
 import java.util.*
 
-data class TimesheetWithJobCardIdAndName(
+data class ResponseTimesheetWithJobCard(
     val id: UUID,
     val sheetTitle: String,
     val report: String,

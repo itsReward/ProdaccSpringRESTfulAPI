@@ -21,7 +21,7 @@ class SyncService(
 ) {
     fun syncToOffline(entity: Any) {
         when (entity) {
-            is JobCard -> template.convertAndSend("/topic/sync/jobcard", entity)
+            is JobCard -> template.convertAndSend("/topic/sync/jobCard", entity)
             is Timesheet -> template.convertAndSend("/topic/sync/timesheet", entity)
             is Vehicle -> template.convertAndSend("/topic/sync/vehicle", entity)
             is Client -> template.convertAndSend("/topic/sync/client", entity)
@@ -48,6 +48,6 @@ class SyncService(
 
         }
         // Broadcast the update to all other clients
-        template.convertAndSend("/topic/sync/${syncData.entityType.toLowerCase()}", syncData.entity)
+        template.convertAndSend("/topic/sync/${syncData.entityType.lowercase()}", syncData.entity)
     }
 }

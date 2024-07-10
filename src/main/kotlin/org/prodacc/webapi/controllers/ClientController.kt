@@ -1,8 +1,8 @@
 package org.prodacc.webapi.controllers
 
-import org.prodacc.webapi.models.dataTransferObjects.ClientWithVehiclesNameAndId
-import org.prodacc.webapi.models.dataTransferObjects.NewClient
 import org.prodacc.webapi.services.ClientService
+import org.prodacc.webapi.services.dataTransferObjects.NewClient
+import org.prodacc.webapi.services.dataTransferObjects.ResponseClientWithVehicles
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -15,20 +15,20 @@ class ClientController(
 ) {
 
     @GetMapping("/all")
-    fun getAll(): Iterable<ClientWithVehiclesNameAndId> = clientService.getAll()
+    fun getAll(): Iterable<ResponseClientWithVehicles> = clientService.getAll()
 
 
     @GetMapping("/get/{id}")
-    fun getClientById(@PathVariable id: UUID): ClientWithVehiclesNameAndId = clientService.getClientById(id)
+    fun getClientById(@PathVariable id: UUID): ResponseClientWithVehicles = clientService.getClientById(id)
 
 
     @PostMapping("/new")
-    fun createClient(@RequestBody client: NewClient): ClientWithVehiclesNameAndId =
+    fun createClient(@RequestBody client: NewClient): ResponseClientWithVehicles =
         clientService.createClient(client)
 
 
     @PutMapping("/update/{id}")
-    fun updateClient(@RequestBody updatedClient: NewClient, @PathVariable id: UUID): ClientWithVehiclesNameAndId =
+    fun updateClient(@RequestBody updatedClient: NewClient, @PathVariable id: UUID): ResponseClientWithVehicles =
         clientService.updateClient(updatedClient, id )
 
     @DeleteMapping("/delete/{id}")

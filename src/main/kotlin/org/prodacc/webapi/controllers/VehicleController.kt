@@ -1,12 +1,8 @@
 package org.prodacc.webapi.controllers
 
-import org.prodacc.webapi.models.Vehicle
-import org.prodacc.webapi.models.dataTransferObjects.NewVehicle
-import org.prodacc.webapi.models.dataTransferObjects.VehicleWithClientIdAndName
-import org.prodacc.webapi.repositories.ClientRepository
-import org.prodacc.webapi.repositories.VehicleRepository
 import org.prodacc.webapi.services.VehicleService
-import org.springframework.http.HttpStatus
+import org.prodacc.webapi.services.dataTransferObjects.NewVehicle
+import org.prodacc.webapi.services.dataTransferObjects.ResponseVehicleWithClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -19,19 +15,19 @@ class VehicleController(
 ) {
 
     @GetMapping("/all")
-    fun getVehicles(): Iterable<VehicleWithClientIdAndName> = vehicleService.getVehicles()
+    fun getVehicles(): Iterable<ResponseVehicleWithClient> = vehicleService.getVehicles()
 
 
     @GetMapping("/get/{id}")
-    fun getVehicleById(@PathVariable id: UUID): VehicleWithClientIdAndName = vehicleService.getVehicleById(id)
+    fun getVehicleById(@PathVariable id: UUID): ResponseVehicleWithClient = vehicleService.getVehicleById(id)
 
 
     @PostMapping("/new")
-    fun addVehicle(@RequestBody vehicle: NewVehicle): VehicleWithClientIdAndName = vehicleService.addVehicle(vehicle)
+    fun addVehicle(@RequestBody vehicle: NewVehicle): ResponseVehicleWithClient = vehicleService.addVehicle(vehicle)
 
 
     @PutMapping("/update/{id}")
-    fun updateVehicle(@PathVariable id: UUID, @RequestBody vehicle: NewVehicle): VehicleWithClientIdAndName =
+    fun updateVehicle(@PathVariable id: UUID, @RequestBody vehicle: NewVehicle): ResponseVehicleWithClient =
         vehicleService.updateVehicle(id, vehicle)
 
 

@@ -1,8 +1,8 @@
 package org.prodacc.webapi.controllers
 
-import org.prodacc.webapi.models.dataTransferObjects.NewServiceChecklist
-import org.prodacc.webapi.models.dataTransferObjects.ResponseServiceChecklistWithJobCard
 import org.prodacc.webapi.services.ServiceChecklistService
+import org.prodacc.webapi.services.dataTransferObjects.NewServiceChecklist
+import org.prodacc.webapi.services.dataTransferObjects.ResponseServiceChecklistWithJobCard
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*

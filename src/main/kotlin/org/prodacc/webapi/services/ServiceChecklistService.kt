@@ -2,11 +2,11 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.VehicleServiceChecklist
-import org.prodacc.webapi.models.dataTransferObjects.NewServiceChecklist
-import org.prodacc.webapi.models.dataTransferObjects.ResponseServiceChecklistWithJobCard
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.ServiceChecklistRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewServiceChecklist
+import org.prodacc.webapi.services.dataTransferObjects.ResponseServiceChecklistWithJobCard
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -114,7 +114,7 @@ class ServiceChecklistService(
             jobCardName = jobCard.jobCardName,
             jobCardId = jobCard.job_id,
             technicianId = technician.employeeId,
-            technicianName = technician.employeeName +" "+technician.employeeSurname,
+            technicianName = technician.employeeName + " " + technician.employeeSurname,
             created = this.created,
             checklist = this.checklist
 

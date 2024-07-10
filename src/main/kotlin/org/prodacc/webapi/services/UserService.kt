@@ -2,10 +2,10 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.User
-import org.prodacc.webapi.models.dataTransferObjects.NewUser
-import org.prodacc.webapi.models.dataTransferObjects.ViewUserWithEmployee
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.UserRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewUser
+import org.prodacc.webapi.services.dataTransferObjects.ResponseUserWithEmployee
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,12 +21,12 @@ class UserService (
 ){
     private val log = LoggerFactory.getLogger(UserService::class.java)
 
-    fun getAllUsers() : List<ViewUserWithEmployee> {
+    fun getAllUsers() : List<ResponseUserWithEmployee> {
         log.info("getting all users")
         return userRepository.findAll().map { user -> user.toViewUserWithEmployee() }
     }
 
-    fun getUserById(id : UUID) : ViewUserWithEmployee {
+    fun getUserById(id : UUID) : ResponseUserWithEmployee {
         log.info("getting user with id: $id")
         return userRepository.findById(id)
             .map { it.toViewUserWithEmployee() }
@@ -34,7 +34,7 @@ class UserService (
     }
 
     @Transactional
-    fun createUser(user : NewUser) : ViewUserWithEmployee {
+    fun createUser(user : NewUser) : ResponseUserWithEmployee {
         log.info("creating user")
         val employee = user.employeeId?.let { employeeRepository.findById(it) }?.get()
         val newUser = userRepository.save(
@@ -51,7 +51,7 @@ class UserService (
 
 
     @Transactional
-    fun updateUser(id: UUID, user : NewUser) : ViewUserWithEmployee {
+    fun updateUser(id: UUID, user : NewUser) : ResponseUserWithEmployee {
         log.info("updating user with id: $id")
         val oldUser = userRepository.findById(id).orElseThrow {EntityNotFoundException("User with id: $id not found")}
         val employee = user.employeeId?.let { employeeRepository.findById(it) }?.get()
@@ -80,9 +80,9 @@ class UserService (
 
 
 
-    private fun User.toViewUserWithEmployee(): ViewUserWithEmployee {
+    private fun User.toViewUserWithEmployee(): ResponseUserWithEmployee {
         val employee = this.employeeId
-        return ViewUserWithEmployee(
+        return ResponseUserWithEmployee(
             id = this.id!!,
             username = this.username!!,
             email = this.email!!,

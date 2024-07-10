@@ -2,10 +2,10 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.Vehicle
-import org.prodacc.webapi.models.dataTransferObjects.NewVehicle
-import org.prodacc.webapi.models.dataTransferObjects.VehicleWithClientIdAndName
 import org.prodacc.webapi.repositories.ClientRepository
 import org.prodacc.webapi.repositories.VehicleRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewVehicle
+import org.prodacc.webapi.services.dataTransferObjects.ResponseVehicleWithClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,7 +20,7 @@ class VehicleService(
 ) {
     private val logger = LoggerFactory.getLogger(VehicleService::class.java)
 
-    fun getVehicles(): Iterable<VehicleWithClientIdAndName> {
+    fun getVehicles(): Iterable<ResponseVehicleWithClient> {
         logger.info("Fetching all vehicles")
         return vehicleRepository.findAll().map { it.toVehicleWithClientIdAndName() }
     }
@@ -28,7 +28,7 @@ class VehicleService(
 
 
 
-    fun getVehicleById( id: UUID): VehicleWithClientIdAndName {
+    fun getVehicleById( id: UUID): ResponseVehicleWithClient {
         return vehicleRepository.findById(id)
             .map { it.toVehicleWithClientIdAndName() }
             .orElseThrow { EntityNotFoundException("Vehicle with id $id not found") }
@@ -36,7 +36,7 @@ class VehicleService(
 
 
     @Transactional
-    fun addVehicle(newVehicle: NewVehicle): VehicleWithClientIdAndName {
+    fun addVehicle(newVehicle: NewVehicle): ResponseVehicleWithClient {
         logger.info("Adding new vehicle")
         if (newVehicle.clientReference == null) {
             throw EntityNotFoundException("Vehicle owner not input, INPUT VEHICLE OWNER")
@@ -49,7 +49,7 @@ class VehicleService(
 
 
     @Transactional
-    fun updateVehicle( id: UUID,  vehicle: NewVehicle): VehicleWithClientIdAndName {
+    fun updateVehicle( id: UUID,  vehicle: NewVehicle): ResponseVehicleWithClient {
         val existingVehicle = vehicleRepository
             .findById(id)
             .orElseThrow { EntityNotFoundException("Vehicle with id $id not found") }
@@ -95,8 +95,8 @@ class VehicleService(
         )
     }
 
-    private fun Vehicle.toVehicleWithClientIdAndName(): VehicleWithClientIdAndName {
-        return VehicleWithClientIdAndName(
+    private fun Vehicle.toVehicleWithClientIdAndName(): ResponseVehicleWithClient {
+        return ResponseVehicleWithClient(
             id = this.id,
             model = this.model,
             regNumber = this.regNumber,

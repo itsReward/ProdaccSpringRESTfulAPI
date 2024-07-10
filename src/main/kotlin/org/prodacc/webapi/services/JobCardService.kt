@@ -2,9 +2,9 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.JobCard
-import org.prodacc.webapi.models.dataTransferObjects.NewJobCard
-import org.prodacc.webapi.models.dataTransferObjects.ViewJobCard
 import org.prodacc.webapi.repositories.*
+import org.prodacc.webapi.services.dataTransferObjects.NewJobCard
+import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCard
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,13 +26,13 @@ class JobCardService(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun getJobCards():Iterable<ViewJobCard> {
+    fun getJobCards():Iterable<ResponseJobCard> {
         logger.info("Fetching all jobCards")
         return jobCardRepository.findAll().map { it.toViewJobCard() }
     }
 
 
-    fun getJobCard(id: UUID): ViewJobCard {
+    fun getJobCard(id: UUID): ResponseJobCard {
         logger.info("Fetching job card with id: $id")
         return jobCardRepository
             .findById(id)
@@ -42,14 +42,14 @@ class JobCardService(
 
 
     @Transactional
-    fun newJobCard(@RequestBody newJobCard: NewJobCard): ViewJobCard {
+    fun newJobCard(@RequestBody newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Creating new job card")
         return jobCardRepository.save(newJobCard.toJobCard()).toViewJobCard()
     }
 
 
     @Transactional
-    fun updateJobCard(id: UUID, newJobCard: NewJobCard): ViewJobCard {
+    fun updateJobCard(id: UUID, newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Updating job card with id: $id")
         val oldJobCard = jobCardRepository.findById(id).orElseThrow { EntityNotFoundException ("JobCard with id: $id not found") }
 
@@ -139,7 +139,7 @@ class JobCardService(
         )
     }
 
-    private fun JobCard.toViewJobCard(): ViewJobCard{
+    private fun JobCard.toViewJobCard(): ResponseJobCard {
         val vehicle = this.vehicleReference?.id?.let { vehicleRepository.findById(it)
             .orElseThrow {EntityNotFoundException("Vehicle with id: $it does not exist")}
         }?: throw (NullPointerException("No vehicle associated with JobCard, JOB CARD HAS TO HAVE A VEHICLE"))
@@ -171,7 +171,7 @@ class JobCardService(
             vehicleStateRepository.findVehicleStateChecklistByJobCard(this).get().id
         } else null
 
-        return ViewJobCard(
+        return ResponseJobCard(
             id = this.job_id!!,
             jobCardName = this.jobCardName!!,
             jobCardNumber = this.jobCardNumber!!,
@@ -181,12 +181,12 @@ class JobCardService(
             clientName = client.clientName + " " + client.clientSurname,
             serviceAdvisorId = serviceAdvisor.employeeId!!,
             serviceAdvisorName = serviceAdvisor.employeeName + " " + serviceAdvisor.employeeSurname,
-            serviceAdvisorReport = this.serviceAdvisorReport?: "null",
+            serviceAdvisorReport = this.serviceAdvisorReport ?: "null",
             supervisorId = supervisor.employeeId!!,
             supervisorName = supervisor.employeeName + " " + supervisor.employeeSurname,
             technicianId = technician?.employeeId,
             technicianName = technician?.employeeName + " " + technician?.employeeSurname,
-            timesheets = timesheets ,
+            timesheets = timesheets,
             controlChecklistId = controlChecklistId,
             stateChecklistId = stateChecklistId,
             serviceChecklistId = serviceChecklistId,

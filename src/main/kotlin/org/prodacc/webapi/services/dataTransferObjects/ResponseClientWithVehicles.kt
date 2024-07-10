@@ -2,7 +2,7 @@ package org.prodacc.webapi.services.dataTransferObjects
 
 import java.util.*
 
-data class ClientWithVehiclesNameAndId(
+data class ResponseClientWithVehicles(
     val id: UUID? = null,
     val clientName: String? = null,
     val clientSurname: String? = null,
@@ -12,5 +12,5 @@ data class ClientWithVehiclesNameAndId(
     val phone: String? = null,
     val email: String? = null,
     val address: String? = null,
-    val vehicles: List<org.prodacc.webapi.services.dataTransferObjects.VehicleWithIdAndName> = listOf(),
+    val vehicles: List<VehicleWithIdAndName> = listOf(),
 )

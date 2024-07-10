@@ -2,7 +2,7 @@ package org.prodacc.webapi.services.dataTransferObjects
 
 import java.util.*
 
-data class EmployeeWithJobCardIdAndName (
+data class ResponseEmployeeWithJobCards (
     val id: UUID,
     val employeeName: String,
     val employeeSurname: String,

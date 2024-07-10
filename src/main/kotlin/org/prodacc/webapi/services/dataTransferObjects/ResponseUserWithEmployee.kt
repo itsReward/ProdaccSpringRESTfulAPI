@@ -2,7 +2,7 @@ package org.prodacc.webapi.services.dataTransferObjects
 
 import java.util.*
 
-data class ViewUserWithEmployee(
+data class ResponseUserWithEmployee(
     var id: UUID,
     var username: String,
     var email: String,

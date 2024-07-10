@@ -3,11 +3,10 @@ package org.prodacc.webapi.services
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.Employee
 import org.prodacc.webapi.models.JobCard
-import org.prodacc.webapi.models.dataTransferObjects.EmployeeWithJobCardIdAndName
-import org.prodacc.webapi.models.dataTransferObjects.JobCardWithIdAndName
-import org.prodacc.webapi.models.dataTransferObjects.NewEmployee
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
+import org.prodacc.webapi.services.dataTransferObjects.NewEmployee
+import org.prodacc.webapi.services.dataTransferObjects.ResponseEmployeeWithJobCards
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,13 +21,13 @@ class EmployeeService(
 ) {
     private val logger = LoggerFactory.getLogger(EmployeeService::class.java)
 
-    fun getEmployees (): Iterable<EmployeeWithJobCardIdAndName> {
+    fun getEmployees (): Iterable<ResponseEmployeeWithJobCards> {
         logger.info("Fetching all employees")
         return employeeRepository.findAll().map { it.toEmployeeWithJobCardIdAndName() }
     }
 
 
-    fun getEmployeeById( id: UUID): EmployeeWithJobCardIdAndName {
+    fun getEmployeeById( id: UUID): ResponseEmployeeWithJobCards {
         logger.info("Fetching employee by id: $id")
         return employeeRepository
             .findById(id)
@@ -38,14 +37,14 @@ class EmployeeService(
 
 
     @Transactional
-    fun createNewEmployee(employee: NewEmployee): EmployeeWithJobCardIdAndName {
+    fun createNewEmployee(employee: NewEmployee): ResponseEmployeeWithJobCards {
         logger.info("Creating new employee")
         return employeeRepository.save(employee.toEmployee()).toEmployeeWithJobCardIdAndName()
     }
 
 
     @Transactional
-    fun updateEmployee( id: UUID, updatedEmployee: NewEmployee): EmployeeWithJobCardIdAndName {
+    fun updateEmployee( id: UUID, updatedEmployee: NewEmployee): ResponseEmployeeWithJobCards {
         val existingEmployee = employeeRepository.findById(id).orElseThrow { EntityNotFoundException(" Employee with id $id not found") }
         val updated = existingEmployee.copy(
             employeeName = updatedEmployee.employeeName ?: existingEmployee.employeeName,
@@ -70,18 +69,23 @@ class EmployeeService(
         }
     }
 
-    private fun Employee.toEmployeeWithJobCardIdAndName(): EmployeeWithJobCardIdAndName {
-        val jobCards =  if (this.employeeRole == "Service Advisor") {
-            jobCardRepository.getJobCardsByServiceAdvisor(this).map { it.toJobCardWithIdAndName() }
-        } else if (this.employeeRole == "technician") {
-            jobCardRepository.getJobCardsByTechnician(this).map { it.toJobCardWithIdAndName() }
-        } else if (this.employeeRole == "Supervisor") {
-            jobCardRepository.getJobCardsBySupervisor(this).map { it.toJobCardWithIdAndName() }
-        } else {
-            listOf()
+    private fun Employee.toEmployeeWithJobCardIdAndName(): ResponseEmployeeWithJobCards {
+        val jobCards = when (this.employeeRole) {
+            "Service Advisor" -> {
+                jobCardRepository.getJobCardsByServiceAdvisor(this).map { it.toJobCardWithIdAndName() }
+            }
+            "Technician" -> {
+                jobCardRepository.getJobCardsByTechnician(this).map { it.toJobCardWithIdAndName() }
+            }
+            "Supervisor" -> {
+                jobCardRepository.getJobCardsBySupervisor(this).map { it.toJobCardWithIdAndName() }
+            }
+            else -> {
+                listOf()
+            }
         }
 
-        return EmployeeWithJobCardIdAndName(
+        return ResponseEmployeeWithJobCards(
             id = this.employeeId!!,
             employeeName = this.employeeName,
             employeeSurname = this.employeeSurname,
@@ -94,8 +98,8 @@ class EmployeeService(
         )
     }
 
-    private fun JobCard.toJobCardWithIdAndName(): JobCardWithIdAndName {
-        return JobCardWithIdAndName(
+    private fun JobCard.toJobCardWithIdAndName(): org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName {
+        return org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName(
             id = this.job_id!!,
             name = this.jobCardName!!
         )
