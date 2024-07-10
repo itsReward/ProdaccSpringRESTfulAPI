@@ -1,4 +1,4 @@
-package org.prodacc.webapi.models.dataTransferObjects
+package org.prodacc.webapi.services.dataTransferObjects
 
 import java.util.*
 
@@ -11,6 +11,6 @@ data class EmployeeWithJobCardIdAndName (
     val employeeDepartment: String,
     val phoneNumber: String,
     val homeAddress: String,
-    val jobCards: List<JobCardWithIdAndName>
+    val jobCards: List<org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName>
 )
 

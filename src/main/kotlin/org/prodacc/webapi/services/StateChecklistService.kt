@@ -2,8 +2,8 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.VehicleStateChecklist
-import org.prodacc.webapi.models.dataTransferObjects.NewVehicleStateChecklist
-import org.prodacc.webapi.models.dataTransferObjects.ResponseStateChecklist
+import org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist
+import org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.StateChecklistRepository
 import org.slf4j.LoggerFactory
@@ -19,19 +19,19 @@ class StateChecklistService(
 ) {
     private val logger = LoggerFactory.getLogger(StateChecklistService::class.java.name)
 
-    fun getAllChecklists() : Iterable<ResponseStateChecklist> {
+    fun getAllChecklists() : Iterable<org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist> {
         logger.info("Getting all checklists")
         return stateChecklistRepository.findAll().map { it.toResponseStateChecklist() }
     }
 
-    fun getChecklistById(id: UUID): ResponseStateChecklist {
+    fun getChecklistById(id: UUID): org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist {
         logger.info("Getting checklist by id: $id")
         return stateChecklistRepository.findById(id)
             .orElseThrow { EntityNotFoundException("State checklist with id: $id not found") }
             .toResponseStateChecklist()
     }
 
-    fun getChecklistByJobCardId( id: UUID): ResponseStateChecklist {
+    fun getChecklistByJobCardId( id: UUID): org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist {
         logger.info("Getting checklist associated with JobCard: $id")
 
         val jobCard = jobCardRepository.findById(id)
@@ -41,7 +41,7 @@ class StateChecklistService(
     }
 
 
-    fun newStateChecklist( newStateChecklist: NewVehicleStateChecklist) : ResponseStateChecklist {
+    fun newStateChecklist( newStateChecklist: org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist) : org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist {
         logger.info("Creating new state checklist")
         val jobCard = newStateChecklist.jobCardId?.let {
             jobCardRepository.findById(it)
@@ -60,7 +60,7 @@ class StateChecklistService(
         ).toResponseStateChecklist()
     }
 
-    fun updateStateChecklist( id: UUID, newStateChecklist: NewVehicleStateChecklist) : ResponseStateChecklist {
+    fun updateStateChecklist( id: UUID, newStateChecklist: org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist) : org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist {
         logger.info("Updating state checklist with id: $id")
         val oldChecklist = stateChecklistRepository.findById(id)
             .orElseThrow { EntityNotFoundException("State checklist with id: $id not found") }
@@ -92,7 +92,7 @@ class StateChecklistService(
         }
     }
 
-    private fun VehicleStateChecklist.toResponseStateChecklist(): ResponseStateChecklist {
+    private fun VehicleStateChecklist.toResponseStateChecklist(): org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist {
         val jobCard = this.jobCard?.job_id
             .let {
                 if (it != null) {
@@ -103,7 +103,7 @@ class StateChecklistService(
                 }
             } ?: throw NullPointerException("state checklist must be associated with a JobCard!!, enter jobCard id")
 
-        return ResponseStateChecklist(
+        return org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist(
             id = this.id,
             jobCardId = jobCard.job_id,
             jobCardName = jobCard.jobCardName,

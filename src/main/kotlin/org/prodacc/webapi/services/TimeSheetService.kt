@@ -2,8 +2,8 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.Timesheet
-import org.prodacc.webapi.models.dataTransferObjects.NewTimesheet
-import org.prodacc.webapi.models.dataTransferObjects.TimesheetWithJobCardIdAndName
+import org.prodacc.webapi.services.dataTransferObjects.NewTimesheet
+import org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.TimesheetRepository
@@ -23,25 +23,25 @@ class TimeSheetService(
 ) {
     private val logger = LoggerFactory.getLogger(TimeSheetService::class.java)
 
-    fun getAllTimesheets(): Iterable<TimesheetWithJobCardIdAndName> {
+    fun getAllTimesheets(): Iterable<org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName> {
         logger.info("Fetching all timesheets")
         return timesheetRepository.findAll().map { it.toTimeSheetWithJobCardIdAndName() }
     }
 
-    fun getTimesheetByJobCardId(id: UUID): Iterable<TimesheetWithJobCardIdAndName?> {
+    fun getTimesheetByJobCardId(id: UUID): Iterable<org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName?> {
         logger.info("Fetching timesheet by job card id: $id")
         val jobCard = jobCardRepository.findById(id).orElseThrow { EntityNotFoundException("Job card not found with id: $id") }
         return timesheetRepository.getTimesheetsByJobCardUUID(jobCard).map { it.toTimeSheetWithJobCardIdAndName() }
     }
 
-    fun getTimesheetById( id: UUID): TimesheetWithJobCardIdAndName {
+    fun getTimesheetById( id: UUID): org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
         logger.info("Fetching timesheet by id: $id")
         val timesheet  = timesheetRepository.findById(id).orElseThrow { EntityNotFoundException("Timesheet not found with id: $id") }
         return timesheet.toTimeSheetWithJobCardIdAndName()
     }
 
     @Transactional
-    fun addTimesheet(newTimesheet: NewTimesheet): TimesheetWithJobCardIdAndName {
+    fun addTimesheet(newTimesheet: org.prodacc.webapi.services.dataTransferObjects.NewTimesheet): org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
         logger.info("Adding New Timesheet")
         val jobCard = newTimesheet.jobCardId?.let {
             jobCardRepository.findById(it).orElseThrow {EntityNotFoundException("Job card not found with id: ${newTimesheet.jobCardId}")}
@@ -64,7 +64,7 @@ class TimeSheetService(
 
 
     @Transactional
-    fun updateTimesheet(id: UUID, newTimesheet: NewTimesheet): TimesheetWithJobCardIdAndName {
+    fun updateTimesheet(id: UUID, newTimesheet: org.prodacc.webapi.services.dataTransferObjects.NewTimesheet): org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
         logger.info("Updating timesheet with id: $id")
         val oldTimesheet = timesheetRepository.findById(id).orElseThrow { EntityNotFoundException("Timesheet not found with id: $id") }
         val technician = newTimesheet.employeeId?.let {
@@ -95,7 +95,7 @@ class TimeSheetService(
     }
 
 
-    private fun Timesheet.toTimeSheetWithJobCardIdAndName() : TimesheetWithJobCardIdAndName {
+    private fun Timesheet.toTimeSheetWithJobCardIdAndName() : org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName {
         val jobCard = this.jobCardUUID?.job_id
         .let {
             if (it != null) {
@@ -114,7 +114,7 @@ class TimeSheetService(
             }
         } ?: throw NullPointerException("Timesheet must be associated with a technician!!, enter employee id")
 
-        return TimesheetWithJobCardIdAndName(
+        return org.prodacc.webapi.services.dataTransferObjects.TimesheetWithJobCardIdAndName(
             id = this.id!!,
             sheetTitle = this.sheetTitle!!,
             report = this.report!!,

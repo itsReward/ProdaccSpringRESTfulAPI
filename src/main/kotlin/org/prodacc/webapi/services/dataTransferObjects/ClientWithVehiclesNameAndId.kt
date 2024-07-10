@@ -1,7 +1,6 @@
-package org.prodacc.webapi.models.dataTransferObjects
+package org.prodacc.webapi.services.dataTransferObjects
 
-import org.prodacc.webapi.models.Vehicle
-import java.util.UUID
+import java.util.*
 
 data class ClientWithVehiclesNameAndId(
     val id: UUID? = null,
@@ -13,5 +12,5 @@ data class ClientWithVehiclesNameAndId(
     val phone: String? = null,
     val email: String? = null,
     val address: String? = null,
-    val vehicles: List<VehicleWithIdAndName> = listOf(),
+    val vehicles: List<org.prodacc.webapi.services.dataTransferObjects.VehicleWithIdAndName> = listOf(),
 )

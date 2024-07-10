@@ -1,4 +1,4 @@
-package org.prodacc.webapi.models.dataTransferObjects
+package org.prodacc.webapi.services.dataTransferObjects
 
 import java.time.LocalDateTime
 import java.util.*

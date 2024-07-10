@@ -1,4 +1,4 @@
-package org.prodacc.webapi.models.dataTransferObjects
+package org.prodacc.webapi.services.dataTransferObjects
 
 data class NewEmployee(
     var employeeName: String? = null,
