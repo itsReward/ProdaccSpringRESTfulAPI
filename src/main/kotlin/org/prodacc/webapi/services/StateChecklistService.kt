@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -40,7 +41,7 @@ class StateChecklistService(
             .get().toResponseStateChecklist()
     }
 
-
+    @Transactional
     fun newStateChecklist( newStateChecklist: NewVehicleStateChecklist) : ResponseStateChecklist {
         logger.info("Creating new state checklist")
         val jobCard = newStateChecklist.jobCardId?.let {
@@ -60,6 +61,7 @@ class StateChecklistService(
         ).toResponseStateChecklist()
     }
 
+    @Transactional
     fun updateStateChecklist( id: UUID, newStateChecklist: NewVehicleStateChecklist) : ResponseStateChecklist {
         logger.info("Updating state checklist with id: $id")
         val oldChecklist = stateChecklistRepository.findById(id)
@@ -81,6 +83,7 @@ class StateChecklistService(
         return stateChecklistRepository.save(newChecklist).toResponseStateChecklist()
     }
 
+    @Transactional
     fun deleteStateChecklist(id: UUID) : ResponseEntity<String> {
         logger.info("Deleting state checklist with id: $id")
         return if (stateChecklistRepository.existsById(id)) {
