@@ -3,7 +3,7 @@ package org.prodacc.webapi.models
 import jakarta.persistence.*
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -15,7 +15,7 @@ data class Timesheet (
     var id: UUID? = null,
 
     @Column(name = "\"clock_in_date_and_time\"", nullable = false)
-    var clockInDateAndTime: Instant? = null,
+    var clockInDateAndTime: LocalDateTime? = null,
 
     @Column(name = "\"sheet_title\"", nullable = false, length = 500)
     var sheetTitle: String? = null,
@@ -24,7 +24,7 @@ data class Timesheet (
     var report: String? = null,
 
     @Column(name = "\"clock_out_date_and_time\"")
-    var clockOutDateAndTime: Instant? = null,
+    var clockOutDateAndTime: LocalDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
@@ -41,4 +41,4 @@ data class Timesheet (
     var version: Long? = 0,
 
 
-)
+    )

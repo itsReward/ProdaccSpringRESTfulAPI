@@ -1,67 +1,39 @@
 package org.prodacc.webapi.controllers
 
-import org.prodacc.webapi.models.Timesheet
 import org.prodacc.webapi.models.dataTransferObjects.NewTimesheet
-import org.prodacc.webapi.repositories.EmployeeRepository
-import org.prodacc.webapi.repositories.JobCardRepository
-import org.prodacc.webapi.repositories.TimesheetRepository
-import org.springframework.data.repository.findByIdOrNull
+import org.prodacc.webapi.models.dataTransferObjects.TimesheetWithJobCardIdAndName
+import org.prodacc.webapi.services.TimeSheetService
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import java.time.ZoneId
 import java.util.*
 
 
 @Controller
 @RequestMapping("/api/v1/timesheets")
 class TimesheetController (
-    private val timesheetRepository: TimesheetRepository,
-    private val jobCardRepository: JobCardRepository,
-    private val employeeRepository: EmployeeRepository
+    private val timeSheetService: TimeSheetService
 ) {
 
     @GetMapping("/all")
-    fun getAllTimesheets(): Iterable<Timesheet> = timesheetRepository.findAll()
+    fun getAllTimesheets(): Iterable<TimesheetWithJobCardIdAndName> = timeSheetService.getAllTimesheets()
 
-    @GetMapping("/timesheet/jobCard/{id}")
-    fun getTimesheetByJobCardId(@PathVariable id: UUID): Timesheet? = timesheetRepository.findByIdOrNull(id)
+    @GetMapping("/jobCard/{id}")
+    fun getTimesheetByJobCardId(@PathVariable id: UUID): Iterable<TimesheetWithJobCardIdAndName?> = timeSheetService.getTimesheetByJobCardId(id)
 
     @GetMapping("/get/{id}")
-    fun getTimesheetById(@PathVariable id: UUID): Optional<Timesheet> = timesheetRepository.findById(id)
+    fun getTimesheetById(@PathVariable id: UUID): TimesheetWithJobCardIdAndName = timeSheetService.getTimesheetById(id)
 
     @PostMapping("/add")
-    fun addTimesheet(@RequestBody timesheet: NewTimesheet): Timesheet? {
-        if (jobCardRepository.findById(timesheet.jobCardId).isPresent && employeeRepository.findById(timesheet.employeeId).isPresent) {
-            return timesheetRepository.save(
-                Timesheet(
-                    jobCardUUID = jobCardRepository.findById(timesheet.jobCardId).get(),
-                    employee = employeeRepository.findById(timesheet.employeeId).get(),
-                    clockInDateAndTime = timesheet.clockInDateAndTime.toInstant(
-                        ZoneId.systemDefault().rules.getOffset(
-                            timesheet.clockInDateAndTime
-                        )
-                    ),
-                    clockOutDateAndTime = timesheet.clockOutDateAndTime.toInstant(
-                        ZoneId.systemDefault().rules.getOffset(
-                            timesheet.clockOutDateAndTime
-                        )
-                    ),
-                    sheetTitle = timesheet.sheetTitle,
-                    report = timesheet.report
-                )
-            )
+    fun addTimesheet(@RequestBody timesheet: NewTimesheet): TimesheetWithJobCardIdAndName = timeSheetService.addTimesheet(timesheet)
 
-        } else {
-            return null
-        }
-    }
+    @PutMapping("/update/{id}")
+    fun updateTimesheet(@PathVariable id: UUID, @RequestBody newTimesheet: NewTimesheet): TimesheetWithJobCardIdAndName =
+        timeSheetService.updateTimesheet(id, newTimesheet)
 
 
-
-    @DeleteMapping("/{id}")
-    fun deleteTimesheet(@PathVariable id: UUID) {
-        timesheetRepository.deleteById(id)
-    }
+    @DeleteMapping("/delete/{id}")
+    fun deleteTimesheet(@PathVariable id: UUID) : ResponseEntity<String> = timeSheetService.deleteTimesheet(id)
 
 
 }

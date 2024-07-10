@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository
 import java.util.UUID
 
 interface TimesheetRepository: CrudRepository<Timesheet, UUID> {
-    fun getTimesheetsByJobCardUUID(jobCardUUID: JobCard): List<Timesheet>
+    fun getTimesheetsByJobCardUUID(jobCard: JobCard): List<Timesheet>
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : Timesheet?> save(entity: S & Any): S & Any

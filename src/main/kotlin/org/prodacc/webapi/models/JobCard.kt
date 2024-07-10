@@ -6,6 +6,7 @@ import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import java.time.Instant
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "jobcards")
@@ -37,16 +38,16 @@ data class JobCard(
 
     @ColumnDefault("2024-04-21 09:21:35.510973")
     @Column(name = "\"date_and_time_in\"", nullable = false)
-    var dateAndTimeIn: Instant? = null,
+    var dateAndTimeIn: LocalDateTime? = null,
 
     @Column(name = "\"estimated_time_of_completion\"")
-    var estimatedTimeOfCompletion: Instant? = null,
+    var estimatedTimeOfCompletion: LocalDateTime? = null,
 
     @Column(name = "\"date_and_time_frozen\"")
-    var dateAndTimeFrozen: Instant? = null,
+    var dateAndTimeFrozen: LocalDateTime? = null,
 
     @Column(name = "\"date_and_time_closed\"")
-    var dateAndTimeClosed: Instant? = null,
+    var dateAndTimeClosed: LocalDateTime? = null,
 
     @Column(name = "\"service_advisor_report\"", nullable = false, length = 1000)
     var serviceAdvisorReport: String? = null,
@@ -76,7 +77,7 @@ data class JobCard(
     var priority: Boolean? = null,
 
     @Column(name = "\"job_card_deadline\"")
-    var jobCardDeadline: Instant? = null,
+    var jobCardDeadline: LocalDateTime? = null,
 
     @Column(name = "\"work_done\"", length = 5000)
     var workDone: String? = null,

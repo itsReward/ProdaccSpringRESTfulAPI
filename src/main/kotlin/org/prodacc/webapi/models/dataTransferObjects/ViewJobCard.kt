@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 class ViewJobCard (
+    var id: UUID,
     var jobCardName: String,
     var jobCardNumber: Int,
     var vehicleId: UUID,
@@ -28,7 +29,7 @@ class ViewJobCard (
     var jobCardDeadline: LocalDateTime? = null,
     var workDone: String? = null,
     var additionalWorkDone: String? = null,
-    var timesheets: List<Timesheet> = listOf(),
+    var timesheets: List<UUID?> = listOf(),
     var stateChecklistId: UUID? = null,
     var serviceChecklistId: UUID? = null,
     var controlChecklistId: UUID? = null,
