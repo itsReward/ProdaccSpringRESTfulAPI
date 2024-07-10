@@ -30,6 +30,16 @@ class GlobalExceptionHandler {
         return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(ex: IllegalArgumentException, request: WebRequest): ResponseEntity<ErrorDetails> {
+        val errorDetails = ErrorDetails(
+            timestamp = LocalDateTime.now(),
+            message = ex.message ?: "Illegal argument encountered",
+            details = request.getDescription(false)
+        )
+        return ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleGlobalException(ex: Exception, request: WebRequest): ResponseEntity<ErrorDetails> {
         val errorDetails = ErrorDetails(
