@@ -17,6 +17,18 @@ class UserController(
     @GetMapping("/get/{id}")
     fun getUserById(@PathVariable id : UUID) : ResponseUserWithEmployee = userService.getUserById(id)
 
+    @GetMapping("/find/{username}")
+    fun findUserByUsername(@PathVariable username: String): ResponseUserWithEmployee =
+        userService.findUserByUsername(username)
+
+    @GetMapping("/find/{email}")
+    fun findUserByEmail(@PathVariable email: String): ResponseUserWithEmployee =
+        userService.findUserByEmail(email)
+
+    @GetMapping("/find/{employeeId}")
+    fun findUserByEmployeeId(@PathVariable employeeId: UUID): ResponseUserWithEmployee =
+        userService.findUserByEmployeeId(employeeId)
+
     @PostMapping("/new")
     fun createUser(@RequestBody user : org.prodacc.webapi.services.dataTransferObjects.NewUser) : ResponseUserWithEmployee = userService.createUser(user)
 
