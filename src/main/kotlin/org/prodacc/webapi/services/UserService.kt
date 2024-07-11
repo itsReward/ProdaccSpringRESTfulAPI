@@ -57,6 +57,15 @@ class UserService(
             .toViewUserWithEmployee()
     }
 
+
+    /**
+     * Creates a User
+     * @param NewUser
+     * @return ResponseUserWithEmployee
+     * @throws EntityExistsException when a user with the same username, email and employee tris to be created
+     * @see ResponseUserWithEmployee
+     * @see NewUser
+    */
     @Transactional
     fun createUser(user: NewUser): ResponseUserWithEmployee {
         log.info("creating user")

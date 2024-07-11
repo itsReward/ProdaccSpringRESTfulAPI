@@ -2,6 +2,10 @@ package org.prodacc.webapi.services.dataTransferObjects
 
 import java.util.*
 
+/**
+ *Response Entity that returns User with associated employee
+ * @since   1.0
+ */
 data class ResponseUserWithEmployee(
     var id: UUID,
     var username: String,
