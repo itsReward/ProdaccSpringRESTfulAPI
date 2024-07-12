@@ -32,7 +32,7 @@ class SecurityConfiguration(
                     .requestMatchers("api/v1/users**")
                     .hasRole("ADMIN")
                     .anyRequest()
-                    .authenticated()
+                    .fullyAuthenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
