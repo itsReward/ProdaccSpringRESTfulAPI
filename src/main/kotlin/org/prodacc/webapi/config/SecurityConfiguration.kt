@@ -25,15 +25,14 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers(HttpMethod.GET, "/api/v1/auth", "/api/v1/auth/refresh", "/error")
+                    .requestMatchers( "/api/v1/auth", "/api/v1/auth/refresh", "/error")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "api/v1/users/new", "/error")
                     .permitAll()
                     .requestMatchers("api/v1/users**")
                     .hasRole("ADMIN")
                     .anyRequest()
-                    .permitAll() //changed this from .fullyAuthorized because i wasnt getting the requested tokens
-                //when i select permit all thats when I receive the tokens 
+                    .authenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
