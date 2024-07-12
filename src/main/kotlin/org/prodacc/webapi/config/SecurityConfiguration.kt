@@ -12,9 +12,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration (
+class SecurityConfiguration(
     private val authenticationProvider: AuthenticationProvider,
-){
+) {
 
     @Bean
     fun securityFilterChain(
@@ -22,17 +22,18 @@ class SecurityConfiguration (
         jwtAuthenticationFilter: JwtAuthenticationFilter
     ): DefaultSecurityFilterChain =
         http
-            .csrf{it.disable()}
+            .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/v1/auth", "/api/v1/auth/refresh", "/error")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/auth", "/api/v1/auth/refresh", "/error")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "api/v1/users/")
+                    .requestMatchers(HttpMethod.POST, "api/v1/users/new", "/error")
                     .permitAll()
                     .requestMatchers("api/v1/users**")
-                    .hasRole("admin")
+                    .hasRole("ADMIN")
                     .anyRequest()
-                    .fullyAuthenticated()
+                    .permitAll() //changed this from .fullyAuthorized because i wasnt getting the requested tokens
+                //when i select permit all thats when I receive the tokens 
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

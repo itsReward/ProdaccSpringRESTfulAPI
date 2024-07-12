@@ -6,7 +6,6 @@ import org.prodacc.webapi.controllers.AuthenticationResponse
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -15,17 +14,15 @@ class AuthenticationService(
     private val authenticationManager: AuthenticationManager,
     private val userDetailsService: CustomUserDetailsService,
     private val tokenService: TokenService,
-    private val jwtProperties: JwtProperties,
-    private val passwordEncoder: PasswordEncoder
+    private val jwtProperties: JwtProperties
 ) {
     private val logger = LoggerFactory.getLogger(AuthenticationService::class.java)
 
 
 
     fun authentication(authRequest: AuthenticationRequest): AuthenticationResponse {
-       logger.info("Authentication Request for user ${authRequest.username}")
 
-
+        val user = userDetailsService.loadUserByUsername(authRequest.username)
 
         try {
             authenticationManager.authenticate(
@@ -39,14 +36,6 @@ class AuthenticationService(
             logger.error("Authentication Error", e)
             throw e
         }
-
-
-        val user = userDetailsService.loadUserByUsername(authRequest.username)
-        logger.info("Loaded user details - Username: ${user.username}, Encoded Password: ${user.password}")
-
-        logger.info("Raw password from request: ${authRequest.password}")
-        logger.info("Encoded password from request: ${passwordEncoder.encode(authRequest.password)}")
-
 
         val accessToken = tokenService.generate(
             userDetails = user,
