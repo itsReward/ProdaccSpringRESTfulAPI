@@ -32,7 +32,9 @@ class SecurityConfiguration(
                     .requestMatchers("api/v1/users**")
                     .hasRole("ADMIN")
                     .anyRequest()
-                    .fullyAuthenticated()
+                    .fullyAuthenticated() /*even with generated access token can not access other endpoints, getting
+                    403 forbidden error */
+
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
