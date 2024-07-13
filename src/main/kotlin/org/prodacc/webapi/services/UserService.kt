@@ -10,6 +10,7 @@ import org.prodacc.webapi.services.dataTransferObjects.ResponseUserWithEmployee
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -18,7 +19,8 @@ import java.util.*
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     private val log = LoggerFactory.getLogger(UserService::class.java)
 
@@ -57,6 +59,15 @@ class UserService(
             .toViewUserWithEmployee()
     }
 
+
+    /**
+     * Creates a User
+     * @param NewUser
+     * @return ResponseUserWithEmployee
+     * @throws EntityExistsException when a user with the same username, email and employee tris to be created
+     * @see ResponseUserWithEmployee
+     * @see NewUser
+    */
     @Transactional
     fun createUser(user: NewUser): ResponseUserWithEmployee {
         log.info("creating user")
@@ -75,7 +86,7 @@ class UserService(
             userRepository.save(
                 User(
                     username = user.username,
-                    password = user.password,
+                    password = passwordEncoder.encode(user.password) ,
                     email = user.email,
                     userRole = user.userRole,
                     employeeId = employee,
@@ -93,7 +104,7 @@ class UserService(
         val employee = user.employeeId?.let { employeeRepository.findById(it) }?.get()
         val updatedUser = oldUser.copy(
             username = user.username,
-            password = user.password,
+            password = passwordEncoder.encode(user.password),
             email = user.email,
             userRole = user.userRole,
             employeeId = employee
