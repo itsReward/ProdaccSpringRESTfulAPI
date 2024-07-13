@@ -28,12 +28,23 @@ class TokenService(
 
     fun isValid(token: String, userDetails: UserDetails): Boolean {
         val username = extractUsername(token)
-        return userDetails.username == username && isExpired(token)
+        val tokenAuthorities = getAllClaimsFromToken(token).get("authorities", List::class.java)
+        return username == userDetails.username &&
+                !isExpired(token) && tokenAuthorities == userDetails.authorities.map { it.authority }
     }
 
     private fun getAllClaimsFromToken(token: String): Claims {
         val parser = Jwts.parser().verifyWith(secretKey).build()
 
         return parser.parseSignedClaims(token).payload
+    }
+
+
+    fun extractAuthorities(token: String): List<String>? {
+        return try {
+            getAllClaimsFromToken(token).get("authorities", List::class.java) as? List<String>
+        } catch (e: Exception) {
+            null
+        }
     }
 }

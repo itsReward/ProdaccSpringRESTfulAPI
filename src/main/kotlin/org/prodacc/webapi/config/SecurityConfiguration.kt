@@ -29,11 +29,10 @@ class SecurityConfiguration(
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "api/v1/users/new", "/error")
                     .permitAll()
-                    .requestMatchers("api/v1/users**")
-                    .hasRole("ADMIN")
+                    .requestMatchers("api/v1/users/**")
+                    .hasAuthority("ROLE_ADMIN")
                     .anyRequest()
-                    .fullyAuthenticated() /*even with generated access token can not access other endpoints, getting
-                    403 forbidden error */
+                    .authenticated()
 
             }
             .sessionManagement {
@@ -42,4 +41,6 @@ class SecurityConfiguration(
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
+
+
 }

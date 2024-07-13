@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.prodacc.webapi.services.TokenService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -38,19 +39,25 @@ class JwtAuthenticationFilter(
             val foundUserDetails = userDetailsService.loadUserByUsername(username)
 
             if (tokenService.isValid(jwtToken, foundUserDetails)) {
-                updateContext(foundUserDetails, request)
+                updateContext(jwtToken, foundUserDetails, request)
             }
 
             filterChain.doFilter(request, response)
         }
     }
 
-    private fun updateContext(foundUserDetails: UserDetails, request: HttpServletRequest) {
-        val authToken = UsernamePasswordAuthenticationToken(foundUserDetails, null, foundUserDetails.authorities)
+    private fun updateContext(token: String, userDetails: UserDetails, request: HttpServletRequest) {
+        val authorities = tokenService.extractAuthorities(token)
+            ?.map { SimpleGrantedAuthority(it) }
+            ?: userDetails.authorities
+
+        val authToken = UsernamePasswordAuthenticationToken(userDetails, null, authorities)
         authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
 
         SecurityContextHolder.getContext().authentication = authToken
     }
+
+
 
     private fun String?.doesNotContainBearerToken(): Boolean =
         this == null || !this.startsWith("Bearer ")
@@ -58,4 +65,6 @@ class JwtAuthenticationFilter(
     private fun String.extractTokenValue(): String {
         return this.substringAfter("Bearer ")
     }
+
+
 }

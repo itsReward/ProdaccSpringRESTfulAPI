@@ -39,7 +39,8 @@ class AuthenticationService(
 
         val accessToken = tokenService.generate(
             userDetails = user,
-            expirationDate = Date(System.currentTimeMillis() + jwtProperties.accessTokenExpiration)
+            expirationDate = Date(System.currentTimeMillis() + jwtProperties.accessTokenExpiration),
+            additionalClaims = mapOf("authorities" to user.authorities.map { it.authority }),
         )
 
         return AuthenticationResponse(accessToken)

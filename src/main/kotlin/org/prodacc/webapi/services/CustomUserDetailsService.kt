@@ -1,6 +1,7 @@
 package org.prodacc.webapi.services
 
 import org.prodacc.webapi.repositories.UserRepository
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -25,8 +26,7 @@ class CustomUserDetailsService(
         val user = User.builder()
             .username(this.username)
             .password(this.password)
-            .roles(this.userRole)
-            .authorities("ROLE${this.userRole!!.uppercase()}")
+            .authorities(SimpleGrantedAuthority("ROLE_${this.userRole!!.uppercase()}"))
             .build()
         return user
     }
