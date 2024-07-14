@@ -12,6 +12,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
+/**
+ * Configuration class that sets up user details service that fetches user details, sets up the password encoder, the
+ * spring framework authentication provider, and the spring framework authentication manager
+ * @see UserDetailsService
+ * @see CustomUserDetailsService
+ * @see
+*/
+
 @Configuration
 @EnableConfigurationProperties(JwtProperties::class)
 class Configuration {

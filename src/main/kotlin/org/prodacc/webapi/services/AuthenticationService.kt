@@ -9,6 +9,23 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service
 import java.util.*
 
+/**
+ * This service handles user authentication and token generation.
+ * It relies on injected dependencies for authentication and token services.
+ *
+ * The service offers the following functionality:
+ *
+ * 1. `authentication(authRequest)`: Performs user authentication and returns an authentication response.
+- Takes an `AuthenticationRequest` object containing username and password as input.
+- Loads user details from the injected `CustomUserDetailsService` using the provided username.
+- Attempts to authenticate the user using the injected `AuthenticationManager`.
+- Logs successful authentication attempts.
+- Catches any exceptions during authentication and re-throws them.
+- On successful authentication, generates an access token using the `TokenService`:
+- User details and expiration time (based on configured `jwtProperties`) are provided.
+- User authorities are included as an additional claim in the token.
+- Returns an `AuthenticationResponse` object containing the generated access token.
+ */
 @Service
 class AuthenticationService(
     private val authenticationManager: AuthenticationManager,

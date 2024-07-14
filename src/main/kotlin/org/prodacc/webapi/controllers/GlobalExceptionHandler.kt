@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import java.time.LocalDateTime
 
+/**
+ * Handles all the exception thrown in the API
+ */
+
 @ControllerAdvice
 class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException::class)

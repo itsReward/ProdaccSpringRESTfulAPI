@@ -10,6 +10,12 @@ import org.springframework.stereotype.Service
 
 typealias ApplicationUser = org.prodacc.webapi.models.User
 
+
+/**
+ * Maps the username and the password from the  User entity to spring UserDetails Service
+ * @see ApplicationUser
+*/
+
 @Service
 class CustomUserDetailsService(
     private val userRepository: UserRepository
