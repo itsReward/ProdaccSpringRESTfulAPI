@@ -26,7 +26,7 @@ class JobCardService(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun getJobCards():Iterable<ResponseJobCard> {
+    fun getJobCards(): Iterable<ResponseJobCard> {
         logger.info("Fetching all jobCards")
         return jobCardRepository.findAll().map { it.toViewJobCard() }
     }
@@ -37,7 +37,7 @@ class JobCardService(
         return jobCardRepository
             .findById(id)
             .map { it.toViewJobCard() }
-            .orElseThrow { EntityNotFoundException ("JobCard with Id: $id not found") }
+            .orElseThrow { EntityNotFoundException("JobCard with Id: $id not found") }
     }
 
 
@@ -51,14 +51,31 @@ class JobCardService(
     @Transactional
     fun updateJobCard(id: UUID, newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Updating job card with id: $id")
-        val oldJobCard = jobCardRepository.findById(id).orElseThrow { EntityNotFoundException ("JobCard with id: $id not found") }
+        val oldJobCard =
+            jobCardRepository.findById(id).orElseThrow { EntityNotFoundException("JobCard with id: $id not found") }
 
-        val vehicle = newJobCard.vehicleId?.let { vehicleRepository.findById(it).orElseThrow { EntityNotFoundException ("Vehicle with id: $id not found") } }
+        val vehicle = newJobCard.vehicleId?.let {
+            vehicleRepository.findById(it).orElseThrow { EntityNotFoundException("Vehicle with id: $id not found") }
+        }
         val client = vehicle?.let { clientRepository.findClientByVehiclesContaining(it) }
-        val supervisor = newJobCard.supervisorId?.let { employeeRepository.findById(it).orElseThrow { EntityNotFoundException ("Supervisor with id: $id not found") } }
-        val serviceAdvisor = newJobCard.serviceAdvisorId?.let { employeeRepository.findById(it).orElseThrow { EntityNotFoundException ("Service Advisor with id: $id not found") } }
-        val technician = newJobCard.technicianId?.let { employeeRepository.findById(it).orElseThrow { EntityNotFoundException("Technician with id: ${newJobCard.technicianId} not found") } }
-        val jobCardName = if (vehicle!=null) "${client?.clientName?.first()} ${client?.clientSurname}'s ${vehicle.model}" else null
+        val supervisor = newJobCard.supervisorId?.let {
+            employeeRepository.findById(it).orElseThrow { EntityNotFoundException("Supervisor with id: $id not found") }
+        }
+        val serviceAdvisor = newJobCard.serviceAdvisorId?.let {
+            employeeRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Service Advisor with id: $id not found") }
+        }
+        val technician = newJobCard.technician?.let {
+            it.map { technician ->
+                employeeRepository.findById(technician)
+                    .orElseThrow { EntityNotFoundException("Technician with id: $it") }
+            }
+        }
+
+        logger.info("\n\n\ntechnicians:\n $technician\n\n\n")
+
+        val jobCardName =
+            if (vehicle != null) "${client?.clientName?.first()} ${client?.clientSurname}'s ${vehicle.model}" else null
 
         val jobCard = oldJobCard.copy(
             vehicleReference = vehicle ?: oldJobCard.vehicleReference,
@@ -66,21 +83,13 @@ class JobCardService(
             serviceAdvisor = serviceAdvisor ?: oldJobCard.serviceAdvisor,
             supervisor = supervisor ?: oldJobCard.supervisor,
             dateAndTimeIn = newJobCard.dateAndTimeIn ?: oldJobCard.dateAndTimeIn,
-            serviceAdvisorReport = newJobCard.serviceAdvisorReport ?: oldJobCard.serviceAdvisorReport,
-            jobCardStatus = newJobCard.jobCardStatus ?: oldJobCard.jobCardStatus,
             estimatedTimeOfCompletion = newJobCard.estimatedTimeOfCompletion ?: oldJobCard.estimatedTimeOfCompletion,
             dateAndTimeFrozen = newJobCard.dateAndTimeFrozen ?: oldJobCard.dateAndTimeFrozen,
             dateAndTimeClosed = newJobCard.dateAndTimeClosed ?: oldJobCard.dateAndTimeClosed,
             jobCardDeadline = newJobCard.jobCardDeadline ?: oldJobCard.jobCardDeadline,
-            technician = technician ?: oldJobCard.technician,
             priority = newJobCard.priority ?: oldJobCard.priority,
-            workDone = newJobCard.workDone ?: oldJobCard.workDone,
-            additionalWorkDone = newJobCard.additionalWorkDone ?: oldJobCard.additionalWorkDone,
             jobCardName = jobCardName ?: oldJobCard.jobCardName,
-            jobCardNumber = oldJobCard.jobCardNumber,
-            supervisorReport = newJobCard.supervisorReport ?: oldJobCard.supervisorReport,
-            technicianDiagnosticReport = newJobCard.technicianDiagnosticReport ?: oldJobCard.technicianDiagnosticReport,
-
+            jobCardNumber = oldJobCard.jobCardNumber
         )
 
         return jobCardRepository.save(jobCard).toViewJobCard()
@@ -101,38 +110,32 @@ class JobCardService(
     }
 
 
-
     private fun NewJobCard.toJobCard(): JobCard {
         val vehicle = this.vehicleId?.let {
-            vehicleRepository.findById(it).orElseThrow { EntityNotFoundException ("Vehicle with id ${this.vehicleId} not found") }
-        }?: throw NullPointerException("Vehicle can not be null")
+            vehicleRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Vehicle with id ${this.vehicleId} not found") }
+        } ?: throw NullPointerException("Vehicle can not be null")
         val client = clientRepository.findClientByVehiclesContaining(vehicle)
         val supervisor = this.supervisorId?.let {
-            employeeRepository.findById(it).orElseThrow { EntityNotFoundException ("Employee with id ${this.supervisorId} not found") }
+            employeeRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Employee with id ${this.supervisorId} not found") }
         } ?: throw NullPointerException("Supervisor can not be null")
         val serviceAdvisor = this.serviceAdvisorId?.let {
-            employeeRepository.findById(it).orElseThrow {EntityNotFoundException("Employee with id ${this.serviceAdvisorId} not found") }
+            employeeRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Employee with id ${this.serviceAdvisorId} not found") }
         } ?: throw NullPointerException("Service Advisor can not be null")
-        val technician = this.technicianId?.let { employeeRepository.findById(it).orElseThrow { EntityNotFoundException("Technician with id: ${this.technicianId} not found") } }
 
         return JobCard(
             vehicleReference = vehicle,
             customerReference = client,
             serviceAdvisor = serviceAdvisor,
             supervisor = supervisor,
-            supervisorReport = this.supervisorReport,
             dateAndTimeIn = this.dateAndTimeIn,
-            serviceAdvisorReport = this.serviceAdvisorReport,
-            jobCardStatus = this.jobCardStatus,
             estimatedTimeOfCompletion = this.estimatedTimeOfCompletion,
             dateAndTimeFrozen = this.dateAndTimeFrozen,
             dateAndTimeClosed = this.dateAndTimeClosed,
             jobCardDeadline = this.jobCardDeadline,
-            technician = technician,
-            technicianDiagnosticReport = this.technicianDiagnosticReport,
             priority = this.priority,
-            workDone = this.workDone,
-            additionalWorkDone = this.additionalWorkDone,
             jobCardName = "${client.clientName.first()} ${client.clientSurname}'s ${vehicle.model}",
             jobCardNumber = (1..1989809802).random()
 
@@ -140,30 +143,32 @@ class JobCardService(
     }
 
     private fun JobCard.toViewJobCard(): ResponseJobCard {
-        val vehicle = this.vehicleReference?.id?.let { vehicleRepository.findById(it)
-            .orElseThrow {EntityNotFoundException("Vehicle with id: $it does not exist")}
-        }?: throw (NullPointerException("No vehicle associated with JobCard, JOB CARD HAS TO HAVE A VEHICLE"))
-        val client = this.customerReference?.id?.let { clientRepository.findById(it)
-            .orElseThrow { EntityNotFoundException("Client with id: $it does not exist") }
-        }?: throw (NullPointerException("No client associated with JobCard, JOB CARD HAS TO HAVE A CLIENT"))
+        val vehicle = this.vehicleReference?.id?.let {
+            vehicleRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Vehicle with id: $it does not exist") }
+        } ?: throw (NullPointerException("No vehicle associated with JobCard, JOB CARD HAS TO HAVE A VEHICLE"))
+        val client = this.customerReference?.id?.let {
+            clientRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Client with id: $it does not exist") }
+        } ?: throw (NullPointerException("No client associated with JobCard, JOB CARD HAS TO HAVE A CLIENT"))
 
-        val serviceAdvisor = this.serviceAdvisor?.employeeId?.let { employeeRepository.findById(it)
-            .orElseThrow { EntityNotFoundException("Employee With Id: $it not found") }
-        }?: throw (NullPointerException("No Service Advisor Associated with JobCard. JobCard has to have a Service Advisor!"))
-
-        val supervisor = this.supervisor?.employeeId?.let { employeeRepository.findById(it)
-            .orElseThrow { EntityNotFoundException("Employee With Id: $it not found") }
-        }?: throw (NullPointerException("No supervisor Associated with JobCard. JobCard has to have a supervisor!"))
-
-        val technician = this.technician?.employeeId?.let { employeeRepository.findById(it)
-            .orElseThrow { EntityNotFoundException("Employee With Id: $it not found") }
+        val serviceAdvisor = this.serviceAdvisor?.employeeId?.let {
+            employeeRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Employee With Id: $it not found") }
         }
+            ?: throw (NullPointerException("No Service Advisor Associated with JobCard. JobCard has to have a Service Advisor!"))
+
+        val supervisor = this.supervisor?.employeeId?.let {
+            employeeRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Employee With Id: $it not found") }
+        } ?: throw (NullPointerException("No supervisor Associated with JobCard. JobCard has to have a supervisor!"))
+
 
 
         val timesheets = timesheetRepository.getTimesheetsByJobCardUUID(this).map { it.id }
         val serviceChecklistId = if (serviceChecklistRepository.getVehicleServiceChecklistByJobCard(this).isPresent) {
             serviceChecklistRepository.getVehicleServiceChecklistByJobCard(this).get().id
-        }else null
+        } else null
         val controlChecklistId = if (controlChecklistRepository.findVehicleControlChecklistByJobCard(this).isPresent) {
             controlChecklistRepository.findVehicleControlChecklistByJobCard(this).get().id
         } else null
@@ -181,24 +186,18 @@ class JobCardService(
             clientName = client.clientName + " " + client.clientSurname,
             serviceAdvisorId = serviceAdvisor.employeeId!!,
             serviceAdvisorName = serviceAdvisor.employeeName + " " + serviceAdvisor.employeeSurname,
-            serviceAdvisorReport = this.serviceAdvisorReport ?: "null",
             supervisorId = supervisor.employeeId!!,
             supervisorName = supervisor.employeeName + " " + supervisor.employeeSurname,
-            technicianId = technician?.employeeId,
-            technicianName = technician?.employeeName + " " + technician?.employeeSurname,
             timesheets = timesheets,
             controlChecklistId = controlChecklistId,
             stateChecklistId = stateChecklistId,
             serviceChecklistId = serviceChecklistId,
-            technicianDiagnosis = this.technicianDiagnosticReport,
             priority = this.priority,
             dateAndTimeIn = this.dateAndTimeIn,
             dateAndTimeFrozen = this.dateAndTimeFrozen,
             dateAndTimeClosed = this.dateAndTimeClosed,
             estimatedTimeOfCompletion = this.estimatedTimeOfCompletion,
-            jobCardDeadline = this.jobCardDeadline,
-            workDone = this.workDone,
-            additionalWorkDone = this.additionalWorkDone
+            jobCardDeadline = this.jobCardDeadline
         )
     }
 }

@@ -1,7 +1,7 @@
 package org.prodacc.webapi.services.dataTransferObjects
 
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class NewJobCard(
     var vehicleId: UUID?,
@@ -15,7 +15,7 @@ data class NewJobCard(
     var dateAndTimeFrozen: LocalDateTime? = null,
     var dateAndTimeClosed: LocalDateTime? = null,
     var technicianDiagnosticReport: String? = null,
-    var technicianId: UUID? = null,
+    var technician: List<UUID>? = null,
     var priority: Boolean? = null,
     var jobCardDeadline: LocalDateTime? = null,
     var workDone: String? = null,

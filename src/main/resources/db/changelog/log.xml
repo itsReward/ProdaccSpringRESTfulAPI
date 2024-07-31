@@ -6,63 +6,41 @@
 
 
 
-    <changeSet id="20240708-add-version-columns" author="itsReward">
-        <comment>Add version columns for optimistic locking</comment>
+    <changeSet id="delete-jobcards-columns" author="itsReward">
+        <dropColumn tableName="jobcards">
+            <column name="diagnostics_technician"/>
+        </dropColumn>
 
-        <addColumn tableName="jobcards">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="technicians"/>
+        </dropColumn>
 
-        <addColumn tableName="timesheets">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="additional_work_done"/>
+        </dropColumn>
 
-        <addColumn tableName="employees">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="work_done"/>
+        </dropColumn>
 
-        <addColumn tableName="clients">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="job_card_status"/>
+        </dropColumn>
 
-        <addColumn tableName="users">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="supervisor_report"/>
+        </dropColumn>
 
-        <addColumn tableName="vehicle_control_checklists">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="technician_diagnostic_report"/>
+        </dropColumn>
 
-        <addColumn tableName="vehicle_service_checklists">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-
-        <addColumn tableName="vehicle_state_checklists">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-
-        <addColumn tableName="vehicles">
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
+        <dropColumn tableName="jobcards">
+            <column name="service_advisor_report"/>
+        </dropColumn>
 
     </changeSet>
+
+
 
 </databaseChangeLog>

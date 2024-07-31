@@ -1,12 +1,11 @@
 package org.prodacc.webapi.models
 
 import jakarta.persistence.*
-import java.util.UUID
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
-import java.time.Instant
 import java.time.LocalDateTime
+import java.util.*
 
 @Entity
 @Table(name = "jobcards")
@@ -49,17 +48,7 @@ data class JobCard(
     @Column(name = "\"date_and_time_closed\"")
     var dateAndTimeClosed: LocalDateTime? = null,
 
-    @Column(name = "\"service_advisor_report\"", nullable = false, length = 1000)
-    var serviceAdvisorReport: String? = null,
 
-    @Column(name = "\"technician_diagnostic_report\"", length = 1000)
-    var technicianDiagnosticReport: String? = null,
-
-    @Column(name = "\"supervisor_report\"", length = 1000)
-    var supervisorReport: String? = null,
-
-    @Column(name = "\"job_card_status\"", nullable = false, length = 1000)
-    var jobCardStatus: String? = null,
 
     @Column(name = "\"job_card_name\"", nullable = false, length = 1000)
     var jobCardName: String? = null,
@@ -67,10 +56,6 @@ data class JobCard(
     @Column(name = "\"job_card_number\"", nullable = false)
     var jobCardNumber: Int? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_DEFAULT)
-    @JoinColumn(name = "technician")
-    var technician: Employee? = null,
 
     @ColumnDefault("false")
     @Column(name = "priority")
@@ -79,11 +64,8 @@ data class JobCard(
     @Column(name = "\"job_card_deadline\"")
     var jobCardDeadline: LocalDateTime? = null,
 
-    @Column(name = "\"work_done\"", length = 5000)
-    var workDone: String? = null,
-
-    @Column(name = "\"additional_work_done\"", length = 5000)
-    var additionalWorkDone: String? = null,
+    @OneToMany(mappedBy = "job_card_id", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var technicians: List<JobCardTechnicians> = emptyList(),
 
     @OneToOne(mappedBy = "jobCard")
     var servicechecklists: VehicleServiceChecklist? = null,

@@ -1,7 +1,7 @@
 package org.prodacc.webapi.models
 
 import jakarta.persistence.*
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "employees")
@@ -36,14 +36,14 @@ data class Employee(
     @Column(name = "version", nullable = false)
     var version: Long? = 0,
 
+    @OneToMany(mappedBy = "employeeId", cascade = arrayOf(CascadeType.ALL), orphanRemoval = true)
+    var jobCards: List<JobCardTechnicians> = emptyList(),
+
     @OneToMany(mappedBy = "serviceAdvisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var jobcardsServiceAdvisor: List<JobCard> = mutableListOf(),
 
     @OneToMany(mappedBy = "supervisor", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var jobcardsSupervisor: List<JobCard> = mutableListOf(),
-
-    @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var jobcardsTechnician: List<JobCard> = mutableListOf(),
 
     @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var servicechecklists: List<VehicleServiceChecklist> = mutableListOf(),

@@ -33,6 +33,9 @@
             <column name="homeAddress" type="varchar(500)" defaultValue="home address">
                 <constraints nullable="false"/>
             </column>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
@@ -68,6 +71,9 @@
                     deleteCascade="true"
             />
         </column>
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
     </createTable>
     </changeSet>
 
@@ -94,7 +100,9 @@
         <column name="phone" type="varchar(100)" defaultValue=""/>
         <column name="email" type="varchar(100)" defaultValue=""/>
         <column name="address" type="varchar(100)" defaultValue=""/>
-
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
     </createTable>
     </changeSet>
 
@@ -126,7 +134,9 @@
                     deleteCascade="true"
             />
         </column>
-
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
 
     </createTable>
     </changeSet>
@@ -181,34 +191,20 @@
                     foreignKeyName="supervisor"
                     referencedTableName="employees"
                     referencedColumnNames="employeeId"
-                    nullable="false"
+                    nullable="true"
             />
         </column>
-
-        <column name="technician" type="uuid">
-            <constraints
-                    foreignKeyName="technician"
-                    referencedTableName="employees"
-                    referencedColumnNames="employeeId"
-                    nullable="false"
-            />
-        </column>
-
         <column name="date_and_time_in" type="datetime"/>
         <column name="estimated_time_of_completion" type="datetime"/>
         <column name="job_card_deadline" type="datetime"/>
         <column name="date_and_time_frozen" type="datetime"/>
         <column name="date_and_time_closed" type="datetime"/>
-        <column name="service_advisor_report" type="varchar"/>
-        <column name="technician_diagnostic_report" type="varchar"/>
-        <column name="supervisor_report" type="varchar"/>
-        <column name="job_card_status" type="varchar"/>
         <column name="job_card_name" type="varchar"/>
         <column name="job_card_number" type="int" autoIncrement="true"/>
         <column name="priority" type="boolean" defaultValue="false"/>
-        <column name="work_done" type="varchar"/>
-        <column name="additional_work_done" type="varchar"/>
-
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
 
     </createTable>
 
@@ -235,6 +231,9 @@
             <constraints nullable="false"/>
         </column>
         <column name="created" type="datetime"/>
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
     </createTable>
     </changeSet>
 
@@ -271,6 +270,9 @@
         </column>
         <column name="created" type="datetime"/>
         <column name="checklist" type="jsonb"/>
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
     </createTable>
     </changeSet>
 
@@ -302,6 +304,9 @@
         <column name="fuel_level_out" type="varchar(20)"/>
         <column name="created" type="datetime"/>
         <column name="checklist" type="jsonb"/>
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
     </createTable>
     </changeSet>
 
@@ -339,7 +344,91 @@
         <column name="clock_out_date_and_time" type="datetime"/>
         <column name="sheet_title" type="varchar(500)"/>
         <column name="report" type="varchar"/>
+        <column name="version" type="bigint" defaultValueNumeric="0">
+            <constraints nullable="false"/>
+        </column>
     </createTable>
+    </changeSet>
+
+    <changeSet id="20240731001" author="itsReward">
+        <createTable tableName="job_card_technicians">
+            <column name="job_card_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_job_card_technicians"/>
+            </column>
+            <column name="employee_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_job_card_technicians"/>
+            </column>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="job_card_technicians"
+                                 baseColumnNames="job_card_id"
+                                 constraintName="fk_job_card_technicians_job_card"
+                                 referencedTableName="jobcards"
+                                 referencedColumnNames="job_id"/>
+        <addForeignKeyConstraint baseTableName="job_card_technicians"
+                                 baseColumnNames="employee_id"
+                                 constraintName="fk_job_card_technicians_employee"
+                                 referencedTableName="employees"
+                                 referencedColumnNames="employee_id"/>
+    </changeSet>
+
+    <changeSet id="20240731002" author="itsReward">
+        <createTable tableName="job_card_status">
+            <column name="job_card_status_id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="job_card_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="job_card_status"
+                                 baseColumnNames="job_card_id"
+                                 constraintName="fk_job_card_status_job_card"
+                                 referencedTableName="jobcards"
+                                 referencedColumnNames="job_id"/>
+    </changeSet>
+
+    <changeSet id="20240731003" author="itsReward">
+        <createTable tableName="job_card_reports">
+            <column name="job_card_report_id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="type_of_report" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_report" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="employee_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="job_card_reports"
+                                 baseColumnNames="employee_id"
+                                 constraintName="fk_job_card_reports_employee"
+                                 referencedTableName="employees"
+                                 referencedColumnNames="employee_id"/>
+        <addForeignKeyConstraint baseTableName="job_card_reports"
+                                 baseColumnNames="job_id"
+                                 constraintName="fk_job_card_reports_job_card"
+                                 referencedTableName="jobcards"
+                                 referencedColumnNames="job_id"/>
     </changeSet>
 
 </databaseChangeLog>
