@@ -6,38 +6,10 @@
 
 
 
-    <changeSet id="delete-jobcards-columns" author="itsReward">
-        <dropColumn tableName="jobcards">
-            <column name="diagnostics_technician"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="technicians"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="additional_work_done"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="work_done"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="job_card_status"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="supervisor_report"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="technician_diagnostic_report"/>
-        </dropColumn>
-
-        <dropColumn tableName="jobcards">
-            <column name="service_advisor_report"/>
-        </dropColumn>
+    <changeSet id="add_created_at_column_to_reports_table" author="itsReward">
+        <addColumn tableName="job_card_reports">
+            <column name="created_at" type="timestamp"/>
+        </addColumn>
 
     </changeSet>
 

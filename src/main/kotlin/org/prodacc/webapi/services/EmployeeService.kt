@@ -75,7 +75,7 @@ class EmployeeService(
                 jobCardRepository.getJobCardsByServiceAdvisor(this).map { it.toJobCardWithIdAndName() }
             }
             "Technician" -> {
-                jobCardRepository.getJobCardsByTechnicianContains(this).map { it.toJobCardWithIdAndName() }
+                jobCardRepository.getJobCardsByTechniciansContains(this).map { it.toJobCardWithIdAndName() }
             }
             "Supervisor" -> {
                 jobCardRepository.getJobCardsBySupervisor(this).map { it.toJobCardWithIdAndName() }

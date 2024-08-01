@@ -10,7 +10,7 @@ import java.util.*
 
 interface JobCardRepository: CrudRepository<JobCard, UUID> {
     fun getJobCardsBySupervisor(supervisor: Employee) : List<JobCard>
-    fun getJobCardsByTechnicianContains(technician: Employee) : List<JobCard>
+    fun getJobCardsByTechniciansContains(technician: Employee) : List<JobCard>
     fun getJobCardsByServiceAdvisor(serviceAdvisor: Employee) : List<JobCard>
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : JobCard?> save(entity: S & Any): S & Any

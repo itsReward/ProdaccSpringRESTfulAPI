@@ -417,6 +417,7 @@
             <column name="version" type="bigint" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="job_card_reports"

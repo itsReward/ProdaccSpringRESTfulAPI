@@ -64,7 +64,7 @@ data class JobCard(
     @Column(name = "\"job_card_deadline\"")
     var jobCardDeadline: LocalDateTime? = null,
 
-    @OneToMany(mappedBy = "job_card_id", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
     var technicians: List<JobCardTechnicians> = emptyList(),
 
     @OneToOne(mappedBy = "jobCard")
