@@ -65,14 +65,6 @@ class JobCardService(
             employeeRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("Service Advisor with id: $id not found") }
         }
-        val technician = newJobCard.technician?.let {
-            it.map { technician ->
-                employeeRepository.findById(technician)
-                    .orElseThrow { EntityNotFoundException("Technician with id: $it") }
-            }
-        }
-
-        logger.info("\n\n\ntechnicians:\n $technician\n\n\n")
 
         val jobCardName =
             if (vehicle != null) "${client?.clientName?.first()} ${client?.clientSurname}'s ${vehicle.model}" else null

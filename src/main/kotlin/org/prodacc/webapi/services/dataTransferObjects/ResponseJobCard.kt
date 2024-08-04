@@ -19,8 +19,6 @@ class ResponseJobCard (
     var estimatedTimeOfCompletion: LocalDateTime? = null,
     var dateAndTimeFrozen: LocalDateTime? = null,
     var dateAndTimeClosed: LocalDateTime? = null,
-    var technicianId: List<UUID> = mutableListOf(),
-    var technicianName: List<String> = mutableListOf(),
     var priority: Boolean? = null,
     var jobCardDeadline: LocalDateTime? = null,
     var timesheets: List<UUID?> = listOf(),

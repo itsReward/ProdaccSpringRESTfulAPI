@@ -38,7 +38,7 @@ class VehicleService(
     @Transactional
     fun addVehicle(newVehicle: NewVehicle): ResponseVehicleWithClient {
         logger.info("Adding new vehicle")
-        if (newVehicle.clientReference == null) {
+        if (newVehicle.clientId == null) {
             throw EntityNotFoundException("Vehicle owner not input, INPUT VEHICLE OWNER")
         } else {
             return vehicleRepository.save(newVehicle.toVehicle()).toVehicleWithClientIdAndName()
@@ -53,12 +53,12 @@ class VehicleService(
         val existingVehicle = vehicleRepository
             .findById(id)
             .orElseThrow { EntityNotFoundException("Vehicle with id $id not found") }
-        val client = vehicle.clientReference?.let { clientRepository.findById(it).get() }
+        val client = vehicle.clientId?.let { clientRepository.findById(it).get() }
         val updatedVehicle = existingVehicle.copy(
             model = vehicle.model?:existingVehicle.model,
             regNumber = vehicle.regNumber?:existingVehicle.regNumber,
             make = vehicle.make?:existingVehicle.make,
-            color = vehicle.make?:existingVehicle.color,
+            color = vehicle.color?:existingVehicle.color,
             chassisNumber = vehicle.chassisNumber?:existingVehicle.chassisNumber,
             clientReference = client?:existingVehicle.clientReference
         )
@@ -79,10 +79,10 @@ class VehicleService(
 
 
     private fun NewVehicle.toVehicle(): Vehicle {
-        val client = if ( this.clientReference != null ) {
+        val client = if ( this.clientId != null ) {
             clientRepository
-                .findById(this.clientReference)
-                .orElseThrow { EntityNotFoundException("Client with id ${this.clientReference} not found") }
+                .findById(this.clientId)
+                .orElseThrow { EntityNotFoundException("Client with id ${this.clientId} not found") }
         } else throw NullPointerException("Client is can not be null, INPUT VEHICLE OWNER")
 
         return Vehicle(

@@ -1,6 +1,6 @@
 package org.prodacc.webapi.services.dataTransferObjects
 
-import java.util.UUID
+import java.util.*
 
 data class NewVehicle(
     val model : String? = null,
@@ -8,5 +8,5 @@ data class NewVehicle(
     val make : String? = null,
     val color : String? = null,
     val chassisNumber : String? = null,
-    val clientReference : UUID? = null
+    val clientId : UUID? = null
 )

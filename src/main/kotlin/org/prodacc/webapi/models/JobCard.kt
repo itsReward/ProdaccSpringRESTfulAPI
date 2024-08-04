@@ -35,7 +35,6 @@ data class JobCard(
     @JoinColumn(name = "supervisor", nullable = false)
     var supervisor: Employee? = null,
 
-    @ColumnDefault("2024-04-21 09:21:35.510973")
     @Column(name = "\"date_and_time_in\"", nullable = false)
     var dateAndTimeIn: LocalDateTime? = null,
 
