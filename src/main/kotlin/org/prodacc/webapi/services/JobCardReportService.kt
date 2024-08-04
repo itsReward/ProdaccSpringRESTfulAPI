@@ -19,6 +19,10 @@ class JobCardReportService(
     private val jobCardRepository: JobCardRepository,
     private val employeeRepository: EmployeeRepository,
 ) {
+    fun getAllReports(): List<ResponseJobCardReport> {
+        return jobCardReportsRepository.findAll().map { it.toResponseJobCardReport() }
+    }
+
     fun newReport(newJobCardReport: NewJobCardReport): ResponseJobCardReport {
         return jobCardReportsRepository.save(newJobCardReport.toJobCardReport()).toResponseJobCardReport()
     }
@@ -53,7 +57,7 @@ class JobCardReportService(
             .orElseThrow { EntityNotFoundException("Report $jobCardReportId not found") }
         try {
             jobCardReportsRepository.delete(report)
-            return ResponseEntity("Job Card Report deleted", HttpStatus.NO_CONTENT)
+            return ResponseEntity("Job Card Report deleted", HttpStatus.OK)
         } catch (e: EntityNotFoundException) {
             throw (EntityNotFoundException(""))
         }

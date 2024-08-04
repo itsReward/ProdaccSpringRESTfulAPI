@@ -7,6 +7,7 @@ import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.UserRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewUser
 import org.prodacc.webapi.services.dataTransferObjects.ResponseUserWithEmployee
+import org.prodacc.webapi.services.dataTransferObjects.UpdateUser
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -62,7 +63,7 @@ class UserService(
 
     /**
      * Creates a User
-     * @param NewUser
+     * @param user
      * @return ResponseUserWithEmployee
      * @throws EntityExistsException when a user with the same username, email and employee tris to be created
      * @see ResponseUserWithEmployee
@@ -98,16 +99,16 @@ class UserService(
 
 
     @Transactional
-    fun updateUser(id: UUID, user: NewUser): ResponseUserWithEmployee {
+    fun updateUser(id: UUID, user: UpdateUser): ResponseUserWithEmployee {
         log.info("updating user with id: $id")
         val oldUser = userRepository.findById(id).orElseThrow { EntityNotFoundException("User with id: $id not found") }
         val employee = user.employeeId?.let { employeeRepository.findById(it) }?.get()
         val updatedUser = oldUser.copy(
-            username = user.username,
-            password = passwordEncoder.encode(user.password),
-            email = user.email,
-            userRole = user.userRole,
-            employeeId = employee
+            username = user.username ?: oldUser.username,
+            password = if (user.password != null) passwordEncoder.encode(user.password) else oldUser.password,
+            email = user.email ?: oldUser.email,
+            userRole = user.userRole ?: oldUser.userRole,
+            employeeId = employee ?: oldUser.employeeId,
         )
 
 

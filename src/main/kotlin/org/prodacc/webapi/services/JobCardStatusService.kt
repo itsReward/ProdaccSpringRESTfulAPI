@@ -6,6 +6,7 @@ import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.JobCardStatusRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewJobCardStatus
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardStatus
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,7 +15,10 @@ class JobCardStatusService(
     private val jobCardStatusRepository: JobCardStatusRepository,
     private val jobCardRepository: JobCardRepository
 ) {
+    private val logger = LoggerFactory.getLogger(JobCardStatusService::class.java)
+
     fun addJobCardStatus(newJobCardStatus: NewJobCardStatus): ResponseJobCardStatus {
+        logger.info("Add Job Card Status id = ${newJobCardStatus.jobCard}")
         return jobCardStatusRepository.save(newJobCardStatus.toJobCardStatus()).toResponseJobCardStatus()
     }
 
@@ -26,6 +30,7 @@ class JobCardStatusService(
 
 
     fun NewJobCardStatus.toJobCardStatus(): JobCardStatus {
+        logger.info("uuid = ${this.jobCard}")
         val jobCard = jobCardRepository.findById(this.jobCard)
             .orElseThrow { throw EntityNotFoundException("JobCard not found with id ${this.jobCard}") }
         return JobCardStatus(

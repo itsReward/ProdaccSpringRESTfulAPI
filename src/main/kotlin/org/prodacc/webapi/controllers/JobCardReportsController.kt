@@ -13,6 +13,10 @@ import java.util.*
 class JobCardReportsController (
     private val jobCardReportService: JobCardReportService
 ){
+    @GetMapping("/getAllJobCardReports")
+    fun getAllJobCardReports():List<ResponseJobCardReport> =
+        jobCardReportService.getAllReports()
+
     @GetMapping("/getJobCardReports/{jobCardId}")
     fun getJobCardReports(@PathVariable("jobCardId") jobCardId : UUID): List<ResponseJobCardReport> {
         return jobCardReportService.getJobCardsReports(jobCardId)

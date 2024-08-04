@@ -1,7 +1,9 @@
 package org.prodacc.webapi.controllers
 
 import org.prodacc.webapi.services.UserService
+import org.prodacc.webapi.services.dataTransferObjects.NewUser
 import org.prodacc.webapi.services.dataTransferObjects.ResponseUserWithEmployee
+import org.prodacc.webapi.services.dataTransferObjects.UpdateUser
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -30,10 +32,10 @@ class UserController(
         userService.findUserByEmployeeId(employeeId)
 
     @PostMapping("/new")
-    fun createUser(@RequestBody user : org.prodacc.webapi.services.dataTransferObjects.NewUser) : ResponseUserWithEmployee = userService.createUser(user)
+    fun createUser(@RequestBody user : NewUser) : ResponseUserWithEmployee = userService.createUser(user)
 
     @PutMapping("/update/{id}")
-    fun updateUser(@PathVariable id: UUID, @RequestBody user : org.prodacc.webapi.services.dataTransferObjects.NewUser) : ResponseUserWithEmployee = userService.updateUser(id, user)
+    fun updateUser(@PathVariable id: UUID, @RequestBody user : UpdateUser) : ResponseUserWithEmployee = userService.updateUser(id, user)
 
     @DeleteMapping("/delete/{id}")
     fun deleteUser(@PathVariable id: UUID): ResponseEntity<String> = userService.deleteUser(id)

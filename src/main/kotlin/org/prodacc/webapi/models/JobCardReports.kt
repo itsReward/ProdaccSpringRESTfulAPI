@@ -1,6 +1,7 @@
 package org.prodacc.webapi.models
 
 import jakarta.persistence.*
+import org.hibernate.annotations.ColumnDefault
 import java.time.LocalDateTime
 import java.util.*
 
@@ -9,6 +10,7 @@ import java.util.*
 data class JobCardReports(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ColumnDefault("gen_random_uuid()")
     @Column(name = "job_card_report_id")
     var jobCardReportId: UUID? = null,
 

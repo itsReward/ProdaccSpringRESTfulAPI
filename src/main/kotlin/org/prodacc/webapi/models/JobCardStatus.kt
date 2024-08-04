@@ -1,6 +1,7 @@
 package org.prodacc.webapi.models
 
 import jakarta.persistence.*
+import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
@@ -11,6 +12,7 @@ import java.util.*
 data class JobCardStatus(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ColumnDefault("gen_random_uuid()")
     @Column(name = "job_card_status_id")
     var jobCardStatusId : UUID? = null,
 
