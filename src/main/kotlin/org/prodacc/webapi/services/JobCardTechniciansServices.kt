@@ -18,6 +18,10 @@ class JobCardTechniciansServices(
     private val employeeRepository: EmployeeRepository,
     private val jobCardRepository: JobCardRepository,
 ) {
+    fun getAllEntries(): List<ResponseJobCardTechnicians> {
+        return jobCardTechniciansRepository.findAll().map { it.toResponseJobCardTechnicians() }
+    }
+
     fun addJobCardTechnician(newJobCardTechnician: NewJobCardTechnician): ResponseJobCardTechnicians {
         val technician = employeeRepository.findById(newJobCardTechnician.technicianId)
             .orElseThrow { EntityNotFoundException("Technician with id ${newJobCardTechnician.technicianId} Not Found") }

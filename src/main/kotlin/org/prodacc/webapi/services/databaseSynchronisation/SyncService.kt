@@ -17,7 +17,10 @@ class SyncService(
     private val controlChecklistRepository: ControlChecklistRepository,
     private val stateChecklistRepository: StateChecklistRepository,
     private val userRepository: UserRepository,
-    private val template: SimpMessagingTemplate
+    private val template: SimpMessagingTemplate,
+    private val jobCardStatusRepository: JobCardStatusRepository,
+    private val jobCardTechniciansRepository: JobCardTechniciansRepository,
+    private val jobCardReportsRepository: JobCardReportsRepository
 ) {
     fun syncToOffline(entity: Any) {
         when (entity) {
@@ -30,6 +33,9 @@ class SyncService(
             is VehicleStateChecklist -> template.convertAndSend("/topic/sync/vehicle_state_checklist", entity)
             is User -> template.convertAndSend("/topic/sync/user", entity)
             is Employee -> template.convertAndSend("/topic/sync/employee", entity)
+            is JobCardStatus -> template.convertAndSend("/topic/sync/jobCardStatus", entity)
+            is JobCardTechnicians -> template.convertAndSend("/topic/sync/jobCardTechnicians", entity)
+            is JobCardReports -> template.convertAndSend("/topic/sync/jobCardReports", entity)
         }
     }
 
@@ -45,6 +51,9 @@ class SyncService(
             "VehicleControlChecklist" -> controlChecklistRepository.save(syncData.entity as VehicleControlChecklist)
             "VehicleStateChecklist" -> stateChecklistRepository.save(syncData.entity as VehicleStateChecklist)
             "User" -> userRepository.save(syncData.entity as User)
+            "JobCardStatus" -> jobCardStatusRepository.save(syncData.entity as JobCardStatus)
+            "JobCardTechnicians" -> jobCardTechniciansRepository.save(syncData.entity as JobCardTechnicians)
+            "JobCardReports" -> jobCardReportsRepository.save(syncData.entity as JobCardReports)
 
         }
         // Broadcast the update to all other clients

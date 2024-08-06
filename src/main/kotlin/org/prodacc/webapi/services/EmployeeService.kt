@@ -5,6 +5,8 @@ import org.prodacc.webapi.models.Employee
 import org.prodacc.webapi.models.JobCard
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
+import org.prodacc.webapi.repositories.JobCardTechniciansRepository
+import org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName
 import org.prodacc.webapi.services.dataTransferObjects.NewEmployee
 import org.prodacc.webapi.services.dataTransferObjects.ResponseEmployeeWithJobCards
 import org.slf4j.LoggerFactory
@@ -17,22 +19,23 @@ import java.util.*
 @Service
 class EmployeeService(
     private val employeeRepository: EmployeeRepository,
-    private val jobCardRepository: JobCardRepository
+    private val jobCardRepository: JobCardRepository,
+    private val jobCardTechniciansRepository: JobCardTechniciansRepository
 ) {
     private val logger = LoggerFactory.getLogger(EmployeeService::class.java)
 
-    fun getEmployees (): Iterable<ResponseEmployeeWithJobCards> {
+    fun getEmployees(): Iterable<ResponseEmployeeWithJobCards> {
         logger.info("Fetching all employees")
         return employeeRepository.findAll().map { it.toEmployeeWithJobCardIdAndName() }
     }
 
 
-    fun getEmployeeById( id: UUID): ResponseEmployeeWithJobCards {
+    fun getEmployeeById(id: UUID): ResponseEmployeeWithJobCards {
         logger.info("Fetching employee by id: $id")
         return employeeRepository
             .findById(id)
-            .map { it.toEmployeeWithJobCardIdAndName()}
-            .orElseThrow{EntityNotFoundException("Employee with id $id not found")}
+            .map { it.toEmployeeWithJobCardIdAndName() }
+            .orElseThrow { EntityNotFoundException("Employee with id $id not found") }
     }
 
 
@@ -44,8 +47,9 @@ class EmployeeService(
 
 
     @Transactional
-    fun updateEmployee( id: UUID, updatedEmployee: NewEmployee): ResponseEmployeeWithJobCards {
-        val existingEmployee = employeeRepository.findById(id).orElseThrow { EntityNotFoundException(" Employee with id $id not found") }
+    fun updateEmployee(id: UUID, updatedEmployee: NewEmployee): ResponseEmployeeWithJobCards {
+        val existingEmployee =
+            employeeRepository.findById(id).orElseThrow { EntityNotFoundException(" Employee with id $id not found") }
         val updated = existingEmployee.copy(
             employeeName = updatedEmployee.employeeName ?: existingEmployee.employeeName,
             employeeSurname = updatedEmployee.employeeSurname ?: existingEmployee.employeeSurname,
@@ -60,7 +64,7 @@ class EmployeeService(
 
 
     @Transactional
-    fun deleteEmployee(id: UUID) : ResponseEntity<String> {
+    fun deleteEmployee(id: UUID): ResponseEntity<String> {
         return if (employeeRepository.existsById(id)) {
             employeeRepository.deleteById(id)
             ResponseEntity("Employee deleted successfully", HttpStatus.OK)
@@ -74,12 +78,20 @@ class EmployeeService(
             "Service Advisor" -> {
                 jobCardRepository.getJobCardsByServiceAdvisor(this).map { it.toJobCardWithIdAndName() }
             }
+
             "Technician" -> {
-                jobCardRepository.getJobCardsByTechniciansContains(this).map { it.toJobCardWithIdAndName() }
+                jobCardTechniciansRepository.getJobCardTechniciansByEmployeeId(this).map {
+                    jobCardRepository.findById(
+                        it.jobCardId?.job_id
+                            ?: throw (IllegalArgumentException("Job Card ID Not Found"))
+                    ).get().toJobCardWithIdAndName()
+                }
             }
+
             "Supervisor" -> {
                 jobCardRepository.getJobCardsBySupervisor(this).map { it.toJobCardWithIdAndName() }
             }
+
             else -> {
                 listOf()
             }
@@ -98,8 +110,8 @@ class EmployeeService(
         )
     }
 
-    private fun JobCard.toJobCardWithIdAndName(): org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName {
-        return org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName(
+    private fun JobCard.toJobCardWithIdAndName(): JobCardWithIdAndName {
+        return JobCardWithIdAndName(
             id = this.job_id!!,
             name = this.jobCardName!!
         )
@@ -107,13 +119,14 @@ class EmployeeService(
 
     private fun NewEmployee.toEmployee(): Employee {
         return Employee(
-            employeeName = this.employeeName?: throw NullPointerException("Employee name cannot be empty"),
-            employeeSurname = this.employeeSurname?: throw NullPointerException("Employee surname cannot be empty"),
-            employeeRole = this.employeeRole?: throw NullPointerException("Employee role cannot be empty"),
-            employeeDepartment = this.employeeDepartment?: throw NullPointerException("Employee department cannot be empty"),
-            phoneNumber = this.phoneNumber?: throw NullPointerException("Phone number cannot be empty"),
-            homeAddress = this.homeAddress?: throw NullPointerException("Home address cannot be empty"),
-            rating = this.rating?: 0f
+            employeeName = this.employeeName ?: throw NullPointerException("Employee name cannot be empty"),
+            employeeSurname = this.employeeSurname ?: throw NullPointerException("Employee surname cannot be empty"),
+            employeeRole = this.employeeRole ?: throw NullPointerException("Employee role cannot be empty"),
+            employeeDepartment = this.employeeDepartment
+                ?: throw NullPointerException("Employee department cannot be empty"),
+            phoneNumber = this.phoneNumber ?: throw NullPointerException("Phone number cannot be empty"),
+            homeAddress = this.homeAddress ?: throw NullPointerException("Home address cannot be empty"),
+            rating = this.rating ?: 0f
         )
     }
 

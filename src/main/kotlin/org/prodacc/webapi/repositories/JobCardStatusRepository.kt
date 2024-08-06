@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository
 import java.util.*
 
 interface JobCardStatusRepository: CrudRepository<JobCardStatus, UUID> {
-    fun getJobCardStatusByJobCardUUID(jobCard: JobCard): List<JobCardStatus>
+    fun getJobCardStatusByJobCardId(jobCard: JobCard): List<JobCardStatus>
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : JobCardStatus?> save(entity: S & Any): S & Any
 

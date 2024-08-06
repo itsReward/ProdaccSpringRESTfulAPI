@@ -19,7 +19,7 @@ data class JobCardStatus(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "\"job_card_id\"", nullable = false)
-    var jobCardUUID: JobCard? = null,
+    var jobCardId: JobCard? = null,
 
     @Column(name = "status")
     var status: String? = null,

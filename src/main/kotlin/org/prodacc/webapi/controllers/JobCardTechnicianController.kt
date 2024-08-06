@@ -12,6 +12,9 @@ import java.util.*
 class JobCardTechnicianController (
     private val jobCardTechniciansServices: JobCardTechniciansServices
 ) {
+    @GetMapping("/allEntries")
+    fun getAllEntries () = jobCardTechniciansServices.getAllEntries()
+
     @GetMapping("/getAllJobCardTechnicians/{id}")
     fun getAllJobCardTechnician(@PathVariable id : UUID): List<UUID?> {
         return jobCardTechniciansServices.getJobCardTechniciansByJobCardId(id)
