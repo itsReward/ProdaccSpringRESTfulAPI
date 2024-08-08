@@ -15,7 +15,7 @@ class SyncService(
     private val clientRepository: ClientRepository,
     private val serviceChecklistRepository: ServiceChecklistRepository,
     private val controlChecklistRepository: ControlChecklistRepository,
-    private val stateChecklistRepository: StateChecklistRepository,
+    private val vehicleStateChecklistRepository: VehicleStateChecklistRepository,
     private val userRepository: UserRepository,
     private val template: SimpMessagingTemplate,
     private val jobCardStatusRepository: JobCardStatusRepository,
@@ -49,7 +49,7 @@ class SyncService(
             "Client" -> clientRepository.save(syncData.entity as Client)
             "VehicleServiceChecklist" -> serviceChecklistRepository.save(syncData.entity as VehicleServiceChecklist)
             "VehicleControlChecklist" -> controlChecklistRepository.save(syncData.entity as VehicleControlChecklist)
-            "VehicleStateChecklist" -> stateChecklistRepository.save(syncData.entity as VehicleStateChecklist)
+            "VehicleStateChecklist" -> vehicleStateChecklistRepository.save(syncData.entity as VehicleStateChecklist)
             "User" -> userRepository.save(syncData.entity as User)
             "JobCardStatus" -> jobCardStatusRepository.save(syncData.entity as JobCardStatus)
             "JobCardTechnicians" -> jobCardTechniciansRepository.save(syncData.entity as JobCardTechnicians)

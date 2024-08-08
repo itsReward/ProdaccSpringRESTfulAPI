@@ -96,11 +96,11 @@ class TimeSheetService(
 
 
     private fun Timesheet.toTimeSheetWithJobCardIdAndName() : ResponseTimesheetWithJobCard {
-        val jobCard = this.jobCardUUID?.job_id
+        val jobCard = this.jobCardUUID?.jobId
         .let {
             if (it != null) {
                 jobCardRepository.findById(it)
-                    .orElseThrow { EntityNotFoundException("JobCard with Id: ${this.jobCardUUID?.job_id} not found") }
+                    .orElseThrow { EntityNotFoundException("JobCard with Id: ${this.jobCardUUID?.jobId} not found") }
             } else {
                 throw NullPointerException("Timesheet must be associated with a JobCard!!, enter jobCard id")
             }
@@ -120,7 +120,7 @@ class TimeSheetService(
             report = this.report!!,
             clockInDateAndTime = this.clockInDateAndTime,
             clockOutDateAndTime = this.clockOutDateAndTime,
-            jobCardId = jobCard.job_id!!,
+            jobCardId = jobCard.jobId!!,
             jobCardName = jobCard.jobCardName!!,
             technicianId = technician.employeeId!!,
             technicianName = technician.employeeName + " " + technician.employeeSurname,

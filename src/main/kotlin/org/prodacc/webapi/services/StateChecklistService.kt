@@ -3,7 +3,7 @@ package org.prodacc.webapi.services
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.VehicleStateChecklist
 import org.prodacc.webapi.repositories.JobCardRepository
-import org.prodacc.webapi.repositories.StateChecklistRepository
+import org.prodacc.webapi.repositories.VehicleStateChecklistRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist
 import org.slf4j.LoggerFactory
@@ -15,19 +15,19 @@ import java.util.*
 
 @Service
 class StateChecklistService(
-    private val stateChecklistRepository: StateChecklistRepository,
+    private val vehicleStateChecklistRepository: VehicleStateChecklistRepository,
     private val jobCardRepository: JobCardRepository,
 ) {
     private val logger = LoggerFactory.getLogger(StateChecklistService::class.java.name)
 
     fun getAllChecklists() : Iterable<ResponseStateChecklist> {
         logger.info("Getting all checklists")
-        return stateChecklistRepository.findAll().map { it.toResponseStateChecklist() }
+        return vehicleStateChecklistRepository.findAll().map { it.toResponseStateChecklist() }
     }
 
     fun getChecklistById(id: UUID): ResponseStateChecklist {
         logger.info("Getting checklist by id: $id")
-        return stateChecklistRepository.findById(id)
+        return vehicleStateChecklistRepository.findById(id)
             .orElseThrow { EntityNotFoundException("State checklist with id: $id not found") }
             .toResponseStateChecklist()
     }
@@ -37,7 +37,7 @@ class StateChecklistService(
 
         val jobCard = jobCardRepository.findById(id)
             .orElseThrow { EntityNotFoundException("Job card with id: $id not found") }
-        return stateChecklistRepository.findVehicleStateChecklistByJobCard(jobCard)
+        return vehicleStateChecklistRepository.findVehicleStateChecklistByJobCard(jobCard)
             .get().toResponseStateChecklist()
     }
 
@@ -48,7 +48,7 @@ class StateChecklistService(
             jobCardRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("Job card with id: ${newStateChecklist.jobCardId} not found") }
         } ?: throw IllegalArgumentException("Job card can not be null")
-        return stateChecklistRepository.save(
+        return vehicleStateChecklistRepository.save(
             VehicleStateChecklist(
                 jobCard = jobCard,
                 millageIn = newStateChecklist.millageIn,
@@ -64,7 +64,7 @@ class StateChecklistService(
     @Transactional
     fun updateStateChecklist( id: UUID, newStateChecklist: NewVehicleStateChecklist) : ResponseStateChecklist {
         logger.info("Updating state checklist with id: $id")
-        val oldChecklist = stateChecklistRepository.findById(id)
+        val oldChecklist = vehicleStateChecklistRepository.findById(id)
             .orElseThrow { EntityNotFoundException("State checklist with id: $id not found") }
         val jobCard = newStateChecklist.jobCardId?.let {
             jobCardRepository.findById(it)
@@ -80,14 +80,14 @@ class StateChecklistService(
             created = newStateChecklist.created ?: oldChecklist.created
         )
 
-        return stateChecklistRepository.save(newChecklist).toResponseStateChecklist()
+        return vehicleStateChecklistRepository.save(newChecklist).toResponseStateChecklist()
     }
 
     @Transactional
     fun deleteStateChecklist(id: UUID) : ResponseEntity<String> {
         logger.info("Deleting state checklist with id: $id")
-        return if (stateChecklistRepository.existsById(id)) {
-            stateChecklistRepository.deleteById(id)
+        return if (vehicleStateChecklistRepository.existsById(id)) {
+            vehicleStateChecklistRepository.deleteById(id)
             ResponseEntity("State Checklist deleted successfully", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("State checklist with id: $id does not exist")
@@ -96,11 +96,11 @@ class StateChecklistService(
     }
 
     private fun VehicleStateChecklist.toResponseStateChecklist(): ResponseStateChecklist {
-        val jobCard = this.jobCard?.job_id
+        val jobCard = this.jobCard?.jobId
             .let {
                 if (it != null) {
                     jobCardRepository.findById(it)
-                        .orElseThrow { EntityNotFoundException("JobCard with Id: ${this.jobCard?.job_id} not found") }
+                        .orElseThrow { EntityNotFoundException("JobCard with Id: ${this.jobCard?.jobId} not found") }
                 } else {
                     throw NullPointerException("State checklist must be associated with a JobCard!!, enter jobCard id")
                 }
@@ -108,7 +108,7 @@ class StateChecklistService(
 
         return ResponseStateChecklist(
             id = this.id,
-            jobCardId = jobCard.job_id,
+            jobCardId = jobCard.jobId,
             jobCardName = jobCard.jobCardName,
             millageIn = this.millageIn,
             millageOut = this.millageOut,

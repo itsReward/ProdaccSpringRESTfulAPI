@@ -22,7 +22,7 @@ class JobCardService(
     private val timesheetRepository: TimesheetRepository,
     private val serviceChecklistRepository: ServiceChecklistRepository,
     private val controlChecklistRepository: ControlChecklistRepository,
-    private val vehicleStateRepository: StateChecklistRepository
+    private val vehicleStateRepository: VehicleStateChecklistRepository
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -169,7 +169,7 @@ class JobCardService(
         } else null
 
         return ResponseJobCard(
-            id = this.job_id!!,
+            id = this.jobId!!,
             jobCardName = this.jobCardName!!,
             jobCardNumber = this.jobCardNumber!!,
             vehicleId = vehicle.id!!,

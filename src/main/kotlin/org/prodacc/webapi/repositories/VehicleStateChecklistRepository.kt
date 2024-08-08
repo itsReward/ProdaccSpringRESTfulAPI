@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.repository.CrudRepository
 import java.util.*
 
-interface StateChecklistRepository: CrudRepository<VehicleStateChecklist, UUID> {
+interface VehicleStateChecklistRepository: CrudRepository<VehicleStateChecklist, UUID> {
     fun findVehicleStateChecklistByJobCard(jobCard: JobCard): Optional<VehicleStateChecklist>
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

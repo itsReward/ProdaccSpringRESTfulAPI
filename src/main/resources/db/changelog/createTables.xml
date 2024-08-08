@@ -155,7 +155,7 @@
     </preConditions>
     <createTable tableName="jobcards">
 
-        <column name="job_id" type="uuid" defaultValue="gen_random_uuid()">
+        <column name="jobId" type="uuid" defaultValue="gen_random_uuid()">
             <constraints primaryKey="true" nullable="false"/>
         </column>
 
@@ -256,7 +256,7 @@
             <constraints
                     foreignKeyName="job_card_id"
                     referencedTableName="jobcards"
-                    referencedColumnNames="job_id"
+                    referencedColumnNames="jobId"
                     nullable="false"
             />
         </column>
@@ -294,7 +294,7 @@
             <constraints
                     foreignKeyName="job_card_id"
                     referencedTableName="jobcards"
-                    referencedColumnNames="job_id"
+                    referencedColumnNames="jobId"
                     nullable="false"
             />
         </column>
@@ -328,7 +328,7 @@
             <constraints
                     foreignKeyName="job_card_id"
                     referencedTableName="jobcards"
-                    referencedColumnNames="job_id"
+                    referencedColumnNames="jobId"
                     nullable="false"
             />
         </column>
@@ -367,7 +367,7 @@
                                  baseColumnNames="job_card_id"
                                  constraintName="fk_job_card_technicians_job_card"
                                  referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"/>
+                                 referencedColumnNames="jobId"/>
         <addForeignKeyConstraint baseTableName="job_card_technicians"
                                  baseColumnNames="employee_id"
                                  constraintName="fk_job_card_technicians_employee"
@@ -394,7 +394,7 @@
                                  baseColumnNames="job_card_id"
                                  constraintName="fk_job_card_status_job_card"
                                  referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"/>
+                                 referencedColumnNames="jobId"/>
     </changeSet>
 
     <changeSet id="20240731003" author="itsReward">
@@ -429,7 +429,7 @@
                                  baseColumnNames="job_id"
                                  constraintName="fk_job_card_reports_job_card"
                                  referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"/>
+                                 referencedColumnNames="jobId"/>
     </changeSet>
 
 </databaseChangeLog>

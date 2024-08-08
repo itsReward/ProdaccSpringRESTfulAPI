@@ -4,5 +4,5 @@ import java.util.*
 
 data class ResponseJobCardTechnicians (
     val jobCardId: UUID,
-    val technicians: UUID
+    val technicianId: UUID
 )

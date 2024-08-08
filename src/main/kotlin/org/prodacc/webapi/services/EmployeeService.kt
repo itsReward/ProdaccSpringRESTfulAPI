@@ -82,7 +82,7 @@ class EmployeeService(
             "Technician" -> {
                 jobCardTechniciansRepository.getJobCardTechniciansByEmployeeId(this).map {
                     jobCardRepository.findById(
-                        it.jobCardId?.job_id
+                        it.jobCardId?.jobId
                             ?: throw (IllegalArgumentException("Job Card ID Not Found"))
                     ).get().toJobCardWithIdAndName()
                 }
@@ -112,7 +112,7 @@ class EmployeeService(
 
     private fun JobCard.toJobCardWithIdAndName(): JobCardWithIdAndName {
         return JobCardWithIdAndName(
-            id = this.job_id!!,
+            id = this.jobId!!,
             name = this.jobCardName!!
         )
     }

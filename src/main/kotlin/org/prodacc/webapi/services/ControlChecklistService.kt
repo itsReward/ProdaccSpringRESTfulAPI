@@ -102,7 +102,7 @@ class ControlChecklistService(
     }
 
     private fun VehicleControlChecklist.toResponseControlChecklist(): ResponseControlChecklist {
-        val jobCard = this.jobCard?.job_id?.let {
+        val jobCard = this.jobCard?.jobId?.let {
             jobCardRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("JobCard with id $it not found") }
         } ?: throw IllegalArgumentException("JobCard can not be null")
@@ -112,7 +112,7 @@ class ControlChecklistService(
         } ?: throw IllegalArgumentException("Employee can not be null")
         return ResponseControlChecklist(
             id = this.id,
-            jobCardId = jobCard.job_id,
+            jobCardId = jobCard.jobId,
             jobCardName = jobCard.jobCardName,
             technicianId = technician.employeeId,
             technicianName = technician.employeeName + " " + technician.employeeSurname,

@@ -43,7 +43,7 @@ class JobCardStatusService(
 
         return jobCardId?.let {
             ResponseJobCardStatus(
-                jobId = jobCardId.job_id!!,
+                jobId = jobCardId.jobId!!,
                 createdAt = this.createdAt,
                 statusId = this.jobCardStatusId ?: throw (IllegalArgumentException("job cards status id can not be null")),
                 status = this.status ?: throw (IllegalArgumentException("status can not be null"))

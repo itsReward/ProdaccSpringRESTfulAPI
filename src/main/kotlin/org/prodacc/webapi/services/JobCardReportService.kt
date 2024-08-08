@@ -85,12 +85,12 @@ class JobCardReportService(
             .employeeId ?: throw (IllegalArgumentException("Employee ID can not be null"))
 
         val jobCard = jobCardRepository.findById(this.jobCardId?.let {
-            it.job_id ?: throw (IllegalArgumentException("Job Card Id cannot be null"))
+            it.jobId ?: throw (IllegalArgumentException("Job Card Id cannot be null"))
         } ?: throw (IllegalArgumentException("Job Card cannot be null")))
             .orElseThrow {
                 EntityNotFoundException("Job Card can not be found")
             }
-            .job_id ?: throw (IllegalArgumentException("Job ID cannot be null"))
+            .jobId ?: throw (IllegalArgumentException("Job ID cannot be null"))
         return ResponseJobCardReport(
             reportId = this.jobCardReportId ?: throw (IllegalArgumentException("Report id can not be null")),
             employeeId = employee,

@@ -14,7 +14,7 @@ data class JobCard(
     @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
     @Column(name = "\"job_id\"", nullable = false)
-    var job_id: UUID? = null,
+    var jobId: UUID? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_DEFAULT)

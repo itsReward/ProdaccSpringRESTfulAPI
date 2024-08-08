@@ -11,7 +11,7 @@ import java.util.*
 @Table(name = "job_card_status")
 data class JobCardStatus(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @ColumnDefault("gen_random_uuid()")
     @Column(name = "job_card_status_id")
     var jobCardStatusId : UUID? = null,

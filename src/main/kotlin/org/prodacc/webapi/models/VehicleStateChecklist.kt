@@ -18,22 +18,22 @@ data class VehicleStateChecklist (
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "\"job_card_id\"", nullable = false)
+    @JoinColumn(name = "job_card_id", nullable = false)
     var jobCard: JobCard? = null,
 
-    @Column(name = "\"millage_in\"", nullable = false, length = 50)
+    @Column(name = "millage_in", nullable = false, length = 50)
     var millageIn: String? = null,
 
-    @Column(name = "\"millage_out\"", nullable = false, length = 50)
+    @Column(name = "millage_out", nullable = false, length = 50)
     var millageOut: String? = null,
 
-    @Column(name = "\"fuel_level_in\"", nullable = false, length = 50)
+    @Column(name = "fuel_level_in", nullable = false, length = 20)
     var fuelLevelIn: String? = null,
 
-    @Column(name = "\"fuel_level_out\"", nullable = false, length = 50)
+    @Column(name = "fuel_level_out", nullable = false, length = 20)
     var fuelLevelOut: String? = null,
 
-    @Column(name = "\"created\"", nullable = false)
+    @Column(name = "created", nullable = false)
     var created: LocalDateTime? = null,
 
     @JdbcTypeCode(SqlTypes.JSON)

@@ -1,6 +1,7 @@
 package org.prodacc.webapi.controllers
 
 import org.prodacc.webapi.services.JobCardTechniciansServices
+import org.prodacc.webapi.services.dataTransferObjects.DeleteTechnician
 import org.prodacc.webapi.services.dataTransferObjects.NewJobCardTechnician
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardTechnicians
 import org.springframework.http.ResponseEntity
@@ -30,9 +31,9 @@ class JobCardTechnicianController (
         return jobCardTechniciansServices.addJobCardTechnician(newJobCardTechnician)
     }
 
-    @DeleteMapping("/remove-technician/{id}")
-    fun deleteJobCardTechnician(@PathVariable id : UUID): ResponseEntity<String> {
-        return jobCardTechniciansServices.deleteJobCardTechniciansByEmployee(id)
+    @DeleteMapping("/remove-technician/")
+    fun deleteJobCardTechnician(@RequestBody record : DeleteTechnician): ResponseEntity<String> {
+        return jobCardTechniciansServices.deleteJobCardTechniciansByEmployee(record)
     }
 
 }

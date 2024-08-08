@@ -5,6 +5,7 @@ import org.prodacc.webapi.models.JobCardTechnicians
 import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.JobCardTechniciansRepository
+import org.prodacc.webapi.services.dataTransferObjects.DeleteTechnician
 import org.prodacc.webapi.services.dataTransferObjects.NewJobCardTechnician
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardTechnicians
 import org.springframework.http.HttpStatus
@@ -51,27 +52,32 @@ class JobCardTechniciansServices(
 
         return jobCardWithTechnicians.map {
             jobCardRepository.findById(it.jobCardId?.let { jobCard ->
-                jobCard.job_id ?: throw (IllegalArgumentException("Job Card Not Found"))
-            } ?: throw (IllegalArgumentException("Job Card with id $it.job_id Not Found")))
-                .orElseThrow { EntityNotFoundException("Job Cards Not Found") }.job_id
+                jobCard.jobId ?: throw (IllegalArgumentException("Job Card Not Found"))
+            } ?: throw (IllegalArgumentException("Job Card with id $it.jobId Not Found")))
+                .orElseThrow { EntityNotFoundException("Job Cards Not Found") }.jobId
         }
     }
 
-    fun deleteJobCardTechniciansByEmployee(technicianId: UUID): ResponseEntity<String> {
-        val technician = employeeRepository.findById(technicianId)
-            .orElseThrow { EntityNotFoundException("Technician with is $technicianId not found ") }
+    fun deleteJobCardTechniciansByEmployee(record: DeleteTechnician): ResponseEntity<String> {
+        val technician = employeeRepository.findById(record.technicianId)
+            .orElseThrow { EntityNotFoundException("Technician with is ${record.technicianId} not found ") }
+        val jobCard = jobCardRepository.findById(record.jobCardId)
+            .orElseThrow { EntityNotFoundException("JobCard with id ${record.technicianId} not found") }
+
+        val jobCardTechnicianRecord =
+            jobCardTechniciansRepository.getJobCardTechniciansByEmployeeIdAndJobCardId(technician, jobCard)
         try {
-            jobCardTechniciansRepository.deleteJobCardTechniciansByEmployeeId(technician)
+            jobCardTechniciansRepository.delete(jobCardTechnicianRecord)
             return ResponseEntity("Technician Removed", HttpStatus.OK)
         } catch (_: EntityNotFoundException) {
-            return ResponseEntity("Technician Not Found", HttpStatus.NOT_FOUND)
+            return ResponseEntity("Technician Record Not Found", HttpStatus.NOT_FOUND)
         }
     }
 
     fun JobCardTechnicians.toResponseJobCardTechnicians(): ResponseJobCardTechnicians {
         val jobCard = this.jobCardId?.let {
-            jobCardRepository.findById(it.job_id ?: throw (IllegalArgumentException("Job ID is null")))
-                .orElseThrow { EntityNotFoundException("JobCard with id ${it.job_id} not found") }
+            jobCardRepository.findById(it.jobId ?: throw (IllegalArgumentException("Job ID is null")))
+                .orElseThrow { EntityNotFoundException("JobCard with id ${it.jobId} not found") }
         }
             ?: throw (NullPointerException("Job Card returned null, JobCardTechnicians can not have a null jobcard value"))
 
@@ -82,8 +88,8 @@ class JobCardTechniciansServices(
             ?: throw (NullPointerException("Employee ID is null, JobCardTechnicians can not have a null technician value"))
 
         return ResponseJobCardTechnicians(
-            jobCardId = jobCard.job_id!!,
-            technicians = technician.employeeId!!
+            jobCardId = jobCard.jobId!!,
+            technicianId = technician.employeeId!!
         )
     }
 

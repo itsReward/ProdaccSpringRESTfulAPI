@@ -104,7 +104,7 @@ class ServiceChecklistService(
     }
 
     private fun VehicleServiceChecklist.toResponseServiceChecklistWithJobCard(): ResponseServiceChecklistWithJobCard {
-        val jobCard = this.jobCard?.job_id?.let {
+        val jobCard = this.jobCard?.jobId?.let {
             jobCardRepository.findById(it).orElseThrow { EntityNotFoundException("Job Card with id: $it not found") }
         } ?: throw IllegalArgumentException("JobCard cannot be null")
         val technician = this.technician?.employeeId?.let {
@@ -113,7 +113,7 @@ class ServiceChecklistService(
         return ResponseServiceChecklistWithJobCard(
             id = this.id,
             jobCardName = jobCard.jobCardName,
-            jobCardId = jobCard.job_id,
+            jobCardId = jobCard.jobId,
             technicianId = technician.employeeId,
             technicianName = technician.employeeName + " " + technician.employeeSurname,
             created = this.created,
