@@ -36,12 +36,16 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    //jsonb jdbc format
-    //implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
-
+    //JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+
+    //AWS CODE
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.2")
+    implementation("com.amazonaws:aws-lambda-java-events:3.11.0")
+    implementation("org.springframework.cloud:spring-cloud-function-adapter-aws:3.2.8")
+
 
 }
 

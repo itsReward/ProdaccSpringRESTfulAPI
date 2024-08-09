@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import org.hibernate.type.SqlTypes
+import org.springframework.boot.context.properties.bind.DefaultValue
 import java.time.LocalDateTime
 import java.util.*
 
@@ -14,6 +15,7 @@ import java.util.*
 data class VehicleServiceChecklist (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @DefaultValue("gen_random_uuid()")
     @Column(name = "id", nullable = false)
     var id: UUID? = null,
 

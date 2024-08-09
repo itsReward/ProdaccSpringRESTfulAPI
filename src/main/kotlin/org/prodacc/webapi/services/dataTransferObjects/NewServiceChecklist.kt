@@ -1,12 +1,18 @@
 package org.prodacc.webapi.services.dataTransferObjects
 
-import com.fasterxml.jackson.annotation.JsonBackReference
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class NewServiceChecklist(
+    val jobCardId: UUID,
+    val technicianId: UUID,
+    val created: LocalDateTime,
+    val checklist: MutableMap<String, Any>,
+)
+
+data class UpdateServiceChecklist(
     val jobCardId: UUID?,
-    val technician: UUID?,
+    val technicianId: UUID?,
     val created: LocalDateTime?,
     val checklist: MutableMap<String, Any>?,
 )

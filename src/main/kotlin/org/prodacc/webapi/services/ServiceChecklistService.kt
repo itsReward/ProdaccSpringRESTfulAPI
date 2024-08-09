@@ -7,6 +7,7 @@ import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.ServiceChecklistRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewServiceChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseServiceChecklistWithJobCard
+import org.prodacc.webapi.services.dataTransferObjects.UpdateServiceChecklist
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -46,16 +47,17 @@ class ServiceChecklistService(
     }
 
 
-    @Transactional
     fun createServiceChecklist(newChecklist: NewServiceChecklist): ResponseServiceChecklistWithJobCard {
         logger.info("Creating a new service checklist")
-        val jobCard = newChecklist.jobCardId?.let {
-            jobCardRepository.findById(it)
+
+        val jobCard = newChecklist.jobCardId.let {
+            logger.info("THE ID IS ${newChecklist.technicianId} ############")
+            jobCardRepository.findById(it ?: throw (IllegalArgumentException("Job Card NADAA")))
                 .orElseThrow {EntityNotFoundException("${newChecklist.jobCardId} Job Card Not Found")}
         } ?: throw IllegalArgumentException("Job Card not be null")
-        val technician = newChecklist.technician?.let {
+        val technician = newChecklist.technicianId.let {
             employeeRepository.findById(it)
-                .orElseThrow {EntityNotFoundException("${newChecklist.technician} Employee Not Found")}
+                .orElseThrow {EntityNotFoundException("${newChecklist.technicianId} Employee Not Found")}
         } ?: throw IllegalArgumentException("Employee can not be null")
         val vehicleServiceChecklist = VehicleServiceChecklist(
             jobCard = jobCard,
@@ -69,7 +71,7 @@ class ServiceChecklistService(
     }
 
     @Transactional
-    fun updateServiceChecklist(id: UUID, newChecklist: NewServiceChecklist): ResponseServiceChecklistWithJobCard {
+    fun updateServiceChecklist(id: UUID, newChecklist: UpdateServiceChecklist): ResponseServiceChecklistWithJobCard {
         logger.info("Updating a service checklist with id $id")
         val oldServiceChecklist = vehicleServiceChecklistRepository.findById(id)
             .orElseThrow {EntityNotFoundException("$id Service Checklist Not Found")}
@@ -78,9 +80,9 @@ class ServiceChecklistService(
                 .orElseThrow { EntityNotFoundException("${newChecklist.jobCardId} Job Card Not Found") }
         }
 
-        val technician = newChecklist.technician?.let {
+        val technician = newChecklist.technicianId?.let {
             employeeRepository.findById(it)
-                .orElseThrow {EntityNotFoundException("${newChecklist.technician} Job Card Not Found")}
+                .orElseThrow {EntityNotFoundException("${newChecklist.technicianId} Job Card Not Found")}
         }
 
         val updatedServiceChecklist = oldServiceChecklist.copy(
@@ -112,8 +114,8 @@ class ServiceChecklistService(
         } ?: throw IllegalArgumentException("Employee cannot be null")
         return ResponseServiceChecklistWithJobCard(
             id = this.id,
-            jobCardName = jobCard.jobCardName,
-            jobCardId = jobCard.jobId,
+            jobCardName = this.jobCard!!.jobCardName,
+            jobCardId = this.jobCard!!.jobId,
             technicianId = technician.employeeId,
             technicianName = technician.employeeName + " " + technician.employeeSurname,
             created = this.created,

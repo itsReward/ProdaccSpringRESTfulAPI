@@ -1,6 +1,7 @@
 package org.prodacc.webapi.controllers
 
 import org.prodacc.webapi.services.StateChecklistService
+import org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -23,11 +24,11 @@ class StateChecklistController (
         stateChecklistService.getChecklistByJobCardId(id)
 
     @PostMapping("/new")
-    fun newStateChecklist(@RequestBody newStateChecklist: org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist) : ResponseStateChecklist =
+    fun newStateChecklist(@RequestBody newStateChecklist: NewVehicleStateChecklist) : ResponseStateChecklist =
         stateChecklistService.newStateChecklist(newStateChecklist)
 
     @PutMapping("/update/{id}")
-    fun updateStateChecklist(@PathVariable id: UUID, @RequestBody newStateChecklist: org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist)
+    fun updateStateChecklist(@PathVariable id: UUID, @RequestBody newStateChecklist: NewVehicleStateChecklist)
     : ResponseStateChecklist =
         stateChecklistService.updateStateChecklist(id, newStateChecklist)
 
