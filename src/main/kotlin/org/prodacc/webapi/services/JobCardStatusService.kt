@@ -8,6 +8,7 @@ import org.prodacc.webapi.services.dataTransferObjects.NewJobCardStatusEntry
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardStatus
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -17,7 +18,7 @@ class JobCardStatusService(
 ) {
     private val logger = LoggerFactory.getLogger(JobCardStatusService::class.java)
 
-
+    @Transactional
     fun newJobCardStatus(newStatusEntry: NewJobCardStatusEntry): ResponseJobCardStatus {
         val jobCard = jobCardRepository.findById(newStatusEntry.jobCardId).orElseThrow { EntityNotFoundException("Job Card not found.") }
         val statusEntry = JobCardStatus(

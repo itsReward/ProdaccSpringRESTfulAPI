@@ -46,13 +46,13 @@ class ServiceChecklistService(
         }.toResponseServiceChecklistWithJobCard()
     }
 
-
+    @Transactional
     fun createServiceChecklist(newChecklist: NewServiceChecklist): ResponseServiceChecklistWithJobCard {
         logger.info("Creating a new service checklist")
 
         val jobCard = newChecklist.jobCardId.let {
             logger.info("THE ID IS ${newChecklist.technicianId} ############")
-            jobCardRepository.findById(it ?: throw (IllegalArgumentException("Job Card NADAA")))
+            jobCardRepository.findById(it)
                 .orElseThrow {EntityNotFoundException("${newChecklist.jobCardId} Job Card Not Found")}
         } ?: throw IllegalArgumentException("Job Card not be null")
         val technician = newChecklist.technicianId.let {

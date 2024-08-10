@@ -11,6 +11,7 @@ import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardTechnician
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -23,6 +24,7 @@ class JobCardTechniciansServices(
         return jobCardTechniciansRepository.findAll().map { it.toResponseJobCardTechnicians() }
     }
 
+    @Transactional
     fun addJobCardTechnician(newJobCardTechnician: NewJobCardTechnician): ResponseJobCardTechnicians {
         val technician = employeeRepository.findById(newJobCardTechnician.technicianId)
             .orElseThrow { EntityNotFoundException("Technician with id ${newJobCardTechnician.technicianId} Not Found") }
@@ -58,6 +60,7 @@ class JobCardTechniciansServices(
         }
     }
 
+    @Transactional
     fun deleteJobCardTechniciansByEmployee(record: DeleteTechnician): ResponseEntity<String> {
         val technician = employeeRepository.findById(record.technicianId)
             .orElseThrow { EntityNotFoundException("Technician with is ${record.technicianId} not found ") }

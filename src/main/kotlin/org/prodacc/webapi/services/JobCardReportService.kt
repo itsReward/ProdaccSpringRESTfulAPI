@@ -11,6 +11,7 @@ import org.prodacc.webapi.services.dataTransferObjects.UpdateJobCardReport
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -23,10 +24,12 @@ class JobCardReportService(
         return jobCardReportsRepository.findAll().map { it.toResponseJobCardReport() }
     }
 
+    @Transactional
     fun newReport(newJobCardReport: NewJobCardReport): ResponseJobCardReport {
         return jobCardReportsRepository.save(newJobCardReport.toJobCardReport()).toResponseJobCardReport()
     }
 
+    @Transactional
     fun updateReport(id: UUID, updateJobCardReport: UpdateJobCardReport): ResponseJobCardReport {
         val oldReport =
             jobCardReportsRepository.findById(id).orElseThrow { EntityNotFoundException("Report $id not found") }
@@ -52,6 +55,7 @@ class JobCardReportService(
             .toResponseJobCardReport()
     }
 
+    @Transactional
     fun deleteJobCardReport(jobCardReportId: UUID): ResponseEntity<String> {
         val report = jobCardReportsRepository.findById(jobCardReportId)
             .orElseThrow { EntityNotFoundException("Report $jobCardReportId not found") }

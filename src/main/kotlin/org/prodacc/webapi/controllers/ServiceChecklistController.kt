@@ -1,7 +1,6 @@
 package org.prodacc.webapi.controllers
 
 import org.prodacc.webapi.services.ServiceChecklistService
-import org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist
 import org.prodacc.webapi.services.dataTransferObjects.NewServiceChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseServiceChecklistWithJobCard
 import org.prodacc.webapi.services.dataTransferObjects.UpdateServiceChecklist
@@ -28,7 +27,7 @@ class ServiceChecklistController (
 
 
     @PostMapping("/new")
-    fun createVehicleServiceChecklist(newChecklist: NewServiceChecklist): ResponseServiceChecklistWithJobCard =
+    fun createVehicleServiceChecklist(@RequestBody newChecklist: NewServiceChecklist): ResponseServiceChecklistWithJobCard =
         serviceChecklistService.createServiceChecklist(newChecklist)
 
 
