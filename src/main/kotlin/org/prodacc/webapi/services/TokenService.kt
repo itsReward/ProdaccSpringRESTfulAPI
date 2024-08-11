@@ -67,7 +67,6 @@ class TokenService(
         return parser.parseSignedClaims(token).payload
     }
 
-
     fun extractAuthorities(token: String): List<String>? {
         return try {
             getAllClaimsFromToken(token).get("authorities", List::class.java) as? List<String>
