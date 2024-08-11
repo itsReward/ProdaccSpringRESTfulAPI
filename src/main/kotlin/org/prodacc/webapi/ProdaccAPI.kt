@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
  @SpringBootApplication
 @EnableJpaRepositories
-class WebApiApplication
+class ProdaccAPI
 
 fun main(args: Array<String>) {
-    runApplication<WebApiApplication>(*args)
+    runApplication<ProdaccAPI>(*args)
 }

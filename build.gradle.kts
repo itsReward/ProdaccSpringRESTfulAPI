@@ -42,9 +42,10 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
     //AWS CODE
-    implementation("com.amazonaws:aws-lambda-java-core:1.2.2")
-    implementation("com.amazonaws:aws-lambda-java-events:3.11.0")
-    implementation("org.springframework.cloud:spring-cloud-function-adapter-aws:3.2.8")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.1")
+    implementation("com.amazonaws.serverless:aws-serverless-java-container-spring:1.7")
+
 
 
 }
