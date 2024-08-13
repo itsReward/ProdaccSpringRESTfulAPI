@@ -29,3 +29,4 @@ public class StreamLambdaHandler implements RequestStreamHandler {
         handler.proxyStream(inputStream, outputStream, context);
     }
 }
+
