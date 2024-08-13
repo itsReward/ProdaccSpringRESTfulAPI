@@ -45,6 +45,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.amazonaws:aws-lambda-java-core:1.2.1")
     implementation("com.amazonaws.serverless:aws-serverless-java-container-spring:1.7")
+    implementation("org.springframework.cloud:spring-cloud-function-adapter-aws:3.2.1")
 
 
 
