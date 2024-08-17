@@ -11,6 +11,6 @@ data class ResponseEmployeeWithJobCards (
     val employeeDepartment: String,
     val phoneNumber: String,
     val homeAddress: String,
-    val jobCards: List<org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName>
+    val jobCards: List<JobCardWithIdAndName>
 )
 
