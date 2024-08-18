@@ -490,3 +490,5 @@ Path : **GET** : _{{baseUrl}}/job-card-technicians/:id_ - gets all technicians a
 
 
 
+
+
