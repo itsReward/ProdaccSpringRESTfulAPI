@@ -4,7 +4,7 @@ This is a RESTFUL API database crud operations. The first version with the bare-
 include the database synchronisation functionality
 
 **Database Entities**
-* [Authentication](documentation/authentication.md)
+* [Authentication](src/main/resources/documentation/authentication.md)
 * [Users](documentation/users.md)
 * [Employees](documentation/employees.md)
 * [Clients](documentation/clients.md)
