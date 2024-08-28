@@ -9,7 +9,7 @@ import java.util.*
 
 
 @RestController
-@RequestMapping("api/v1/clients")
+@RequestMapping("/clients")
 class ClientController(
     private val clientService: ClientService,
 ) {

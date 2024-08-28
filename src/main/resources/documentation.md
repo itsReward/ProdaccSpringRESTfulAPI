@@ -3,7 +3,7 @@
 This is a RESTFUL API database crud operations. The first version with the bare-bones functionality, does not
 include the database synchronisation functionality
 
-**Database Entities**
+**Request End Points**
 * [Authentication](documentation/authentication.md)
 * [Users](documentation/users.md)
 * [Employees](documentation/employees.md)
@@ -17,10 +17,6 @@ include the database synchronisation functionality
 * [VehicleControlChecklist](documentation/vehicleControlChecklist.md)
 * [VehicleServiceChecklist](documentation/vehicleServiceChecklist.md)
 * [VehicleStateChecklist](documentation/vehicleStateChecklist.md)
-
-### **REQUESTS**
-
-the first request is the authentication endpoint.
 
 
 

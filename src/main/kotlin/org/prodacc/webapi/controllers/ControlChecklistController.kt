@@ -1,14 +1,14 @@
 package org.prodacc.webapi.controllers
 
+import org.prodacc.webapi.services.ControlChecklistService
 import org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist
-import org.prodacc.webapi.services.ControlChecklistService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("api/v1/control-checklist")
+@RequestMapping("/control-checklist")
 class ControlChecklistController(
     private val controlChecklistService: ControlChecklistService
 ) {
