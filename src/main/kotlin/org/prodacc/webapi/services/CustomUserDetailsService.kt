@@ -19,7 +19,8 @@ typealias ApplicationUser = org.prodacc.webapi.models.User
 @Service
 class CustomUserDetailsService(
     private val userRepository: UserRepository
-): UserDetailsService {
+): UserDetailsService
+{
 
     override fun loadUserByUsername(username: String): UserDetails {
         val details = userRepository.findByUsername(username)

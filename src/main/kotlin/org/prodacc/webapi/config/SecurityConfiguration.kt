@@ -44,11 +44,11 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers( "/api/v1/auth", "/api/v1/auth/refresh", "/error")
+                    .requestMatchers( "/auth", "/auth/refresh", "/error")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "api/v1/users/new", "/error")
+                    .requestMatchers(HttpMethod.POST, "/users/new", "/error")
                     .hasAuthority("ROLE_ADMIN")
-                    .requestMatchers("api/v1/users/**")
+                    .requestMatchers("/users/**")
                     .hasAuthority("ROLE_ADMIN")
                     .anyRequest()
                     .authenticated()

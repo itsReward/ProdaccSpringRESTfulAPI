@@ -31,6 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter
  *        - Request details are attached using `WebAuthenticationDetailsSource`.
  * 4. The filter chain continues processing the request if the token is invalid or no "Authorization" header is present.
  */
+
 @Component
 class JwtAuthenticationFilter(
     private val userDetailsService: UserDetailsService,
@@ -83,6 +84,5 @@ class JwtAuthenticationFilter(
     private fun String.extractTokenValue(): String {
         return this.substringAfter("Bearer ")
     }
-
-
 }
+
