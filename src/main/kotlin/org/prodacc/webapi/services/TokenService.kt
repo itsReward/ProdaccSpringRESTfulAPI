@@ -40,7 +40,8 @@ import java.util.*
 @Service
 class TokenService(
     jwtProperties: JwtProperties
-) {
+)
+{
 
     private val secretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 

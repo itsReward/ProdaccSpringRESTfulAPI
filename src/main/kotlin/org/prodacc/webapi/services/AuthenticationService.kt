@@ -1,5 +1,6 @@
 package org.prodacc.webapi.services
 
+
 import org.prodacc.webapi.config.JwtProperties
 import org.prodacc.webapi.controllers.AuthenticationRequest
 import org.prodacc.webapi.controllers.AuthenticationResponse
@@ -32,7 +33,8 @@ class AuthenticationService(
     private val userDetailsService: CustomUserDetailsService,
     private val tokenService: TokenService,
     private val jwtProperties: JwtProperties
-) {
+)
+{
     private val logger = LoggerFactory.getLogger(AuthenticationService::class.java)
 
 

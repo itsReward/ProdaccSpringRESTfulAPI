@@ -53,6 +53,7 @@ class SecurityConfiguration(
                     .anyRequest()
                     .authenticated()
 
+
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -61,5 +62,5 @@ class SecurityConfiguration(
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
 
-
 }
+
