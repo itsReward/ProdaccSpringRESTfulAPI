@@ -4,7 +4,7 @@ This is a RESTFUL API database crud operations. The first version with the bare-
 include the database synchronisation functionality
 
 **Request End Points**
-* [Authentication](documentation/authentication.md)
+* [Authentication](/blob/master/src/main/resources/documentation/authentication.md)
 * [Users](documentation/users.md)
 * [Employees](documentation/employees.md)
 * [Clients](documentation/clients.md)
