@@ -19,15 +19,15 @@ class UserController(
     @GetMapping("/get/{id}")
     fun getUserById(@PathVariable id : UUID) : ResponseUserWithEmployee = userService.getUserById(id)
 
-    @GetMapping("/find/{username}")
+    @GetMapping("/findByUserName/{username}")
     fun findUserByUsername(@PathVariable username: String): ResponseUserWithEmployee =
         userService.findUserByUsername(username)
 
-    @GetMapping("/find/{email}")
+    @GetMapping("/findByEmail/{email}")
     fun findUserByEmail(@PathVariable email: String): ResponseUserWithEmployee =
         userService.findUserByEmail(email)
 
-    @GetMapping("/find/{employeeId}")
+    @GetMapping("/findByEmployeeId/{employeeId}")
     fun findUserByEmployeeId(@PathVariable employeeId: UUID): ResponseUserWithEmployee =
         userService.findUserByEmployeeId(employeeId)
 
