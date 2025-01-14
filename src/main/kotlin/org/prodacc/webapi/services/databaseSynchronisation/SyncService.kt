@@ -2,12 +2,13 @@ package org.prodacc.webapi.services.databaseSynchronisation
 
 import org.prodacc.webapi.models.*
 import org.prodacc.webapi.repositories.*
-import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 
 @Service
 class SyncService(
+    private val webSocketHandler: WebSocketHandler,
     private val jobCardRepository: JobCardRepository,
     private val timesheetRepository: TimesheetRepository,
     private val employeeRepository: EmployeeRepository,
@@ -17,46 +18,51 @@ class SyncService(
     private val controlChecklistRepository: ControlChecklistRepository,
     private val vehicleStateChecklistRepository: VehicleStateChecklistRepository,
     private val userRepository: UserRepository,
-    private val template: SimpMessagingTemplate,
     private val jobCardStatusRepository: JobCardStatusRepository,
     private val jobCardTechniciansRepository: JobCardTechniciansRepository,
     private val jobCardReportsRepository: JobCardReportsRepository
 ) {
+
     fun syncToOffline(entity: Any) {
-        when (entity) {
-            is JobCard -> template.convertAndSend("/topic/sync/jobCard", entity)
-            is Timesheet -> template.convertAndSend("/topic/sync/timesheet", entity)
-            is Vehicle -> template.convertAndSend("/topic/sync/vehicle", entity)
-            is Client -> template.convertAndSend("/topic/sync/client", entity)
-            is VehicleServiceChecklist -> template.convertAndSend("/topic/sync/vehicle_service_checklist", entity)
-            is VehicleControlChecklist -> template.convertAndSend("/topic/sync/vehicle_control_checklist", entity)
-            is VehicleStateChecklist -> template.convertAndSend("/topic/sync/vehicle_state_checklist", entity)
-            is User -> template.convertAndSend("/topic/sync/user", entity)
-            is Employee -> template.convertAndSend("/topic/sync/employee", entity)
-            is JobCardStatus -> template.convertAndSend("/topic/sync/jobCardStatus", entity)
-            is JobCardTechnicians -> template.convertAndSend("/topic/sync/jobCardTechnicians", entity)
-            is JobCardReports -> template.convertAndSend("/topic/sync/jobCardReports", entity)
+        val updateType = when (entity) {
+            is JobCard -> "jobCard"
+            is Timesheet -> "timesheet"
+            is Vehicle -> "vehicle"
+            is Client -> "client"
+            is VehicleServiceChecklist -> "vehicleServiceChecklist"
+            is VehicleControlChecklist -> "vehicleControlChecklist"
+            is VehicleStateChecklist -> "vehicleStateChecklist"
+            is User -> "user"
+            is Employee -> "employee"
+            is JobCardStatus -> "jobCardStatus"
+            is JobCardTechnicians -> "jobCardTechnicians"
+            is JobCardReports -> "jobCardReports"
+            else -> throw IllegalArgumentException("Unknown entity type")
         }
+
+        webSocketHandler.broadcastUpdate(updateType, entity)
     }
 
-    @MessageMapping("/sync/offline")
-    fun syncFromOffline(syncData: SyncData) {
-        when (syncData.entityType) {
+    @PostMapping("/sync") // Change to REST endpoint
+    fun syncFromOffline(@RequestBody syncData: SyncData) {
+        val savedEntity = when (syncData.entityType) {
             "JobCard" -> jobCardRepository.save(syncData.entity as JobCard)
             "Timesheet" -> timesheetRepository.save(syncData.entity as Timesheet)
-            "Employee" -> employeeRepository.save(syncData.entity as Employee)
             "Vehicle" -> vehicleRepository.save(syncData.entity as Vehicle)
             "Client" -> clientRepository.save(syncData.entity as Client)
-            "VehicleServiceChecklist" -> serviceChecklistRepository.save(syncData.entity as VehicleServiceChecklist)
-            "VehicleControlChecklist" -> controlChecklistRepository.save(syncData.entity as VehicleControlChecklist)
+            "VehicleServiceChecklist" -> vehicleStateChecklistRepository.save(syncData.entity as VehicleStateChecklist)
+            "VehicleControlChecklist" -> vehicleStateChecklistRepository.save(syncData.entity as VehicleStateChecklist)
             "VehicleStateChecklist" -> vehicleStateChecklistRepository.save(syncData.entity as VehicleStateChecklist)
             "User" -> userRepository.save(syncData.entity as User)
+            "Employee" -> employeeRepository.save(syncData.entity as Employee)
             "JobCardStatus" -> jobCardStatusRepository.save(syncData.entity as JobCardStatus)
-            "JobCardTechnicians" -> jobCardTechniciansRepository.save(syncData.entity as JobCardTechnicians)
+            "JobCardTechnicians" -> jobCardTechniciansRepository
             "JobCardReports" -> jobCardReportsRepository.save(syncData.entity as JobCardReports)
+            else -> throw IllegalArgumentException("Unknown entity type")
 
         }
-        // Broadcast the update to all other clients
-        template.convertAndSend("/topic/sync/${syncData.entityType.lowercase()}", syncData.entity)
+
+        // Broadcast the update to all connected clients
+        webSocketHandler.broadcastUpdate(syncData.entityType.lowercase(), savedEntity)
     }
 }

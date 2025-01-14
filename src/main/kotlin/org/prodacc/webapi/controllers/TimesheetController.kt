@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 
-@Controller
+@RestController
 @RequestMapping("/timesheets")
 class TimesheetController (
     private val timeSheetService: TimeSheetService

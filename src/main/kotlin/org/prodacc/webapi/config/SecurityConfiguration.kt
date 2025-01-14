@@ -46,7 +46,7 @@ class SecurityConfiguration(
                 it
                     .requestMatchers( "/auth", "/auth/refresh", "/error")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/users/findByUserName")
+                    .requestMatchers(HttpMethod.GET, "/users/findByUserName/**")
                     .authenticated()
                     .requestMatchers(HttpMethod.POST, "/users/new", "/error")
                     .hasAuthority("ROLE_ADMIN")
