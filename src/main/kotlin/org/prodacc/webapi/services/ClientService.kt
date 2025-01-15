@@ -23,8 +23,13 @@ class ClientService (
 
     fun getAll(): Iterable<ResponseClientWithVehicles> {
         logger.info("Getting all clients")
-        return clientRepository.findAll().map { it.toClientWithVehicleNameAndId()
+        try {
+            return clientRepository.findAll().map { it.toClientWithVehicleNameAndId() }
+        } catch (e:Exception){
+            logger.error(e.message)
+            throw e
         }
+
     }
 
     fun getClientById( id: UUID): ResponseClientWithVehicles {
@@ -38,6 +43,7 @@ class ClientService (
     @Transactional
     fun createClient( client: NewClient): ResponseClientWithVehicles {
         logger.info("Creating new client")
+
         val newClient = try {
             Client(
                 clientName = client.clientName!!,
@@ -50,6 +56,7 @@ class ClientService (
                 address = client.address
             )
         } catch (e: Exception) {
+            logger.error(e.message)
             throw NullPointerException("client name, surname, gender and phone cannot be null!")
         }
         return clientRepository.save( newClient ).toClientWithVehicleNameAndId()
@@ -58,29 +65,47 @@ class ClientService (
     @Transactional
     fun updateClient(updatedClient: NewClient, id: UUID): ResponseClientWithVehicles {
         logger.info("Updating client with id: $id")
-        val existingClient = clientRepository.findById(id).orElseThrow { EntityNotFoundException("Client with id: $id not found") }
-        val updated = existingClient.copy(
-            clientName = updatedClient.clientName?: existingClient.clientName,
-            clientSurname = updatedClient.clientSurname?: existingClient.clientSurname,
-            gender = updatedClient.gender?: existingClient.gender,
-            jobTitle = updatedClient.jobTitle?:existingClient.jobTitle,
-            company = updatedClient.company?: existingClient.company,
-            phone = updatedClient.phone?: existingClient.phone,
-            email = updatedClient.email?: existingClient.email,
-            address = updatedClient.address?: existingClient.address
-        )
-        return clientRepository.save(updated).toClientWithVehicleNameAndId()
+        try {
+            val existingClient = clientRepository.findById(id).orElseThrow { EntityNotFoundException("Client with id: $id not found") }
+            val updated = existingClient.copy(
+                clientName = updatedClient.clientName?: existingClient.clientName,
+                clientSurname = updatedClient.clientSurname?: existingClient.clientSurname,
+                gender = updatedClient.gender?: existingClient.gender,
+                jobTitle = updatedClient.jobTitle?:existingClient.jobTitle,
+                company = updatedClient.company?: existingClient.company,
+                phone = updatedClient.phone?: existingClient.phone,
+                email = updatedClient.email?: existingClient.email,
+                address = updatedClient.address?: existingClient.address
+            )
+            return clientRepository.save(updated).toClientWithVehicleNameAndId()
+        }catch (e: Exception){
+            logger.error(e.message)
+            when (e){
+                is EntityNotFoundException -> throw EntityNotFoundException("Client with id: $id not found")
+                else -> throw e
+            }
+        }
+
     }
 
     @Transactional
     fun deleteClientById(id: UUID): ResponseEntity<String> {
         logger.info("Deleting client with id: $id")
-        return if (clientRepository.existsById(id)) {
-            clientRepository.deleteById(id)
-            ResponseEntity("Client deleted successfully", HttpStatus.OK)
-        } else {
-             throw EntityNotFoundException("Client with id: $id not found")
+        try {
+            return if (clientRepository.existsById(id)) {
+                clientRepository.deleteById(id)
+                ResponseEntity("Client deleted successfully", HttpStatus.OK)
+            } else {
+                throw EntityNotFoundException("Client with id: $id not found")
+            }
+        }catch (e: Exception){
+            logger.error(e.message)
+            when (e){
+                is EntityNotFoundException -> throw EntityNotFoundException("Client with id: $id not found")
+                else -> throw e
+            }
         }
+
     }
 
 

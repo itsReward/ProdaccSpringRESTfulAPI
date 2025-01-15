@@ -78,8 +78,13 @@ data class JobCard(
     @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var vehiclecontrolchecklists: VehicleControlChecklist? = null,
 
+    @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var statuses: MutableSet<JobCardStatus> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var reports: MutableSet<JobCardReports> = mutableSetOf(),
+
     @Version
     @Column(name = "version", nullable = false)
     var version: Long? = 0,
-) {
-}
+)

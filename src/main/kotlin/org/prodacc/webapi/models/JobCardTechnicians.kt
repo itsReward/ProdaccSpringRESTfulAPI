@@ -12,13 +12,13 @@ import java.util.*
 data class JobCardTechnicians(
     @Id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "job_card_id", nullable = false)
     var jobCardId: JobCard? = null,
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "employee_id", nullable = false)
     var employeeId: Employee? = null
 )

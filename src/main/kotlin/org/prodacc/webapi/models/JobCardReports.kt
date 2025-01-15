@@ -2,6 +2,8 @@ package org.prodacc.webapi.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 import java.util.*
 
@@ -28,6 +30,7 @@ data class JobCardReports(
     var employee: Employee? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "job_id", nullable = false)
     var jobCardId: JobCard? = null,
 )

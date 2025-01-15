@@ -28,63 +28,87 @@ class JobCardService(
 
     fun getJobCards(): Iterable<ResponseJobCard> {
         logger.info("Fetching all jobCards")
-        return jobCardRepository.findAll().map { it.toViewJobCard() }
+        try {
+            return jobCardRepository.findAll().map { it.toViewJobCard() }
+        } catch (e:Exception){
+            logger.error(e.message)
+            throw e
+        }
+
     }
 
 
     fun getJobCard(id: UUID): ResponseJobCard {
         logger.info("Fetching job card with id: $id")
-        return jobCardRepository
-            .findById(id)
-            .map { it.toViewJobCard() }
-            .orElseThrow { EntityNotFoundException("JobCard with Id: $id not found") }
+        try {
+            return jobCardRepository
+                .findById(id)
+                .map { it.toViewJobCard() }
+                .orElseThrow { EntityNotFoundException("JobCard with Id: $id not found") }
+        }catch (e:Exception){
+            logger.error(e.message)
+            throw e
+        }
+
     }
 
 
     @Transactional
     fun newJobCard(@RequestBody newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Creating new job card")
-        return jobCardRepository.save(newJobCard.toJobCard()).toViewJobCard()
+        try {
+            return jobCardRepository.save(newJobCard.toJobCard()).toViewJobCard()
+        } catch (e: Exception){
+            logger.error(e.message)
+            throw e
+        }
+
     }
 
 
     @Transactional
     fun updateJobCard(id: UUID, newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Updating job card with id: $id")
-        val oldJobCard =
-            jobCardRepository.findById(id).orElseThrow { EntityNotFoundException("JobCard with id: $id not found") }
+        try {
+            val oldJobCard =
+                jobCardRepository.findById(id).orElseThrow { EntityNotFoundException("JobCard with id: $id not found") }
 
-        val vehicle = newJobCard.vehicleId?.let {
-            vehicleRepository.findById(it).orElseThrow { EntityNotFoundException("Vehicle with id: $id not found") }
+            val vehicle = newJobCard.vehicleId?.let {
+                vehicleRepository.findById(it).orElseThrow { EntityNotFoundException("Vehicle with id: $id not found") }
+            }
+            val client = vehicle?.let { clientRepository.findClientByVehiclesContaining(it) }
+            val supervisor = newJobCard.supervisorId?.let {
+                employeeRepository.findById(it).orElseThrow { EntityNotFoundException("Supervisor with id: $id not found") }
+            }
+            val serviceAdvisor = newJobCard.serviceAdvisorId?.let {
+                employeeRepository.findById(it)
+                    .orElseThrow { EntityNotFoundException("Service Advisor with id: $id not found") }
+            }
+
+            val jobCardName =
+                if (vehicle != null) "${client?.clientName?.first()} ${client?.clientSurname}'s ${vehicle.model}" else null
+
+            val jobCard = oldJobCard.copy(
+                vehicleReference = vehicle ?: oldJobCard.vehicleReference,
+                customerReference = client ?: oldJobCard.customerReference,
+                serviceAdvisor = serviceAdvisor ?: oldJobCard.serviceAdvisor,
+                supervisor = supervisor ?: oldJobCard.supervisor,
+                dateAndTimeIn = newJobCard.dateAndTimeIn ?: oldJobCard.dateAndTimeIn,
+                estimatedTimeOfCompletion = newJobCard.estimatedTimeOfCompletion ?: oldJobCard.estimatedTimeOfCompletion,
+                dateAndTimeFrozen = newJobCard.dateAndTimeFrozen ?: oldJobCard.dateAndTimeFrozen,
+                dateAndTimeClosed = newJobCard.dateAndTimeClosed ?: oldJobCard.dateAndTimeClosed,
+                jobCardDeadline = newJobCard.jobCardDeadline ?: oldJobCard.jobCardDeadline,
+                priority = newJobCard.priority ?: oldJobCard.priority,
+                jobCardName = jobCardName ?: oldJobCard.jobCardName,
+                jobCardNumber = oldJobCard.jobCardNumber
+            )
+
+            return jobCardRepository.save(jobCard).toViewJobCard()
+        } catch (e:Exception){
+            logger.error(e.message)
+            throw e
         }
-        val client = vehicle?.let { clientRepository.findClientByVehiclesContaining(it) }
-        val supervisor = newJobCard.supervisorId?.let {
-            employeeRepository.findById(it).orElseThrow { EntityNotFoundException("Supervisor with id: $id not found") }
-        }
-        val serviceAdvisor = newJobCard.serviceAdvisorId?.let {
-            employeeRepository.findById(it)
-                .orElseThrow { EntityNotFoundException("Service Advisor with id: $id not found") }
-        }
 
-        val jobCardName =
-            if (vehicle != null) "${client?.clientName?.first()} ${client?.clientSurname}'s ${vehicle.model}" else null
-
-        val jobCard = oldJobCard.copy(
-            vehicleReference = vehicle ?: oldJobCard.vehicleReference,
-            customerReference = client ?: oldJobCard.customerReference,
-            serviceAdvisor = serviceAdvisor ?: oldJobCard.serviceAdvisor,
-            supervisor = supervisor ?: oldJobCard.supervisor,
-            dateAndTimeIn = newJobCard.dateAndTimeIn ?: oldJobCard.dateAndTimeIn,
-            estimatedTimeOfCompletion = newJobCard.estimatedTimeOfCompletion ?: oldJobCard.estimatedTimeOfCompletion,
-            dateAndTimeFrozen = newJobCard.dateAndTimeFrozen ?: oldJobCard.dateAndTimeFrozen,
-            dateAndTimeClosed = newJobCard.dateAndTimeClosed ?: oldJobCard.dateAndTimeClosed,
-            jobCardDeadline = newJobCard.jobCardDeadline ?: oldJobCard.jobCardDeadline,
-            priority = newJobCard.priority ?: oldJobCard.priority,
-            jobCardName = jobCardName ?: oldJobCard.jobCardName,
-            jobCardNumber = oldJobCard.jobCardNumber
-        )
-
-        return jobCardRepository.save(jobCard).toViewJobCard()
 
     }
 
@@ -92,13 +116,19 @@ class JobCardService(
     @Transactional
     fun deleteJobCard(jobCardId: UUID): ResponseEntity<String> {
         logger.info("Deleting job card with id: $jobCardId")
-        return if (jobCardRepository.existsById(jobCardId)) {
-            jobCardRepository.deleteById(jobCardId)
-            ResponseEntity("JobCard deleted successfully", HttpStatus.OK)
-        } else {
-            throw EntityNotFoundException("JobCard with id: $jobCardId does not exist")
+        try {
+            return if (jobCardRepository.existsById(jobCardId)) {
+                jobCardRepository.deleteById(jobCardId)
+                ResponseEntity("JobCard deleted successfully", HttpStatus.OK)
+            } else {
+                throw EntityNotFoundException("JobCard with id: $jobCardId does not exist")
 
+            }
+        } catch (e: Exception){
+            logger.error(e.message)
+            throw e
         }
+
     }
 
 
