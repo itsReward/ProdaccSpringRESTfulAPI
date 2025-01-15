@@ -39,9 +39,9 @@ data class Client (
     @Column(name = "version", nullable = false)
     var version: Long? = 0,
 
-    @OneToMany(mappedBy = "customerReference")
+    @OneToMany(mappedBy = "customerReference", cascade = [CascadeType.ALL], orphanRemoval = true)
     var jobCards: List<JobCard> = listOf(),
 
-    @OneToMany(mappedBy = "clientReference")
+    @OneToMany(mappedBy = "clientReference", cascade = [CascadeType.ALL], orphanRemoval = true)
     var vehicles: List<Vehicle> = listOf()
 )

@@ -5,6 +5,7 @@ import org.prodacc.webapi.models.Client
 import org.prodacc.webapi.models.Vehicle
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 import java.util.*
 
 interface ClientRepository: CrudRepository<Client, UUID> {

@@ -35,7 +35,7 @@ data class Vehicle (
     @JoinColumn(name = "\"client_reference_id\"", nullable = false)
     var clientReference: Client? = null,
 
-    @OneToMany(mappedBy = "vehicleReference")
+    @OneToMany(mappedBy = "vehicleReference", cascade = [CascadeType.ALL], orphanRemoval = true)
     var jobcards: List<JobCard> = listOf(),
 
     @Version

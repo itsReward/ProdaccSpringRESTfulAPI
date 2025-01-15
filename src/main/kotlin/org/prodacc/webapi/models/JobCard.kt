@@ -66,16 +66,16 @@ data class JobCard(
     @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
     var technicians: List<JobCardTechnicians> = emptyList(),
 
-    @OneToOne(mappedBy = "jobCard")
+    @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var servicechecklists: VehicleServiceChecklist? = null,
 
-    @OneToMany(mappedBy = "jobCardUUID")
+    @OneToMany(mappedBy = "jobCardUUID", cascade = [CascadeType.ALL], orphanRemoval = true)
     var timesheets: MutableSet<Timesheet> = mutableSetOf(),
 
-    @OneToOne(mappedBy = "jobCard")
+    @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var vehiclechecklists: VehicleStateChecklist? = null,
 
-    @OneToOne(mappedBy = "jobCard")
+    @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var vehiclecontrolchecklists: VehicleControlChecklist? = null,
 
     @Version
