@@ -21,6 +21,11 @@ data class VehicleStateChecklist (
     @JoinColumn(name = "job_card_id", nullable = false)
     var jobCard: JobCard? = null,
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "technician", nullable = false)
+    var technician: Employee? = null,
+
     @Column(name = "millage_in", nullable = false, length = 50)
     var millageIn: String? = null,
 

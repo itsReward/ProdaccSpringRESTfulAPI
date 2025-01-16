@@ -2,6 +2,7 @@ package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.VehicleStateChecklist
+import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.VehicleStateChecklistRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist
@@ -17,6 +18,7 @@ import java.util.*
 class StateChecklistService(
     private val vehicleStateChecklistRepository: VehicleStateChecklistRepository,
     private val jobCardRepository: JobCardRepository,
+    private val employeeRepository: EmployeeRepository
 ) {
     private val logger = LoggerFactory.getLogger(StateChecklistService::class.java.name)
 
@@ -48,9 +50,16 @@ class StateChecklistService(
             jobCardRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("Job card with id: ${newStateChecklist.jobCardId} not found") }
         } ?: throw IllegalArgumentException("Job card can not be null")
+
+        val technician = newStateChecklist.technicianId?.let {
+            employeeRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Employee with id: $it not found") }
+        } ?: throw IllegalArgumentException("Employee can not be null")
+
         return vehicleStateChecklistRepository.save(
             VehicleStateChecklist(
                 jobCard = jobCard,
+                technician = technician,
                 millageIn = newStateChecklist.millageIn,
                 millageOut = newStateChecklist.millageOut,
                 fuelLevelIn = newStateChecklist.fuelLevelIn,
@@ -70,8 +79,13 @@ class StateChecklistService(
             jobCardRepository.findById(it)
                 .orElseThrow { EntityNotFoundException("Job card with id: $id not found") }
         }
+        val technician = newStateChecklist.technicianId?.let {
+            employeeRepository.findById(it)
+            .orElseThrow { EntityNotFoundException("Employee with id: $id not found") }
+        }
         val newChecklist = oldChecklist.copy(
             jobCard = jobCard ?: oldChecklist.jobCard,
+            technician = technician ?: oldChecklist.technician,
             millageIn = newStateChecklist.millageIn ?: oldChecklist.millageIn,
             millageOut = newStateChecklist.millageOut ?: oldChecklist.millageOut,
             fuelLevelIn = newStateChecklist.fuelLevelIn ?: oldChecklist.fuelLevelIn,
@@ -106,6 +120,16 @@ class StateChecklistService(
                 }
             } ?: throw NullPointerException("state checklist must be associated with a JobCard!!, enter jobCard id")
 
+        val technician = this.technician?.employeeId
+            .let {
+                if (it != null){
+                    employeeRepository.findById(it)
+                        .orElseThrow { EntityNotFoundException("Employee with id: $id not found") }
+                } else {
+                    throw NullPointerException("State checklist must be associated with a Technician!!, enter technician id")
+                }
+            } ?: throw NullPointerException("State checklist must be associated with a Technician!!, enter technician")
+
         return ResponseStateChecklist(
             id = this.id,
             jobCardId = jobCard.jobId,
@@ -115,7 +139,10 @@ class StateChecklistService(
             fuelLevelIn = this.fuelLevelIn,
             fuelLevelOut = this.fuelLevelOut,
             created = this.created,
-            checklist = this.checklist
+            checklist = this.checklist,
+            technician = technician.employeeId,
+            technicianName = technician.employeeName,
+            technicianSurname = technician.employeeSurname
         )
 
     }

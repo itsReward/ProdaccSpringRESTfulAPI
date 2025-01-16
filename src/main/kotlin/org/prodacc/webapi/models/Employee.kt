@@ -48,6 +48,9 @@ data class Employee(
     @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var servicechecklists: List<VehicleServiceChecklist> = mutableListOf(),
 
+    @OneToMany(mappedBy = "technician", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var statechecklists: List<VehicleStateChecklist> = mutableListOf(),
+
     @OneToMany(mappedBy = "employee", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var timesheets: List<Timesheet> = mutableListOf(),
 

@@ -228,7 +228,12 @@
             <constraints nullable="false"/>
         </column>
         <column name="technician" type="uuid">
-            <constraints nullable="false"/>
+            <constraints
+                    foreignKeyName="technician"
+                    referencedTableName="employees"
+                    referencedColumnNames="employeeId"
+                    nullable="false"
+            />
         </column>
         <column name="created" type="datetime"/>
         <column name="version" type="bigint" defaultValueNumeric="0">
@@ -295,6 +300,14 @@
                     foreignKeyName="job_card_id"
                     referencedTableName="jobcards"
                     referencedColumnNames="jobId"
+                    nullable="false"
+            />
+        </column>
+        <column name="technician" type="uuid">
+            <constraints
+                    foreignKeyName="technician"
+                    referencedTableName="employees"
+                    referencedColumnNames="employeeId"
                     nullable="false"
             />
         </column>
