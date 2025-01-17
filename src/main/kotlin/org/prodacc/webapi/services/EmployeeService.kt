@@ -75,11 +75,11 @@ class EmployeeService(
 
     private fun Employee.toEmployeeWithJobCardIdAndName(): ResponseEmployeeWithJobCards {
         val jobCards = when (this.employeeRole) {
-            "Service Advisor" -> {
+            "serviceAdvisor" -> {
                 jobCardRepository.getJobCardsByServiceAdvisor(this).map { it.toJobCardWithIdAndName() }
             }
 
-            "Technician" -> {
+            "technician" -> {
                 jobCardTechniciansRepository.getJobCardTechniciansByEmployeeId(this).map {
                     jobCardRepository.findById(
                         it.jobCardId?.jobId
@@ -88,7 +88,7 @@ class EmployeeService(
                 }
             }
 
-            "Supervisor" -> {
+            "supervisor" -> {
                 jobCardRepository.getJobCardsBySupervisor(this).map { it.toJobCardWithIdAndName() }
             }
 
