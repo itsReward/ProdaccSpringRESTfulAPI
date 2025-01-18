@@ -10,6 +10,7 @@ import java.util.*
 interface VehicleStateChecklistRepository: CrudRepository<VehicleStateChecklist, UUID> {
     fun findVehicleStateChecklistByJobCard(jobCard: JobCard): Optional<VehicleStateChecklist>
 
+    fun deleteVehicleStateChecklistByJobCard(jobCard: JobCard)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : VehicleStateChecklist?> save(entity: S & Any): S & Any
 }

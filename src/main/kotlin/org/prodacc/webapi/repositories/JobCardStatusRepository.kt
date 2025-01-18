@@ -9,6 +9,8 @@ import java.util.*
 
 interface JobCardStatusRepository: CrudRepository<JobCardStatus, UUID> {
     fun getJobCardStatusByJobCardId(jobCard: JobCard): List<JobCardStatus>
+    fun deleteJobCardStatusByJobCardId(jobCard: JobCard)
+    fun deleteJobCardStatusesByJobCardId(jobCard: JobCard)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : JobCardStatus?> save(entity: S & Any): S & Any
 

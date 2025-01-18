@@ -1,6 +1,8 @@
 package org.prodacc.webapi.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
+import org.apache.commons.lang3.builder.ToStringExclude
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
@@ -63,24 +65,31 @@ data class JobCard(
     @Column(name = "\"job_card_deadline\"")
     var jobCardDeadline: LocalDateTime? = null,
 
+    @JsonIgnore
     @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
     var technicians: List<JobCardTechnicians> = emptyList(),
 
+    @ToStringExclude
     @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var servicechecklists: VehicleServiceChecklist? = null,
 
+    @JsonIgnore
     @OneToMany(mappedBy = "jobCardUUID", cascade = [CascadeType.ALL], orphanRemoval = true)
     var timesheets: MutableSet<Timesheet> = mutableSetOf(),
 
+    @JsonIgnore
     @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var vehiclechecklists: VehicleStateChecklist? = null,
 
+    @JsonIgnore
     @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
     var vehiclecontrolchecklists: VehicleControlChecklist? = null,
 
+    @JsonIgnore
     @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
     var statuses: MutableSet<JobCardStatus> = mutableSetOf(),
 
+    @JsonIgnore
     @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
     var reports: MutableSet<JobCardReports> = mutableSetOf(),
 

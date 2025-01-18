@@ -22,7 +22,10 @@ class JobCardService(
     private val timesheetRepository: TimesheetRepository,
     private val serviceChecklistRepository: ServiceChecklistRepository,
     private val controlChecklistRepository: ControlChecklistRepository,
-    private val vehicleStateRepository: VehicleStateChecklistRepository
+    private val vehicleStateRepository: VehicleStateChecklistRepository,
+    private val jobCardStatusRepository: JobCardStatusRepository,
+    private val jobCardReportsRepository: JobCardReportsRepository,
+    private val jobCardTechniciansRepository: JobCardTechniciansRepository
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -117,13 +120,31 @@ class JobCardService(
     fun deleteJobCard(jobCardId: UUID): ResponseEntity<String> {
         logger.info("Deleting job card with id: $jobCardId")
         try {
-            return if (jobCardRepository.existsById(jobCardId)) {
-                jobCardRepository.deleteById(jobCardId)
-                ResponseEntity("JobCard deleted successfully", HttpStatus.OK)
-            } else {
+            if (!jobCardRepository.existsById(jobCardId)) {
                 throw EntityNotFoundException("JobCard with id: $jobCardId does not exist")
-
             }
+
+            val jobCard = jobCardRepository.findById(jobCardId).get()
+
+
+            timesheetRepository.deleteTimesheetByJobCardUUID(jobCard)
+
+            // Delete related checklists
+            vehicleStateRepository.deleteVehicleStateChecklistByJobCard(jobCard)
+            serviceChecklistRepository.deleteVehicleServiceChecklistByJobCardId(jobCard.jobId!!)
+            controlChecklistRepository.deleteVehicleControlChecklistByJobCard(jobCard)
+
+            // Delete any job card technician assignments
+            jobCardTechniciansRepository.deleteJobCardTechniciansByJobCardId(jobCard)
+
+            jobCardReportsRepository.deleteJobCardReportsByJobCardId(jobCard)
+            // Delete any job card statuses
+            jobCardStatusRepository.deleteJobCardStatusesByJobCardId(jobCard)
+
+            // Finally delete the job card
+            jobCardRepository.deleteById(jobCardId)
+            return ResponseEntity("Job Card Deleted successfully", HttpStatus.OK)
+
         } catch (e: Exception){
             logger.error(e.message)
             throw e

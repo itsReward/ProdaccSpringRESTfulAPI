@@ -13,6 +13,7 @@ interface JobCardTechniciansRepository : CrudRepository<JobCardTechnicians, UUID
     fun getJobCardTechniciansByEmployeeId(employeeId: Employee): List<JobCardTechnicians>
     fun getJobCardTechniciansByEmployeeIdAndJobCardId(employeeId: Employee, jobCardId: JobCard): JobCardTechnicians
     fun deleteJobCardTechniciansByEmployeeId(employeeId: Employee)
+    fun deleteJobCardTechniciansByJobCardId(jobCardId: JobCard)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : JobCardTechnicians?> save(entity: S & Any): S & Any
 }
