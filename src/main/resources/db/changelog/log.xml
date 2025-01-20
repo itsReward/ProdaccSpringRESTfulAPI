@@ -4,6 +4,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
 
+
     <changeSet id="1" author="itsReward">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -11,7 +12,7 @@
             </not>
         </preConditions>
         <createTable tableName="employees">
-            <column name="employee_id" type="uuid">
+            <column name="employee_id" type="uuid" defaultValue="gen_random_uuid()">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="employee_name" type="varchar(50)" defaultValue="unknown">
@@ -241,6 +242,7 @@
                 />
             </column>
             <column name="created" type="datetime"/>
+            <column name="checklist" type="jsonb"/>
             <column name="version" type="bigint" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
@@ -305,6 +307,14 @@
                         foreignKeyName="job_card_id"
                         referencedTableName="jobcards"
                         referencedColumnNames="job_id"
+                        nullable="false"
+                />
+            </column>
+            <column name="technician" type="uuid">
+                <constraints
+                        foreignKeyName="technician"
+                        referencedTableName="employees"
+                        referencedColumnNames="employee_id"
                         nullable="false"
                 />
             </column>
@@ -377,12 +387,16 @@
                                  baseColumnNames="job_card_id"
                                  constraintName="fk_job_card_technicians_job_card"
                                  referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"/>
+                                 referencedColumnNames="job_id"
+                                 onDelete="CASCADE"
+        />
         <addForeignKeyConstraint baseTableName="job_card_technicians"
                                  baseColumnNames="employee_id"
                                  constraintName="fk_job_card_technicians_employee"
                                  referencedTableName="employees"
-                                 referencedColumnNames="employee_id"/>
+                                 referencedColumnNames="employee_id"
+                                 onDelete="CASCADE"
+        />
     </changeSet>
 
     <changeSet id="11" author="itsReward">
@@ -404,12 +418,15 @@
                                  baseColumnNames="job_card_id"
                                  constraintName="fk_job_card_status_job_card"
                                  referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"/>
+                                 referencedColumnNames="job_id"
+                                 onDelete="CASCADE"
+        />
     </changeSet>
+
 
     <changeSet id="12" author="itsReward">
         <createTable tableName="job_card_reports">
-            <column name="job_card_report_id" type="INT" autoIncrement="true">
+            <column name="job_card_report_id" type="UUID" >
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="type_of_report" type="VARCHAR(255)">
@@ -439,7 +456,9 @@
                                  baseColumnNames="job_id"
                                  constraintName="fk_job_card_reports_job_card"
                                  referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"/>
+                                 referencedColumnNames="job_id"
+                                 onDelete="CASCADE"
+        />
     </changeSet>
 
 </databaseChangeLog>
