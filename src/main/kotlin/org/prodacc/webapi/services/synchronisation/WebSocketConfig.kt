@@ -90,7 +90,6 @@ data class WebSocketUpdate(
 class WebSocketAuthInterceptor(
     private val jwtAuthenticationHandler: JwtAuthenticationHandler
 ) : HandshakeInterceptor {
-
     override fun beforeHandshake(
         request: ServerHttpRequest,
         response: ServerHttpResponse,
