@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.socket.WebSocketHandler
 import java.util.*
 
 @Service
@@ -25,7 +26,8 @@ class JobCardService(
     private val vehicleStateRepository: VehicleStateChecklistRepository,
     private val jobCardStatusRepository: JobCardStatusRepository,
     private val jobCardReportsRepository: JobCardReportsRepository,
-    private val jobCardTechniciansRepository: JobCardTechniciansRepository
+    private val jobCardTechniciansRepository: JobCardTechniciansRepository,
+    private val webSocketHandler: org.prodacc.webapi.services.synchronisation.WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -60,7 +62,12 @@ class JobCardService(
     fun newJobCard(@RequestBody newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Creating new job card")
         try {
-            return jobCardRepository.save(newJobCard.toJobCard()).toViewJobCard()
+            val jobCard = newJobCard.toJobCard()
+            val savedJobCard = jobCardRepository.save(jobCard)
+            val responseJobCard = savedJobCard.toViewJobCard()
+
+            webSocketHandler.broadcastUpdate("NEW_JOB_CARD", responseJobCard.id)
+            return  responseJobCard
         } catch (e: Exception){
             logger.error(e.message)
             throw e
@@ -106,6 +113,7 @@ class JobCardService(
                 jobCardNumber = oldJobCard.jobCardNumber
             )
 
+            webSocketHandler.broadcastUpdate("UPDATE_JOB_CARD", jobCard.toViewJobCard())
             return jobCardRepository.save(jobCard).toViewJobCard()
         } catch (e:Exception){
             logger.error(e.message)
@@ -141,6 +149,8 @@ class JobCardService(
 
             // Finally delete the job card
             jobCardRepository.deleteById(jobCardId)
+
+            webSocketHandler.broadcastUpdate("DELETE_JOB_CARD", jobCardId)
             return ResponseEntity("Job Card Deleted successfully", HttpStatus.OK)
 
         } catch (e: Exception){
