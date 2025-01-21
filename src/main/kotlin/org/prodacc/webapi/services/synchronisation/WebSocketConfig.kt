@@ -1,7 +1,6 @@
-package org.prodacc.webapi.services.databaseSynchronisation
+package org.prodacc.webapi.services.synchronisation
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.prodacc.webapi.services.TimeSheetService
 import org.prodacc.webapi.services.TokenService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,7 +38,7 @@ class WebSocketConfig(
 @Component
 class WebSocketHandler : TextWebSocketHandler() {
     private val sessions = ConcurrentHashMap<String, WebSocketSession>()
-    private val logger = LoggerFactory.getLogger(TimeSheetService::class.java)
+    private val logger = LoggerFactory.getLogger(WebSocketHandler::class.java)
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         sessions[session.id] = session
@@ -47,7 +46,14 @@ class WebSocketHandler : TextWebSocketHandler() {
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
-        // Handle incoming messages if needed
+        try {
+            // Handle incoming messages
+            val payload = message.payload
+            logger.info("Received message: $payload from session: ${session.id}")
+            // Process the message as needed
+        } catch (e: Exception) {
+            logger.error("Error handling message from session ${session.id}", e)
+        }
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {

@@ -1,4 +1,4 @@
-package org.prodacc.webapi.services.databaseSynchronisation
+package org.prodacc.webapi.services.synchronisation
 
 import org.prodacc.webapi.models.*
 import org.prodacc.webapi.repositories.*

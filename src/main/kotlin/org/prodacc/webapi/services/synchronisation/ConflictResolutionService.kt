@@ -1,4 +1,4 @@
-package org.prodacc.webapi.services.databaseSynchronisation
+package org.prodacc.webapi.services.synchronisation
 
 import org.springframework.stereotype.Service
 

@@ -125,27 +125,12 @@ class JobCardService(
             }
 
             val jobCard = jobCardRepository.findById(jobCardId).get()
-            val vehicleStateChecklist = jobCard.vehiclechecklists?.id?.let { vehicleStateRepository.findById(it) }
-            val serviceChecklist = jobCard.servicechecklists?.id?.let { serviceChecklistRepository.findById(it) }
-            val controlChecklist = jobCard.vehiclecontrolchecklists?.id?.let { controlChecklistRepository.findById(it) }
-
 
             timesheetRepository.deleteTimesheetByJobCardUUID(jobCard)
 
-            // Delete related checklists
-            if (vehicleStateChecklist != null) {
-                vehicleStateRepository.delete(vehicleStateChecklist.get())
-            }
-            if (serviceChecklist != null) {
-                serviceChecklistRepository.delete(serviceChecklist.get())
-            }
-            if (controlChecklist != null) {
-                controlChecklistRepository.delete(controlChecklist.get())
-            }
-
-            /*vehicleStateRepository.deleteVehicleStateChecklistByJobCard(jobCard)
+            vehicleStateRepository.deleteVehicleStateChecklistByJobCard(jobCard)
             serviceChecklistRepository.deleteVehicleServiceChecklistByJobCardId(jobCard.jobId!!)
-            controlChecklistRepository.deleteVehicleControlChecklistByJobCard(jobCard)*/
+            controlChecklistRepository.deleteVehicleControlChecklistByJobCard(jobCard)
 
             // Delete any job card technician assignments
             jobCardTechniciansRepository.deleteJobCardTechniciansByJobCardId(jobCard)
