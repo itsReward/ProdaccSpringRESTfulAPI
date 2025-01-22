@@ -31,8 +31,8 @@ class WebSocketConfig(
 ) : WebSocketConfigurer {
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
         registry.addHandler(WebSocketHandler(), "/websocket")
-            .setAllowedOrigins("*")
             .addInterceptors(WebSocketAuthInterceptor(jwtAuthenticationHandler))
+            .setAllowedOrigins("*")
     }
 
 }
@@ -69,6 +69,7 @@ class WebSocketHandler : TextWebSocketHandler() {
         logger.info("broadcasting message: update type: $updateType, entity: $entity")
         val update = WebSocketUpdate(updateType, entity)
         val json = ObjectMapper().writeValueAsString(update)
+        logger.info(json)
 
         logger.info(sessions.values.toString())
         sessions.values.forEach { session ->
@@ -133,7 +134,10 @@ class JwtAuthenticationHandler(
     private val tokenService: TokenService,
     private val userDetailsService: UserDetailsService
 ) {
+    val logger = LoggerFactory.getLogger(JwtAuthenticationHandler::class.java)
+
     fun validateToken(token: String): Boolean {
+        logger.info("Validating token: $token")
         return try {
             // Extract username from token
             val username = tokenService.extractUsername(token) ?: return false
@@ -158,7 +162,8 @@ class JwtAuthenticationHandler(
     }
 }
 
-/*@Configuration
+/*
+@Configuration
 class JacksonConfig {
 
     @Bean
@@ -167,4 +172,5 @@ class JacksonConfig {
         objectMapper.registerModule(JavaTimeModule())
         return objectMapper
     }
-}*/
+}
+*/

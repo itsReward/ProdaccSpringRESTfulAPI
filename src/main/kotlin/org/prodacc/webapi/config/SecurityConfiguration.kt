@@ -44,6 +44,8 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
+                    .requestMatchers("/websocket/**")
+                    .permitAll()
                     .requestMatchers( "/auth", "/auth/refresh", "/error")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/users/findByUserName/**")
