@@ -8,6 +8,7 @@ import org.prodacc.webapi.repositories.ServiceChecklistRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewServiceChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseServiceChecklistWithJobCard
 import org.prodacc.webapi.services.dataTransferObjects.UpdateServiceChecklist
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +20,8 @@ import java.util.*
 class ServiceChecklistService(
     private val vehicleServiceChecklistRepository: ServiceChecklistRepository,
     private val jobCardRepository: JobCardRepository,
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(ServiceChecklistService::class.java)
 
@@ -66,7 +68,9 @@ class ServiceChecklistService(
             checklist = newChecklist.checklist
         )
 
-        return vehicleServiceChecklistRepository.save(vehicleServiceChecklist).toResponseServiceChecklistWithJobCard()
+        val responseChecklist = vehicleServiceChecklistRepository.save(vehicleServiceChecklist).toResponseServiceChecklistWithJobCard()
+        webSocketHandler.broadcastUpdate("NEW_SERVICE_CHECKLIST", responseChecklist.id!!)
+        return responseChecklist
 
     }
 
@@ -91,14 +95,16 @@ class ServiceChecklistService(
             created = newChecklist.created ?: oldServiceChecklist.created,
             checklist = newChecklist.checklist ?: oldServiceChecklist.checklist
         )
-
-        return vehicleServiceChecklistRepository.save(updatedServiceChecklist).toResponseServiceChecklistWithJobCard()
+        val responseServiceChecklist = vehicleServiceChecklistRepository.save(updatedServiceChecklist).toResponseServiceChecklistWithJobCard()
+        webSocketHandler.broadcastUpdate("UPDATE_SERVICE_CHECKLIST", responseServiceChecklist.id!!)
+        return responseServiceChecklist
     }
 
     @Transactional
     fun deleteServiceChecklist( id: UUID): ResponseEntity<String> {
         return if (vehicleServiceChecklistRepository.existsById(id)) {
             vehicleServiceChecklistRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_SERVICE_CHECKLIST", id)
             ResponseEntity("Checklist deleted successfully", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("$id Service Checklist Not Found")
@@ -114,8 +120,8 @@ class ServiceChecklistService(
         } ?: throw IllegalArgumentException("Employee cannot be null")
         return ResponseServiceChecklistWithJobCard(
             id = this.id,
-            jobCardName = this.jobCard!!.jobCardName,
-            jobCardId = this.jobCard!!.jobId,
+            jobCardName = jobCard.jobCardName,
+            jobCardId = jobCard.jobId,
             technicianId = technician.employeeId,
             technicianName = technician.employeeName + " " + technician.employeeSurname,
             created = this.created,

@@ -8,6 +8,7 @@ import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewJobCardReport
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardReport
 import org.prodacc.webapi.services.dataTransferObjects.UpdateJobCardReport
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ class JobCardReportService(
     private val jobCardReportsRepository: JobCardReportsRepository,
     private val jobCardRepository: JobCardRepository,
     private val employeeRepository: EmployeeRepository,
+    private val webSocketHandler: WebSocketHandler,
 ) {
     fun getAllReports(): List<ResponseJobCardReport> {
         return jobCardReportsRepository.findAll().map { it.toResponseJobCardReport() }
@@ -26,7 +28,9 @@ class JobCardReportService(
 
     @Transactional
     fun newReport(newJobCardReport: NewJobCardReport): ResponseJobCardReport {
-        return jobCardReportsRepository.save(newJobCardReport.toJobCardReport()).toResponseJobCardReport()
+        val report = jobCardReportsRepository.save(newJobCardReport.toJobCardReport()).toResponseJobCardReport()
+        webSocketHandler.broadcastUpdate("NEW_JOB_CARD_REPORT", report.reportId)
+        return report
     }
 
     @Transactional
@@ -41,7 +45,9 @@ class JobCardReportService(
             jobReport = updateJobCardReport.jobReport ?: oldReport.jobReport,
             typeOfReport = updateJobCardReport.reportType ?: oldReport.typeOfReport
         )
-        return jobCardReportsRepository.save(newReport).toResponseJobCardReport()
+        val reponse = jobCardReportsRepository.save(newReport).toResponseJobCardReport()
+        webSocketHandler.broadcastUpdate("UPDATE_JOB_CARD_REPORT", reponse.jobCardId)
+        return reponse
     }
 
     fun getJobCardsReports(jobCardId: UUID): List<ResponseJobCardReport> {
@@ -61,6 +67,7 @@ class JobCardReportService(
             .orElseThrow { EntityNotFoundException("Report $jobCardReportId not found") }
         try {
             jobCardReportsRepository.delete(report)
+            webSocketHandler.broadcastUpdate("DELETE_JOB_CARD_REPORT", report!!.jobCardId!!)
             return ResponseEntity("Job Card Report deleted", HttpStatus.OK)
         } catch (e: EntityNotFoundException) {
             throw (EntityNotFoundException(""))

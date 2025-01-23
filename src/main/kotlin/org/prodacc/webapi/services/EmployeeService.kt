@@ -9,6 +9,7 @@ import org.prodacc.webapi.repositories.JobCardTechniciansRepository
 import org.prodacc.webapi.services.dataTransferObjects.JobCardWithIdAndName
 import org.prodacc.webapi.services.dataTransferObjects.NewEmployee
 import org.prodacc.webapi.services.dataTransferObjects.ResponseEmployeeWithJobCards
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,7 +21,8 @@ import java.util.*
 class EmployeeService(
     private val employeeRepository: EmployeeRepository,
     private val jobCardRepository: JobCardRepository,
-    private val jobCardTechniciansRepository: JobCardTechniciansRepository
+    private val jobCardTechniciansRepository: JobCardTechniciansRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(EmployeeService::class.java)
 
@@ -42,7 +44,9 @@ class EmployeeService(
     @Transactional
     fun createNewEmployee(employee: NewEmployee): ResponseEmployeeWithJobCards {
         logger.info("Creating new employee")
-        return employeeRepository.save(employee.toEmployee()).toEmployeeWithJobCardIdAndName()
+        val newEmployee = employeeRepository.save(employee.toEmployee()).toEmployeeWithJobCardIdAndName()
+        webSocketHandler.broadcastUpdate("NEW_EMPLOYEE", newEmployee.id)
+        return newEmployee
     }
 
 
@@ -59,7 +63,9 @@ class EmployeeService(
             phoneNumber = updatedEmployee.phoneNumber ?: existingEmployee.phoneNumber,
             homeAddress = updatedEmployee.homeAddress ?: existingEmployee.homeAddress
         )
-        return employeeRepository.save(updated).toEmployeeWithJobCardIdAndName()
+        val newEmployee = employeeRepository.save(updated).toEmployeeWithJobCardIdAndName()
+        webSocketHandler.broadcastUpdate("UPDATE_EMPLOYEE", newEmployee.id)
+        return newEmployee
     }
 
 
@@ -67,6 +73,7 @@ class EmployeeService(
     fun deleteEmployee(id: UUID): ResponseEntity<String> {
         return if (employeeRepository.existsById(id)) {
             employeeRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_EMPLOYEE", id)
             ResponseEntity("Employee deleted successfully", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("Employee with id $id not found")

@@ -6,6 +6,7 @@ import org.prodacc.webapi.repositories.ClientRepository
 import org.prodacc.webapi.repositories.VehicleRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewVehicle
 import org.prodacc.webapi.services.dataTransferObjects.ResponseVehicleWithClient
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,7 +17,8 @@ import java.util.*
 @Service
 class VehicleService(
     private val vehicleRepository: VehicleRepository,
-    private val clientRepository: ClientRepository
+    private val clientRepository: ClientRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(VehicleService::class.java)
 
@@ -41,7 +43,9 @@ class VehicleService(
         if (newVehicle.clientId == null) {
             throw EntityNotFoundException("Vehicle owner not input, INPUT VEHICLE OWNER")
         } else {
-            return vehicleRepository.save(newVehicle.toVehicle()).toVehicleWithClientIdAndName()
+            val responseVehicle = vehicleRepository.save(newVehicle.toVehicle()).toVehicleWithClientIdAndName()
+            webSocketHandler.broadcastUpdate("NEW_VEHICLE", responseVehicle.id!!)
+            return responseVehicle
         }
 
 
@@ -62,7 +66,9 @@ class VehicleService(
             chassisNumber = vehicle.chassisNumber?:existingVehicle.chassisNumber,
             clientReference = client?:existingVehicle.clientReference
         )
-        return vehicleRepository.save(updatedVehicle).toVehicleWithClientIdAndName()
+        val responseVehicle = vehicleRepository.save(updatedVehicle).toVehicleWithClientIdAndName()
+        webSocketHandler.broadcastUpdate("UPDATE_VEHICLE", responseVehicle.id!!)
+        return responseVehicle
 
     }
 
@@ -71,6 +77,7 @@ class VehicleService(
     fun deleteVehicle( id: UUID): ResponseEntity<String> {
         return if (vehicleRepository.existsById(id)) {
             vehicleRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_VEHICLE", id)
             ResponseEntity("Vehicle deleted successfully", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("Vehicle with id $id not found")

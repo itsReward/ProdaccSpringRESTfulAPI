@@ -6,7 +6,7 @@ import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.JobCardStatusRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewJobCardStatusEntry
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardStatus
-import org.slf4j.LoggerFactory
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -14,9 +14,9 @@ import java.util.*
 @Service
 class JobCardStatusService(
     private val jobCardStatusRepository: JobCardStatusRepository,
-    private val jobCardRepository: JobCardRepository
+    private val jobCardRepository: JobCardRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
-    private val logger = LoggerFactory.getLogger(JobCardStatusService::class.java)
 
     @Transactional
     fun newJobCardStatus(newStatusEntry: NewJobCardStatusEntry): ResponseJobCardStatus {
@@ -26,7 +26,9 @@ class JobCardStatusService(
             status = newStatusEntry.status,
             createdAt = newStatusEntry.createdAt,
         )
-        return jobCardStatusRepository.save(jobCardStatusRepository.save(statusEntry)).toResponseJobCardStatus()
+        val responseStatusEntry = jobCardStatusRepository.save(jobCardStatusRepository.save(statusEntry)).toResponseJobCardStatus()
+        webSocketHandler.broadcastUpdate("NEW_JOB_CARD_STATUS", responseStatusEntry.jobId)
+        return responseStatusEntry
     }
 
     fun getAllJobCardStatusRecords(jobCardId: UUID): List<ResponseJobCardStatus> {

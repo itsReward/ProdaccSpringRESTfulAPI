@@ -7,6 +7,7 @@ import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.VehicleStateChecklistRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewVehicleStateChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseStateChecklist
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +19,8 @@ import java.util.*
 class StateChecklistService(
     private val vehicleStateChecklistRepository: VehicleStateChecklistRepository,
     private val jobCardRepository: JobCardRepository,
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(StateChecklistService::class.java.name)
 
@@ -56,7 +58,7 @@ class StateChecklistService(
                 .orElseThrow { EntityNotFoundException("Employee with id: $it not found") }
         } ?: throw IllegalArgumentException("Employee can not be null")
 
-        return vehicleStateChecklistRepository.save(
+        val responseStateChecklist = vehicleStateChecklistRepository.save(
             VehicleStateChecklist(
                 jobCard = jobCard,
                 technician = technician,
@@ -68,6 +70,8 @@ class StateChecklistService(
                 created = newStateChecklist.created
             )
         ).toResponseStateChecklist()
+        webSocketHandler.broadcastUpdate("NEW_STATE_CHECKLIST", responseStateChecklist.id!!)
+        return responseStateChecklist
     }
 
     @Transactional
@@ -94,7 +98,9 @@ class StateChecklistService(
             created = newStateChecklist.created ?: oldChecklist.created
         )
 
-        return vehicleStateChecklistRepository.save(newChecklist).toResponseStateChecklist()
+        val responseChecklist = vehicleStateChecklistRepository.save(newChecklist).toResponseStateChecklist()
+        webSocketHandler.broadcastUpdate("UPDATE_STATE_CHECKLIST", responseChecklist.id!!)
+        return responseChecklist
     }
 
     @Transactional
@@ -102,6 +108,7 @@ class StateChecklistService(
         logger.info("Deleting state checklist with id: $id")
         return if (vehicleStateChecklistRepository.existsById(id)) {
             vehicleStateChecklistRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_STATE_CHECKLIST", id)
             ResponseEntity("State Checklist deleted successfully", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("State checklist with id: $id does not exist")

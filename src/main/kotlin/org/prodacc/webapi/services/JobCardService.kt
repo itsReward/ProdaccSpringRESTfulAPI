@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.socket.WebSocketHandler
 import java.util.*
 
 @Service
@@ -113,7 +112,7 @@ class JobCardService(
                 jobCardNumber = oldJobCard.jobCardNumber
             )
 
-            webSocketHandler.broadcastUpdate("UPDATE_JOB_CARD", jobCard.toViewJobCard())
+            webSocketHandler.broadcastUpdate("UPDATE_JOB_CARD", jobCard.jobId!!)
             return jobCardRepository.save(jobCard).toViewJobCard()
         } catch (e:Exception){
             logger.error(e.message)

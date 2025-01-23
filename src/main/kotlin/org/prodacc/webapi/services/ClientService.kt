@@ -6,6 +6,7 @@ import org.prodacc.webapi.repositories.ClientRepository
 import org.prodacc.webapi.repositories.VehicleRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewClient
 import org.prodacc.webapi.services.dataTransferObjects.ResponseClientWithVehicles
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,9 +15,10 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
-class ClientService (
+class ClientService(
     private val clientRepository: ClientRepository,
-    private val vehicleRepository: VehicleRepository
+    private val vehicleRepository: VehicleRepository,
+    private val webSocketHandler: WebSocketHandler
 )
 {
     private val logger = LoggerFactory.getLogger(ClientService::class.java)
@@ -59,7 +61,11 @@ class ClientService (
             logger.error(e.message)
             throw NullPointerException("client name, surname, gender and phone cannot be null!")
         }
-        return clientRepository.save( newClient ).toClientWithVehicleNameAndId()
+
+        val clientResponse = clientRepository.save( newClient ).toClientWithVehicleNameAndId()
+
+        webSocketHandler.broadcastUpdate("NEW_CLIENT", clientResponse.id!!)
+        return clientResponse
     }
 
     @Transactional
@@ -77,7 +83,9 @@ class ClientService (
                 email = updatedClient.email?: existingClient.email,
                 address = updatedClient.address?: existingClient.address
             )
-            return clientRepository.save(updated).toClientWithVehicleNameAndId()
+            val newClient = clientRepository.save(updated).toClientWithVehicleNameAndId()
+            webSocketHandler.broadcastUpdate("UPDATE_CLIENT", newClient.id!!)
+            return newClient
         }catch (e: Exception){
             logger.error(e.message)
             when (e){
@@ -94,6 +102,7 @@ class ClientService (
         try {
             return if (clientRepository.existsById(id)) {
                 clientRepository.deleteById(id)
+                webSocketHandler.broadcastUpdate("DELETE_CLIENT", id)
                 ResponseEntity("Client deleted successfully", HttpStatus.OK)
             } else {
                 throw EntityNotFoundException("Client with id: $id not found")

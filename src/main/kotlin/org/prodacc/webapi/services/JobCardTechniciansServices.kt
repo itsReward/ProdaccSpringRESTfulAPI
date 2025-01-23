@@ -8,6 +8,7 @@ import org.prodacc.webapi.repositories.JobCardTechniciansRepository
 import org.prodacc.webapi.services.dataTransferObjects.DeleteTechnician
 import org.prodacc.webapi.services.dataTransferObjects.NewJobCardTechnician
 import org.prodacc.webapi.services.dataTransferObjects.ResponseJobCardTechnicians
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ class JobCardTechniciansServices(
     private val jobCardTechniciansRepository: JobCardTechniciansRepository,
     private val employeeRepository: EmployeeRepository,
     private val jobCardRepository: JobCardRepository,
+    private val webSocketHandler: WebSocketHandler,
 ) {
     fun getAllEntries(): List<ResponseJobCardTechnicians> {
         return jobCardTechniciansRepository.findAll().map { it.toResponseJobCardTechnicians() }
@@ -30,7 +32,10 @@ class JobCardTechniciansServices(
             .orElseThrow { EntityNotFoundException("Technician with id ${newJobCardTechnician.technicianId} Not Found") }
         val jobCard = jobCardRepository.findById(newJobCardTechnician.jobCardId)
             .orElseThrow { EntityNotFoundException("Job Card with id ${newJobCardTechnician.jobCardId} Not Found") }
-        return jobCardTechniciansRepository.save(JobCardTechnicians(jobCard, technician)).toResponseJobCardTechnicians()
+
+        val jobCardTechnician = jobCardTechniciansRepository.save(JobCardTechnicians(jobCard, technician)).toResponseJobCardTechnicians()
+        webSocketHandler.broadcastUpdate("NEW_JOB_CARD_TECHNICIAN", jobCard.jobId!!)
+        return jobCardTechnician
     }
 
     fun getJobCardTechniciansByJobCardId(jobCardId: UUID): List<UUID?> {
@@ -71,6 +76,7 @@ class JobCardTechniciansServices(
             jobCardTechniciansRepository.getJobCardTechniciansByEmployeeIdAndJobCardId(technician, jobCard)
         try {
             jobCardTechniciansRepository.delete(jobCardTechnicianRecord)
+            webSocketHandler.broadcastUpdate("DELETE_JOB_CARD_TECHNICIAN", jobCard.jobId!!)
             return ResponseEntity("Technician Removed", HttpStatus.OK)
         } catch (_: EntityNotFoundException) {
             return ResponseEntity("Technician Record Not Found", HttpStatus.NOT_FOUND)

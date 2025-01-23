@@ -7,6 +7,7 @@ import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.repositories.TimesheetRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewTimesheet
 import org.prodacc.webapi.services.dataTransferObjects.ResponseTimesheetWithJobCard
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +20,8 @@ import java.util.*
 class TimeSheetService(
     private val timesheetRepository: TimesheetRepository,
     private val jobCardRepository: JobCardRepository,
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(TimeSheetService::class.java)
 
@@ -58,8 +60,9 @@ class TimeSheetService(
             sheetTitle = newTimesheet.sheetTitle,
             report = newTimesheet.report
         )
-
-        return timesheetRepository.save(timesheet).toTimeSheetWithJobCardIdAndName()
+        val responseTimesheet = timesheetRepository.save(timesheet).toTimeSheetWithJobCardIdAndName()
+        webSocketHandler.broadcastUpdate("NEW_TIMESHEET", responseTimesheet.id)
+        return responseTimesheet
     }
 
 
@@ -77,7 +80,9 @@ class TimeSheetService(
             clockOutDateAndTime = newTimesheet.clockOutDateAndTime,
             employee = technician?: oldTimesheet.employee
         )
-        return timesheetRepository.save(update).toTimeSheetWithJobCardIdAndName()
+        val responseTimesheet = timesheetRepository.save(update).toTimeSheetWithJobCardIdAndName()
+        webSocketHandler.broadcastUpdate("UPDATE_TIMESHEET", responseTimesheet.id)
+        return responseTimesheet
 
     }
 
@@ -88,6 +93,7 @@ class TimeSheetService(
         logger.info("deleting timesheet with id: $id")
         return if ( timesheetRepository.findById(id).isPresent ){
             timesheetRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_TIMESHEET", id)
             ResponseEntity("Timesheet has been deleted", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("Timesheet not found with id: $id")

@@ -7,6 +7,7 @@ import org.prodacc.webapi.repositories.EmployeeRepository
 import org.prodacc.webapi.repositories.JobCardRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewControlChecklist
 import org.prodacc.webapi.services.dataTransferObjects.ResponseControlChecklist
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,7 +19,8 @@ import java.util.*
 class ControlChecklistService(
     private val controlChecklistRepository: ControlChecklistRepository,
     private val jobCardRepository: JobCardRepository,
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val webSocketHandler: WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(ControlChecklistService::class.java)
 
@@ -57,7 +59,7 @@ class ControlChecklistService(
                 .orElseThrow { EntityNotFoundException("Employee not found with id: $it") }
         } ?: throw IllegalArgumentException("Employee can not be null")
 
-        return controlChecklistRepository.save(
+        val newControlChecklist = controlChecklistRepository.save(
             VehicleControlChecklist(
                 jobCard = jobCard,
                 technician = technician,
@@ -65,6 +67,8 @@ class ControlChecklistService(
                 checklist = checklist.checklist
             )
         ).toResponseControlChecklist()
+        webSocketHandler.broadcastUpdate("NEW_CONTROL_CHECKLIST", jobCard.jobId!!)
+        return newControlChecklist
     }
 
     @Transactional
@@ -86,6 +90,7 @@ class ControlChecklistService(
             created = checklist.created ?: oldChecklist.created,
             checklist = checklist.checklist ?: oldChecklist.checklist
         )
+        webSocketHandler.broadcastUpdate("UPDATE_CONTROL_CHECKLIST", jobCard!!.jobId!!)
         return controlChecklistRepository.save(updatedChecklist).toResponseControlChecklist()
     }
 
@@ -94,6 +99,7 @@ class ControlChecklistService(
         logger.info("Deleting checklist with id: $id")
         return if (controlChecklistRepository.existsById(id)) {
             controlChecklistRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_CONTROL_CHECKLIST", id)
             ResponseEntity("Control Checklist deleted successfully", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("Checklist not found with id: $id")

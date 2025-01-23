@@ -8,6 +8,7 @@ import org.prodacc.webapi.repositories.UserRepository
 import org.prodacc.webapi.services.dataTransferObjects.NewUser
 import org.prodacc.webapi.services.dataTransferObjects.ResponseUserWithEmployee
 import org.prodacc.webapi.services.dataTransferObjects.UpdateUser
+import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,6 +23,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val employeeRepository: EmployeeRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val webSocketHandler: WebSocketHandler,
 ) {
     private val log = LoggerFactory.getLogger(UserService::class.java)
 
@@ -84,7 +86,7 @@ class UserService(
         } else if (employee?.let { userRepository.findUserByEmployeeId(it).isPresent } == true) {
             throw EntityExistsException("User with employee id ${employee.employeeId} exists")
         } else {
-            userRepository.save(
+            val responseUser = userRepository.save(
                 User(
                     username = user.username,
                     password = passwordEncoder.encode(user.password) ,
@@ -93,7 +95,10 @@ class UserService(
                     employeeId = employee,
                 )
             )
+            webSocketHandler.broadcastUpdate("NEW_USER", responseUser.id!!)
+            responseUser
         }.toViewUserWithEmployee()
+
 
     }
 
@@ -111,8 +116,9 @@ class UserService(
             employeeId = employee ?: oldUser.employeeId,
         )
 
-
-        return userRepository.save(updatedUser).toViewUserWithEmployee()
+        val responseUser = userRepository.save(updatedUser).toViewUserWithEmployee()
+        webSocketHandler.broadcastUpdate("UPDATE_USER", responseUser.id)
+        return responseUser
     }
 
     @Transactional
@@ -120,6 +126,7 @@ class UserService(
         log.info("deleting user with id: $id")
         return if (userRepository.existsById(id)) {
             userRepository.deleteById(id)
+            webSocketHandler.broadcastUpdate("DELETE_USER", id)
             ResponseEntity("User deleted", HttpStatus.OK)
         } else {
             throw EntityNotFoundException("User with id: $id not found")
