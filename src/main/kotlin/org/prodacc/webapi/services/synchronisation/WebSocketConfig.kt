@@ -1,5 +1,7 @@
 package org.prodacc.webapi.services.synchronisation
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.prodacc.webapi.services.TokenService
 import org.slf4j.LoggerFactory
@@ -52,7 +54,21 @@ class WebSocketHandler : TextWebSocketHandler() {
             // Handle incoming messages
             val payload = message.payload
             logger.info("Received message: $payload from session: ${session.id}")
-            // Process the message as needed
+
+            if (payload == "ping") {
+                session.sendMessage(TextMessage("pong"))
+                return
+            }
+
+
+            // Process the payload
+            val objectMapper = ObjectMapper()
+            val webSocketUpdate = objectMapper.readValue(payload, WebSocketUpdate::class.java)
+            val updateType = webSocketUpdate.type
+            val entity = webSocketUpdate.data
+
+            // Call broadcastUpdate function
+            broadcastUpdate(updateType, entity)
         } catch (e: Exception) {
             logger.error("Error handling message from session ${session.id}", e)
         }
@@ -65,7 +81,7 @@ class WebSocketHandler : TextWebSocketHandler() {
 
     fun broadcastUpdate(updateType: String, entity: Any) {
         logger.info("broadcasting message: update type: $updateType, entity: $entity")
-        val update = WebSocketUpdate(updateType, entity)
+        val update = WebSocketUpdate(updateType, entity.toString())
         val json = ObjectMapper().writeValueAsString(update)
         logger.info(json)
 
@@ -73,6 +89,7 @@ class WebSocketHandler : TextWebSocketHandler() {
         sessions.values.forEach { session ->
             try {
                 session.sendMessage(TextMessage(json))
+                logger.info("Message sent to session ${session.id}")
             } catch (e: Exception) {
                 logger.error("Error sending message to session ${session.id}", e)
             }
@@ -81,10 +98,15 @@ class WebSocketHandler : TextWebSocketHandler() {
 }
 
 // Data class for WebSocket updates
-data class WebSocketUpdate(
+data class WebSocketUpdate (
+    @get:JsonProperty("type")
     val type: String,
-    val data: Any
-)
+    @get:JsonProperty("data")
+    val data: String
+) {
+    @JsonCreator
+    constructor() : this("", "")
+}
 
 class WebSocketAuthInterceptor(
     private val jwtAuthenticationHandler: JwtAuthenticationHandler
@@ -158,6 +180,7 @@ class JwtAuthenticationHandler(
             null
         }
     }
+
 }
 
 /*
