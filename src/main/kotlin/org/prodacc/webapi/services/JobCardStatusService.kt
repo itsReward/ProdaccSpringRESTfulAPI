@@ -27,7 +27,7 @@ class JobCardStatusService(
             createdAt = newStatusEntry.createdAt,
         )
         val responseStatusEntry = jobCardStatusRepository.save(jobCardStatusRepository.save(statusEntry)).toResponseJobCardStatus()
-        webSocketHandler.broadcastUpdate("NEW_JOB_CARD_STATUS", responseStatusEntry.jobId)
+        webSocketHandler.broadcastUpdate("JOB_CARD_STATUS_CHANGED", responseStatusEntry.jobId)
         return responseStatusEntry
     }
 
