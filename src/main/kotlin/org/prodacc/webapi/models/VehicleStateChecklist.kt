@@ -16,8 +16,7 @@ data class VehicleStateChecklist (
     @Column(name = "id", nullable = false)
     var id: UUID? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "job_card_id", nullable = false)
     var jobCard: JobCard? = null,
 

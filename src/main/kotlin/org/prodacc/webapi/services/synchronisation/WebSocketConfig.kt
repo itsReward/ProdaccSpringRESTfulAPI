@@ -183,15 +183,3 @@ class JwtAuthenticationHandler(
 
 }
 
-/*
-@Configuration
-class JacksonConfig {
-
-    @Bean
-    fun objectMapper(): ObjectMapper {
-        val objectMapper = ObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
-        return objectMapper
-    }
-}
-*/

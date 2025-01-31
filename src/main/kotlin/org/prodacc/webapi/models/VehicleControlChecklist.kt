@@ -17,7 +17,7 @@ data class VehicleControlChecklist (
     @Column(name = "id", nullable = false)
     var id: UUID? = null,
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "\"job_card_id\"", nullable = false)
     var jobCard: JobCard? = null,

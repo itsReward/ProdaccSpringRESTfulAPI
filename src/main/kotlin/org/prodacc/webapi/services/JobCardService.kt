@@ -135,9 +135,9 @@ class JobCardService(
 
             timesheetRepository.deleteTimesheetByJobCardUUID(jobCard)
 
-            vehicleStateRepository.deleteVehicleStateChecklistByJobCard(jobCard)
-            serviceChecklistRepository.deleteVehicleServiceChecklistByJobCardId(jobCard.jobId!!)
-            controlChecklistRepository.deleteVehicleControlChecklistByJobCard(jobCard)
+            vehicleStateRepository.deleteVehicleStateChecklistByJobCard_JobId(jobCard.jobId!!)
+            serviceChecklistRepository.deleteVehicleServiceChecklistByJobCard_JobId(jobCard.jobId!!)
+            controlChecklistRepository.deleteVehicleControlChecklistByJobCard_JobId(jobCard.jobId!!)
 
             // Delete any job card technician assignments
             jobCardTechniciansRepository.deleteJobCardTechniciansByJobCardId(jobCard)

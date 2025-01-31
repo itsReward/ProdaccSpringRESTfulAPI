@@ -70,27 +70,27 @@ data class JobCard(
     var technicians: List<JobCardTechnicians> = emptyList(),
 
     @ToStringExclude
-    @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var servicechecklists: VehicleServiceChecklist? = null,
+    @OneToMany(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var servicechecklists: MutableSet<VehicleServiceChecklist>? = null,
 
     @JsonIgnore
     @OneToMany(mappedBy = "jobCardUUID", cascade = [CascadeType.ALL], orphanRemoval = true)
     var timesheets: MutableSet<Timesheet> = mutableSetOf(),
 
     @JsonIgnore
-    @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var vehiclechecklists: VehicleStateChecklist? = null,
+    @OneToMany(mappedBy = "jobCard")
+    var vehiclechecklists: MutableSet<VehicleStateChecklist>? = null,
 
     @JsonIgnore
-    @OneToOne(mappedBy = "jobCard", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var vehiclecontrolchecklists: VehicleControlChecklist? = null,
+    @OneToMany(mappedBy = "jobCard")
+    var vehiclecontrolchecklists: MutableSet<VehicleControlChecklist>? = null,
 
     @JsonIgnore
-    @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "jobCardId")
     var statuses: MutableSet<JobCardStatus> = mutableSetOf(),
 
     @JsonIgnore
-    @OneToMany(mappedBy = "jobCardId", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "jobCardId")
     var reports: MutableSet<JobCardReports> = mutableSetOf(),
 
     @Version

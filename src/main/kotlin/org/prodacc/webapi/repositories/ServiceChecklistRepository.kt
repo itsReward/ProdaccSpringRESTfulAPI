@@ -18,4 +18,6 @@ interface ServiceChecklistRepository: CrudRepository<VehicleServiceChecklist, UU
     fun deleteVehicleServiceChecklistByJobCardId(@Param("jobCardId") jobCardId: UUID)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     override fun <S : VehicleServiceChecklist?> save(entity: S & Any): S & Any
+
+    fun deleteVehicleServiceChecklistByJobCard_JobId(jobCardJobId: UUID): Unit
 }
