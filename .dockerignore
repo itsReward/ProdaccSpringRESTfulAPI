@@ -1,0 +1,13 @@
+.git
+.gitignore
+.gradle
+.idea
+build
+!build/libs/*.jar
+*.md
+gradle
+test
+*.bat
+*.log
+documentation
+db/changelog

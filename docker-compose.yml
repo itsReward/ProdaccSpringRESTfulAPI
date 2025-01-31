@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_DATASOURCE=jdbc:postgresql://localhost:5432/jobkeepdb
+      - DB_USERNAME=dev
+      - DB_PASSWORD=development
+      - JWT_KEY=JVHABSJHDDHBJjhcswhdfiya47ufhsdjbhbdjfbabhBGFSKDJBG8Hbgfdsyuhgo87weygufdshjbvfjhbgseiugw78e4y7t89hgersbgsjfhdbyhcbguyfhguifsyhg738yrt87giudhgjsfdg78ey579ty3985yygeuyihgvfdshbghfuhvhbvyush87ges8rtgy8euyhbguy8s7ehguyidfhgyuisdfh87gey8t7serygfdgjhdbfgbdfuig8s7eyt93785938tyuurhegistu354hty354hi34htrhb34hgtr4ui3htruhg35b4tuy35htihubw3ug4t5ru345gbtug354vtu3ebtu3h5wgbtu345gbtuy53gtuh3bwu5g835htge8rythg8e75syt8yuh85tetgfer
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=jdbc:postgresql://localhost:5432/jobkeepdb
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
