@@ -45,9 +45,9 @@ class JobCardReportService(
             jobReport = updateJobCardReport.jobReport ?: oldReport.jobReport,
             typeOfReport = updateJobCardReport.reportType ?: oldReport.typeOfReport
         )
-        val reponse = jobCardReportsRepository.save(newReport).toResponseJobCardReport()
-        webSocketHandler.broadcastUpdate("UPDATE_JOB_CARD_REPORT", reponse.jobCardId)
-        return reponse
+        val response = jobCardReportsRepository.save(newReport).toResponseJobCardReport()
+        webSocketHandler.broadcastUpdate("UPDATE_JOB_CARD_REPORT", response.jobCardId)
+        return response
     }
 
     fun getJobCardsReports(jobCardId: UUID): List<ResponseJobCardReport> {

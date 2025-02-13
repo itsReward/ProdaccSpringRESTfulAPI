@@ -93,6 +93,10 @@ data class JobCard(
     @OneToMany(mappedBy = "jobCardId")
     var reports: MutableSet<JobCardReports> = mutableSetOf(),
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "jobCardId")
+    var comments: MutableSet<JobCardComments> = mutableSetOf(),
+
     @Version
     @Column(name = "version", nullable = false)
     var version: Long? = 0,

@@ -461,4 +461,29 @@
         />
     </changeSet>
 
+    <changeSet id="13" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="job_card_comments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="job_card_comments">
+            <column name="job_card_comment_id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="comment" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="employee_id" type="uuid">
+                <constraints nullable="false" foreignKeyName="fk_job_card_comments_employee" referencedTableName="employees" referencedColumnNames="employee_id"/>
+            </column>
+            <column name="job_id" type="uuid">
+                <constraints nullable="false" foreignKeyName="fk_job_card_comments_job_card" referencedTableName="jobcards" referencedColumnNames="job_id" />
+            </column>
+            <column name="version" type="bigint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
