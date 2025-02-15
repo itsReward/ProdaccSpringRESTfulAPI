@@ -38,3 +38,7 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### build files ###
+api-image.tar
+postgres-image.tar

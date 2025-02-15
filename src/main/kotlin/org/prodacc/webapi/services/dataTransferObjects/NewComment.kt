@@ -12,5 +12,6 @@ data class Comment(
     val commentId: UUID? = null,
     val jobCardId: UUID? = null,
     val employeeId: UUID? = null,
+    val employeeName: String? = null,
     val comment: String? = null
 )

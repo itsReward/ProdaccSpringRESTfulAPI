@@ -98,10 +98,14 @@ class CommentService(
     }
 
     fun JobCardComments.toComment(): Comment {
+        val employee = this.employee.let { employee ->
+            employeeRepository.findById(employee?.employeeId!!).orElseThrow { Exception("Employee not found.") }
+        }
         return Comment(
             commentId = this.jobCardCommentId,
             jobCardId = this.jobCardId?.jobId!!,
             employeeId = this.employee?.employeeId,
+            employeeName = "${employee.employeeName} ${employee.employeeSurname}",
             comment = this.comment
         )
     }
