@@ -25,4 +25,5 @@ class ResponseJobCard (
     var stateChecklistId: UUID? = null,
     var serviceChecklistId: UUID? = null,
     var controlChecklistId: UUID? = null,
+    var comments: List<UUID?> = listOf(),
 )

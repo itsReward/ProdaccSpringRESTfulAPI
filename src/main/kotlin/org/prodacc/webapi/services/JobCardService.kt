@@ -26,6 +26,7 @@ class JobCardService(
     private val jobCardStatusRepository: JobCardStatusRepository,
     private val jobCardReportsRepository: JobCardReportsRepository,
     private val jobCardTechniciansRepository: JobCardTechniciansRepository,
+    private val commentsRepository: CommentsRepository,
     private val webSocketHandler: org.prodacc.webapi.services.synchronisation.WebSocketHandler
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -146,6 +147,9 @@ class JobCardService(
             // Delete any job card statuses
             jobCardStatusRepository.deleteJobCardStatusesByJobCardId(jobCard)
 
+            //Delete any jobcards comments
+            commentsRepository.deleteJobCardCommentsByJobCardId(jobCard)
+
             // Finally delete the job card
             jobCardRepository.deleteById(jobCardId)
 
@@ -226,6 +230,8 @@ class JobCardService(
             vehicleStateRepository.findVehicleStateChecklistByJobCard(this).get().id
         } else null
 
+        val comments = commentsRepository.getCommentsByJobCardId(this).map { it.jobCardCommentId }
+
         return ResponseJobCard(
             id = this.jobId!!,
             jobCardName = this.jobCardName!!,
@@ -247,7 +253,8 @@ class JobCardService(
             dateAndTimeFrozen = this.dateAndTimeFrozen,
             dateAndTimeClosed = this.dateAndTimeClosed,
             estimatedTimeOfCompletion = this.estimatedTimeOfCompletion,
-            jobCardDeadline = this.jobCardDeadline
+            jobCardDeadline = this.jobCardDeadline,
+            comments = comments
         )
     }
 }

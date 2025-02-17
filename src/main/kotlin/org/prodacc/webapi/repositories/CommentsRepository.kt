@@ -13,4 +13,5 @@ interface CommentsRepository : CrudRepository<JobCardComments, UUID> {
     override fun <S : JobCardComments?> save(entity: S & Any): S & Any
 
     fun getCommentsByJobCardId(jobCardId: JobCard): List<JobCardComments>
+    fun deleteJobCardCommentsByJobCardId(jobCardId: JobCard)
 }
