@@ -42,3 +42,8 @@ out/
 ### build files ###
 api-image.tar
 postgres-image.tar
+postgres-image.tar
+*.tar
+.env
+api-image.tar
+postgres-image.tar
