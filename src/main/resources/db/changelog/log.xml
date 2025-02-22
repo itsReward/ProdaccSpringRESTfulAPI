@@ -486,4 +486,65 @@
             <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="14" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="spare_part_categories"/>
+            </not>
+        </preConditions>
+        <createTable tableName="spare_part_categories">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="categoryName" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="15" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="spare_part_vehicles"/>
+            </not>
+        </preConditions>
+        <createTable tableName="spare_part_vehicles">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="make" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="model" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="year" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="16" author="itsReward">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="product"/>
+            </not>
+        </preConditions>
+        <createTable tableName="product">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partNumber" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partName" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
