@@ -4,7 +4,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
 
-
     <changeSet id="1" author="itsReward">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -487,64 +486,179 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="14" author="itsReward">
+
+    <changeSet id="14" author="system">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="spare_part_categories"/>
+                <tableExists tableName="product_category"/>
             </not>
         </preConditions>
-        <createTable tableName="spare_part_categories">
-            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+
+        <createTable tableName="product_category">
+            <column name="id" type="uuid" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="categoryName" type="text">
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="15" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="product_vehicle"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="product_vehicle">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="make" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="model" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="year" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="15" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="spare_part_vehicles"/>
-            </not>
-        </preConditions>
-        <createTable tableName="spare_part_vehicles">
-            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="make" type="text">
-                <constraints nullable="false"/>
-            </column>
-            <column name="model" type="text">
-                <constraints nullable="false"/>
-            </column>
-            <column name="year" type="text">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="16" author="itsReward">
+    <changeSet id="16" author="system">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="product"/>
             </not>
         </preConditions>
+
         <createTable tableName="product">
-            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+            <column name="productId" type="uuid">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="partNumber" type="text">
+            <column name="partNumber" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="partName" type="text">
+            <column name="partName" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="category" type="text">
+            <column name="description" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="inStock" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="healthyNumber" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="arrivalPrice" type="float">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sellingPrice" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storageLocation" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
+    <!-- Junction tables for many-to-many relationships -->
+    <changeSet id="17" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="product_vehicle_reference"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="product_vehicle_reference">
+            <column name="product_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="vehicle_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                tableName="product_vehicle_reference"
+                columnNames="product_id, vehicle_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="product_vehicle_reference"
+                baseColumnNames="product_id"
+                constraintName="fk_pvr_product"
+                referencedTableName="product"
+                referencedColumnNames="productId"/>
+
+        <addForeignKeyConstraint
+                baseTableName="product_vehicle_reference"
+                baseColumnNames="vehicle_id"
+                constraintName="fk_pvr_vehicle"
+                referencedTableName="product_vehicle"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+
+    <changeSet id="18" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="product_category_reference"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="product_category_reference">
+            <column name="product_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                tableName="product_category_reference"
+                columnNames="product_id, category_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="product_category_reference"
+                baseColumnNames="product_id"
+                constraintName="fk_pcr_product"
+                referencedTableName="product"
+                referencedColumnNames="productId"/>
+
+        <addForeignKeyConstraint
+                baseTableName="product_category_reference"
+                baseColumnNames="category_id"
+                constraintName="fk_pcr_category"
+                referencedTableName="product_category"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- Add indexes for better query performance -->
+    <changeSet id="19" author="system">
+        <createIndex indexName="idx_product_part_number"
+                     tableName="product">
+            <column name="partNumber"/>
+        </createIndex>
+
+        <createIndex indexName="idx_product_vehicle_make_model"
+                     tableName="product_vehicle">
+            <column name="make"/>
+            <column name="model"/>
+        </createIndex>
+
+        <createIndex indexName="idx_product_category_name"
+                     tableName="product_category">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
