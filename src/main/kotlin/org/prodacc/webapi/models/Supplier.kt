@@ -2,7 +2,6 @@ package org.prodacc.webapi.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
-import org.prodacc.webapi.models.products.Product
 import java.time.LocalDateTime
 import java.util.*
 

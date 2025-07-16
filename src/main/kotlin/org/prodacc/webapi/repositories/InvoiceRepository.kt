@@ -204,19 +204,19 @@ interface InvoiceRepository : JpaRepository<Invoice, UUID>, JpaSpecificationExec
 
     @Query("SELECT " +
             "SUM(CASE WHEN i.dueDate IS NULL OR i.dueDate >= CURRENT_DATE THEN i.balanceDue ELSE 0 END) as current, " +
-            "SUM(CASE WHEN i.dueDate < CURRENT_DATE AND DATEDIFF(CURRENT_DATE, i.dueDate) BETWEEN 1 AND 30 THEN i.balanceDue ELSE 0 END) as days1to30, " +
-            "SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.dueDate) BETWEEN 31 AND 60 THEN i.balanceDue ELSE 0 END) as days31to60, " +
-            "SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.dueDate) BETWEEN 61 AND 90 THEN i.balanceDue ELSE 0 END) as days61to90, " +
-            "SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.dueDate) > 90 THEN i.balanceDue ELSE 0 END) as days90plus " +
+            "SUM(CASE WHEN i.dueDate < CURRENT_DATE AND TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) BETWEEN 1 AND 30 THEN i.balanceDue ELSE 0 END) as days1to30, " +
+            "SUM(CASE WHEN TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) BETWEEN 31 AND 60 THEN i.balanceDue ELSE 0 END) as days31to60, " +
+            "SUM(CASE WHEN TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) BETWEEN 61 AND 90 THEN i.balanceDue ELSE 0 END) as days61to90, " +
+            "SUM(CASE WHEN TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) > 90 THEN i.balanceDue ELSE 0 END) as days90plus " +
             "FROM Invoice i WHERE i.status IN ('SENT', 'PARTIALLY_PAID', 'OVERDUE')")
     fun getAgingAnalysis(): List<Array<Any>>
 
     @Query("SELECT i.client, " +
             "SUM(CASE WHEN i.dueDate IS NULL OR i.dueDate >= CURRENT_DATE THEN i.balanceDue ELSE 0 END) as current, " +
             "SUM(CASE WHEN i.dueDate < CURRENT_DATE AND DATEDIFF(CURRENT_DATE, i.dueDate) BETWEEN 1 AND 30 THEN i.balanceDue ELSE 0 END) as days1to30, " +
-            "SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.dueDate) BETWEEN 31 AND 60 THEN i.balanceDue ELSE 0 END) as days31to60, " +
-            "SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.dueDate) BETWEEN 61 AND 90 THEN i.balanceDue ELSE 0 END) as days61to90, " +
-            "SUM(CASE WHEN DATEDIFF(CURRENT_DATE, i.dueDate) > 90 THEN i.balanceDue ELSE 0 END) as days90plus " +
+            "SUM(CASE WHEN TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) BETWEEN 31 AND 60 THEN i.balanceDue ELSE 0 END) as days31to60, " +
+            "SUM(CASE WHEN TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) BETWEEN 61 AND 90 THEN i.balanceDue ELSE 0 END) as days61to90, " +
+            "SUM(CASE WHEN TIMESTAMPDIFF(DAY, i.dueDate, CURRENT_DATE) > 90 THEN i.balanceDue ELSE 0 END) as days90plus " +
             "FROM Invoice i WHERE i.status IN ('SENT', 'PARTIALLY_PAID', 'OVERDUE') " +
             "GROUP BY i.client HAVING (current + days1to30 + days31to60 + days61to90 + days90plus) > 0 " +
             "ORDER BY (current + days1to30 + days31to60 + days61to90 + days90plus) DESC")

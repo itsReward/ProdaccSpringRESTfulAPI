@@ -1,7 +1,6 @@
 package org.prodacc.webapi.controllers
 
 import jakarta.persistence.EntityNotFoundException
-import org.prodacc.webapi.models.products.Product
 import org.prodacc.webapi.services.ProductService
 import org.prodacc.webapi.services.dataTransferObjects.*
 import org.springframework.http.HttpStatus

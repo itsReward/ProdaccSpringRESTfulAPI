@@ -12,7 +12,6 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.ColumnDefault
-import org.prodacc.webapi.models.products.Product
 import java.time.LocalDateTime
 import java.util.UUID
 
