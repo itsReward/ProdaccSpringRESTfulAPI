@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.*
 
+@Deprecated("Use the latest ProductCategoryRepository")
 interface ProductCategoryRepository: JpaRepository<ProductCategory, UUID> {
     fun findByName(name: String): Optional<ProductCategory>
 

@@ -1,243 +1,177 @@
 package org.prodacc.webapi.services
 
 import jakarta.persistence.EntityNotFoundException
-import org.prodacc.webapi.models.products.*
-import org.prodacc.webapi.repositories.products.ProductCategoryRepository
-import org.prodacc.webapi.repositories.products.ProductRepository
-import org.prodacc.webapi.repositories.products.ProductVehicleRepository
-import org.prodacc.webapi.services.dataTransferObjects.CreateProductCategoryDto
+import org.prodacc.webapi.models.Product
+import org.prodacc.webapi.models.ProductCategory
+import org.prodacc.webapi.models.TransactionType
+import org.prodacc.webapi.repositories.ProductCategoryRepository
+import org.prodacc.webapi.repositories.ProductRepository
+import org.prodacc.webapi.repositories.SupplierRepository
+import org.prodacc.webapi.services.dataTransferObjects.CreateInventoryTransactionDto
 import org.prodacc.webapi.services.dataTransferObjects.CreateProductDto
-import org.prodacc.webapi.services.dataTransferObjects.CreateProductVehicleDto
-import org.prodacc.webapi.services.dataTransferObjects.toEntity
+import org.prodacc.webapi.services.dataTransferObjects.ProductResponseDto
+import org.prodacc.webapi.services.dataTransferObjects.toDto
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 class ProductService(
     private val productRepository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
-    private val productVehicleRepository: ProductVehicleRepository
+    private val supplierRepository: SupplierRepository,
+    private val inventoryTransactionService: InventoryTransactionService
 ) {
     private val logger = LoggerFactory.getLogger(ProductService::class.java)
 
-    // Product operations
-    fun getProductById(id: UUID): Product {
-        logger.info("fetching product with id $id")
-        return productRepository.findById(id)
-            .orElseThrow { EntityNotFoundException("Product not found with id: $id") }
+    fun getAllProducts(): List<ProductResponseDto> {
+        logger.info("Fetching all active products")
+        return productRepository.findByIsActiveTrue().map { it.toDto() }
     }
 
-    fun getProductWithRelationships(id: UUID): Product {
-        logger.info("get product with id $id and relationships")
-        return productRepository.findByIdWithRelationships(id)
-            .orElseThrow { EntityNotFoundException("Product not found with id: $id") }
+    fun getProductById(id: UUID): ProductResponseDto {
+        logger.info("Fetching product with ID: $id")
+        val product = productRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Product not found with ID: $id") }
+        return product.toDto()
     }
 
-    fun getAllProducts(): List<Product> {
-        logger.info("fetching all products")
-        return productRepository.findAll()
+    fun getProductWithRelationships(id: UUID): ProductResponseDto {
+        logger.info("Fetching product with relationships for ID: $id")
+        val product = productRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Product not found with ID: $id") }
+        return product.toDto()
     }
 
-    fun getProductsByCategoryId(categoryId: UUID): List<Product> {
-        logger.info("fetching products by category id $categoryId")
-        return productRepository.findProductsByCategoryId(categoryId)
-    }
+    fun createProduct(createDto: CreateProductDto): ProductResponseDto {
+        logger.info("Creating new product: ${createDto.productName}")
 
-    @Transactional
-    fun createProduct(createProductDto: CreateProductDto): Product {
-        logger.info("creating new product")
-        return productRepository.save(createProductDto.toEntity())
-    }
-
-    @Transactional
-    fun updateProduct(id: UUID, createProductDto: CreateProductDto): Product {
-        logger.info("Updating existing product with id $id")
-        val existingProduct = getProductById(id)
-        val updatedProduct = createProductDto.toEntity().copy(
-            id = existingProduct.id,
-            version = existingProduct.version,
-            productCategory = existingProduct.productCategory,
-            productVehicle = existingProduct.productVehicle
-        )
-        return productRepository.save(updatedProduct)
-    }
-
-    @Transactional
-    fun deleteProduct(id: UUID) {
-        logger.info("deleting product with id $id")
-        if (!productRepository.existsById(id)) {
-            throw EntityNotFoundException("Product not found with id: $id")
+        if (productRepository.existsByProductCodeIgnoreCase(createDto.productCode)) {
+            throw IllegalArgumentException("Product with code '${createDto.productCode}' already exists")
         }
-        productRepository.deleteById(id)
-    }
 
-    // Category operations
-    fun getAllCategories(): List<ProductCategory> {
-        logger.info("fetching categories")
-        return productCategoryRepository.findAll()
-    }
-
-    fun getAllCategoriesWithProducts(): List<ProductCategory> {
-        logger.info("fetching categories with products")
-        return productCategoryRepository.findAllWithProducts()
-    }
-
-    fun getCategoryById(id: UUID): ProductCategory {
-        logger.info("fetching category with id $id")
-        return productCategoryRepository.findById(id)
-            .orElseThrow { EntityNotFoundException("Category not found with id: $id") }
-    }
-
-    fun getCategoryWithProducts(id: UUID): ProductCategory {
-        logger.info("fetching category with id $id and products")
-        return productCategoryRepository.findByIdWithProducts(id)
-            .orElseThrow { EntityNotFoundException("Category not found with id: $id") }
-    }
-
-    @Transactional
-    fun createCategory(createCategoryDto: CreateProductCategoryDto): ProductCategory {
-        logger.info("creating product")
-        return productCategoryRepository.save(createCategoryDto.toEntity())
-    }
-
-    @Transactional
-    fun updateCategory(id: UUID, createCategoryDto: CreateProductCategoryDto): ProductCategory {
-        logger.info("Updating product with id $id")
-        val existingCategory = getCategoryById(id)
-        val updatedCategory = createCategoryDto.toEntity().copy(
-            id = existingCategory.id,
-            productReference = existingCategory.productReference
-        )
-        return productCategoryRepository.save(updatedCategory)
-    }
-
-    @Transactional
-    fun deleteCategory(id: UUID) {
-        logger.info("deleting category with id $id")
-        if (!productCategoryRepository.existsById(id)) {
-            throw EntityNotFoundException("Category not found with id: $id")
+        val category = createDto.categoryId?.let {
+            productCategoryRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Product category not found with ID: $it") }
         }
-        productCategoryRepository.deleteById(id)
-    }
 
-    // Vehicle operations
-    fun getAllVehicles(): List<ProductVehicle> {
-        logger.info("fetching all vehicles")
-        return productVehicleRepository.findAll()
-    }
-
-    fun getAllVehiclesWithProducts(): List<ProductVehicle> {
-        logger.info("fetching all vehicles with products")
-        return productVehicleRepository.findAllWithProducts()
-    }
-
-    fun getVehicleById(id: UUID): ProductVehicle {
-        logger.info("fetching vehicle with id $id")
-        return productVehicleRepository.findById(id)
-            .orElseThrow { EntityNotFoundException("Vehicle not found with id: $id") }
-    }
-
-    fun getVehicleWithProducts(id: UUID): ProductVehicle {
-        logger.info("fetching vehicle with id $id and products")
-        return productVehicleRepository.findByIdWithProducts(id)
-            .orElseThrow { EntityNotFoundException("Vehicle not found with id: $id") }
-    }
-
-    fun getVehiclesByMakeAndModel(make: String, model: String): List<ProductVehicle> {
-        logger.info("Get Vehicles with their models")
-        return productVehicleRepository.findByMakeAndModel(make, model)
-    }
-
-    fun getProductsByVehicleId(vehicleId: UUID): List<Product> {
-        logger.info("getting products by vehicle id $vehicleId")
-        return productRepository.findProductsByVehicleId(vehicleId)
-    }
-
-    @Transactional
-    fun createVehicle(createVehicleDto: CreateProductVehicleDto): ProductVehicle {
-        logger.info("create vehicle")
-        return productVehicleRepository.save(createVehicleDto.toEntity())
-    }
-
-    @Transactional
-    fun updateVehicle(id: UUID, createVehicleDto: CreateProductVehicleDto): ProductVehicle {
-        logger.info("Updating vehicle with id $id")
-        val existingVehicle = getVehicleById(id)
-        val updatedVehicle = createVehicleDto.toEntity().copy(
-            id = existingVehicle.id,
-            productReference = existingVehicle.productReference
-        )
-        return productVehicleRepository.save(updatedVehicle)
-    }
-
-    @Transactional
-    fun deleteVehicle(id: UUID) {
-        logger.info("deleting vehicle with id $id")
-        if (!productVehicleRepository.existsById(id)) {
-            throw EntityNotFoundException("Vehicle not found with id: $id")
+        val supplier = createDto.supplierId?.let {
+            supplierRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Supplier not found with ID: $it") }
         }
-        productVehicleRepository.deleteById(id)
+
+        val product = Product(
+            productCode = createDto.productCode,
+            productName = createDto.productName,
+            description = createDto.description,
+            category = category,
+            brand = createDto.brand,
+            unitOfMeasure = createDto.unitOfMeasure,
+            minimumStock = createDto.minimumStock,
+            maximumStock = createDto.maximumStock,
+            costPrice = createDto.costPrice,
+            sellingPrice = createDto.sellingPrice,
+            markupPercentage = createDto.markupPercentage,
+            supplier = supplier
+        )
+
+        val savedProduct = productRepository.save(product)
+        logger.info("Successfully created product with ID: ${savedProduct.productId}")
+
+        return savedProduct.toDto()
     }
 
-    // Relationship management
-    @Transactional
-    fun addCategoryToProduct(productId: UUID, categoryId: UUID) {
-        logger.info("Adding category to product")
+    fun updateProduct(id: UUID, updateDto: CreateProductDto): ProductResponseDto {
+        logger.info("Updating product with ID: $id")
+
+        val existingProduct = productRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Product not found with ID: $id") }
+
+        val category = updateDto.categoryId?.let {
+            productCategoryRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Product category not found with ID: $it") }
+        }
+
+        val supplier = updateDto.supplierId?.let {
+            supplierRepository.findById(it)
+                .orElseThrow { EntityNotFoundException("Supplier not found with ID: $it") }
+        }
+
+        val updatedProduct = existingProduct.copy(
+            productCode = updateDto.productCode,
+            productName = updateDto.productName,
+            description = updateDto.description,
+            category = category ,
+            brand = updateDto.brand,
+            unitOfMeasure = updateDto.unitOfMeasure,
+            minimumStock = updateDto.minimumStock,
+            maximumStock = updateDto.maximumStock,
+            costPrice = updateDto.costPrice,
+            sellingPrice = updateDto.sellingPrice,
+            markupPercentage = updateDto.markupPercentage,
+            supplier = supplier,
+            updatedAt = LocalDateTime.now()
+        )
+
+        val savedProduct = productRepository.save(updatedProduct)
+        logger.info("Successfully updated product with ID: $id")
+
+        return savedProduct.toDto()
+    }
+
+    fun deleteProduct(id: UUID): String {
+        logger.info("Deleting product with ID: $id")
+
+        val product = productRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Product not found with ID: $id") }
+
+        // Soft delete by setting isActive to false
+        val deactivatedProduct = product.copy(isActive = false, updatedAt = LocalDateTime.now())
+        productRepository.save(deactivatedProduct)
+
+        logger.info("Successfully deactivated product with ID: $id")
+        return "Product successfully deactivated"
+    }
+
+    fun getLowStockProducts(): List<ProductResponseDto> {
+        logger.info("Fetching low stock products")
+        return productRepository.findLowStockProducts().map { it.toDto() }
+    }
+
+    fun getProductsForVehicle(make: String, model: String?): List<ProductResponseDto> {
+        logger.info("Fetching products for vehicle: $make $model")
+        return productRepository.findProductsForVehicle(make, model).map { it.toDto() }
+    }
+
+    fun updateStock(productId: UUID, newStock: Int, reason: String): ProductResponseDto {
+        logger.info("Updating stock for product ID: $productId to $newStock")
+
         val product = productRepository.findById(productId)
-            .orElseThrow { EntityNotFoundException("Product not found with id: $productId") }
+            .orElseThrow { EntityNotFoundException("Product not found with ID: $productId") }
 
-        val category = productCategoryRepository.findById(categoryId)
-            .orElseThrow { EntityNotFoundException("Category not found with id: $categoryId") }
+        val stockDifference = newStock - product.currentStock
 
-        // Check if relationship already exists
-        if (product.productCategory.none { it.categoryId.id == categoryId }) {
-            val reference = ProductCategoryReference(
-                productId = product,
-                categoryId = category
-            )
-            product.productCategory.add(reference)
-            productRepository.save(product)
-        }
-    }
+        // Update product stock
+        val updatedProduct = product.copy(
+            currentStock = newStock,
+            updatedAt = LocalDateTime.now()
+        )
+        val savedProduct = productRepository.save(updatedProduct)
 
-    @Transactional
-    fun removeCategoryFromProduct(productId: UUID, categoryId: UUID) {
-        logger.info("Removing category from product")
-        val product = getProductById(productId)
-        val category = getCategoryById(categoryId)
-        product.removeCategory(category)
-        productRepository.save(product)
-    }
+        // Create inventory transaction
+        val transactionDto = CreateInventoryTransactionDto(
+            productId = productId,
+            transactionType = if (stockDifference >= 0) TransactionType.ADJUSTMENT else TransactionType.ADJUSTMENT,
+            quantity = stockDifference,
+            notes = reason,
+            referenceType = "MANUAL_ADJUSTMENT"
+        )
+        inventoryTransactionService.createTransaction(transactionDto)
 
-    @Transactional
-    fun addVehicleToProduct(productId: UUID, vehicleId: UUID) {
-        logger.info("Adding a vehicle to a product")
-        val product = productRepository.findById(productId)
-            .orElseThrow { EntityNotFoundException("Product not found with id: $productId") }
-
-        val vehicle = productVehicleRepository.findById(vehicleId)
-            .orElseThrow { EntityNotFoundException("Vehicle not found with id: $vehicleId") }
-
-        // Check if relationship already exists
-        if (product.productVehicle.none { it.vehicleId.id == vehicleId }) {
-            val reference = ProductVehicleReference(
-                productId = product,
-                vehicleId = vehicle
-            )
-            product.productVehicle.add(reference)
-            productRepository.save(product)
-        }
-    }
-
-    @Transactional
-    fun removeVehicleFromProduct(productId: UUID, vehicleId: UUID) {
-        logger.info("Removing vehicle from product")
-        val product = getProductById(productId)
-        val vehicle = getVehicleById(vehicleId)
-        product.removeVehicle(vehicle)
-        productRepository.save(product)
+        logger.info("Successfully updated stock for product ID: $productId")
+        return savedProduct.toDto()
     }
 }

@@ -3,6 +3,7 @@ package org.prodacc.webapi.models.products
 import jakarta.persistence.*
 import java.util.*
 
+@Deprecated("Use the latest product entity")
 @Entity
 @Table(name = "product")
 data class Product(

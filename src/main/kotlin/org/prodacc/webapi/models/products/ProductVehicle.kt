@@ -1,8 +1,10 @@
 package org.prodacc.webapi.models.products
 
 import jakarta.persistence.*
+import org.prodacc.webapi.models.ProductVehicle
 import java.util.*
 
+@Deprecated(message = "this version of Product Vehicle is deprecated", replaceWith = ReplaceWith("org.prodacc.webapi.models.ProductVehicle"))
 @Entity
 @Table(name = "product_vehicle")
 data class ProductVehicle (

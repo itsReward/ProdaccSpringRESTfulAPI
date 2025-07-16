@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Query
 import java.util.*
 
+@Deprecated("Repo deprecated use recent one")
 interface ProductRepository: JpaRepository<Product, UUID> {
     override fun findById(id: UUID): Optional<Product>
 

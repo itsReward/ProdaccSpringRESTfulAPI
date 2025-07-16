@@ -9,18 +9,21 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
+@CrossOrigin(origins = ["*"])
 class ProductController(
     private val productService: ProductService
 ) {
 
-    // Product CRUD Operations
+    @GetMapping("/all")
+    fun getAllProducts(): ResponseEntity<List<ProductResponseDto>> =
+        ResponseEntity.ok(productService.getAllProducts())
+
     @GetMapping("/{id}")
     fun getProduct(@PathVariable id: UUID): ResponseEntity<ProductResponseDto> =
         try {
-            ResponseEntity.ok(productService.getProductById(id).toDto())
+            ResponseEntity.ok(productService.getProductById(id))
         } catch (e: EntityNotFoundException) {
             ResponseEntity.notFound().build()
         }
@@ -28,214 +31,61 @@ class ProductController(
     @GetMapping("/{id}/full")
     fun getProductWithRelationships(@PathVariable id: UUID): ResponseEntity<ProductResponseDto> =
         try {
-            ResponseEntity.ok(productService.getProductWithRelationships(id).toDto())
+            ResponseEntity.ok(productService.getProductWithRelationships(id))
         } catch (e: EntityNotFoundException) {
             ResponseEntity.notFound().build()
         }
 
-    @GetMapping
-    fun getAllProducts(): ResponseEntity<List<ProductResponseDto>> =
-        ResponseEntity.ok(productService.getAllProducts().map { it.toDto() })
-
     @PostMapping("/new")
-    fun createProduct(@RequestBody product: CreateProductDto): ResponseEntity<ProductResponseDto> =
-        ResponseEntity.status(HttpStatus.CREATED)
-            .body(productService.createProduct(product).toDto())
+    fun createProduct(@RequestBody createDto: CreateProductDto): ResponseEntity<ProductResponseDto> =
+        try {
+            ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(createDto))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().build()
+        } catch (e: EntityNotFoundException) {
+            ResponseEntity.badRequest().build()
+        }
 
     @PutMapping("/update/{id}")
     fun updateProduct(
         @PathVariable id: UUID,
-        @RequestBody product: CreateProductDto
-    ): ResponseEntity<ProductResponseDto> {
-        return try {
-            ResponseEntity.ok(productService.updateProduct(id, product).toDto())
+        @RequestBody updateDto: CreateProductDto
+    ): ResponseEntity<ProductResponseDto> =
+        try {
+            ResponseEntity.ok(productService.updateProduct(id, updateDto))
         } catch (e: EntityNotFoundException) {
             ResponseEntity.notFound().build()
         }
-    }
 
     @DeleteMapping("/delete/{id}")
-    fun deleteProduct(@PathVariable id: UUID): ResponseEntity<Unit> =
+    fun deleteProduct(@PathVariable id: UUID): ResponseEntity<String> =
         try {
-            productService.deleteProduct(id)
-            ResponseEntity.noContent().build()
+            ResponseEntity.ok(productService.deleteProduct(id))
         } catch (e: EntityNotFoundException) {
             ResponseEntity.notFound().build()
         }
 
-    // Category CRUD Operations
-    @GetMapping("/categories")
-    fun getAllCategories(): ResponseEntity<List<ProductCategoryResponseDto>> =
-        ResponseEntity.ok(productService.getAllCategories().map { it.toDto() })
+    @GetMapping("/low-stock")
+    fun getLowStockProducts(): ResponseEntity<List<ProductResponseDto>> =
+        ResponseEntity.ok(productService.getLowStockProducts())
 
-    @GetMapping("/categories/with-products")
-    fun getAllCategoriesWithProducts(): ResponseEntity<List<ProductCategoryWithProductsResponseDto>> =
-        ResponseEntity.ok(productService.getAllCategoriesWithProducts().map { it.toDtoWithProducts() })
-
-    @GetMapping("/categories/{categoryId}")
-    fun getCategoryById(@PathVariable categoryId: UUID): ResponseEntity<ProductCategoryResponseDto> =
-        try {
-            ResponseEntity.ok(productService.getCategoryById(categoryId).toDto())
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @PostMapping("/categories/new-category")
-    fun createCategory(@RequestBody category: CreateProductCategoryDto): ResponseEntity<ProductCategoryResponseDto> =
-        ResponseEntity.status(HttpStatus.CREATED)
-            .body(productService.createCategory(category).toDto())
-
-    @PutMapping("/categories/update-category/{categoryId}")
-    fun updateCategory(
-        @PathVariable categoryId: UUID,
-        @RequestBody category: CreateProductCategoryDto
-    ): ResponseEntity<ProductCategoryResponseDto> {
-        return try {
-            ResponseEntity.ok(productService.updateCategory(categoryId, category).toDto())
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-    }
-
-    @DeleteMapping("/categories/delete/{categoryId}")
-    fun deleteCategory(@PathVariable categoryId: UUID): ResponseEntity<Unit> =
-        try {
-            productService.deleteCategory(categoryId)
-            ResponseEntity.noContent().build()
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @GetMapping("/categories/{categoryId}/with-products")
-    fun getCategoryWithProducts(@PathVariable categoryId: UUID): ResponseEntity<ProductCategoryWithProductsResponseDto> =
-        try {
-            ResponseEntity.ok(productService.getCategoryWithProducts(categoryId).toDtoWithProducts())
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @GetMapping("/by-category/{categoryId}") //TODO: fix this
-    fun getProductsByCategory(@PathVariable categoryId: UUID): ResponseEntity<List<ProductResponseDto>> =
-        ResponseEntity.ok(productService.getProductsByCategoryId(categoryId).map { it.toDto() })
-
-    // Vehicle CRUD Operations
-    @GetMapping("/vehicles")
-    fun getAllVehicles(): ResponseEntity<List<ProductVehicleResponseDto>> =
-        ResponseEntity.ok(productService.getAllVehicles().map { it.toDto() })
-
-    @GetMapping("/vehicles/with-products")
-    fun getAllVehiclesWithProducts(): ResponseEntity<List<ProductVehicleWithProductsResponseDto>> =
-        ResponseEntity.ok(productService.getAllVehiclesWithProducts().map { it.toDtoWithProducts() })
-
-    @GetMapping("/vehicles/{vehicleId}")
-    fun getVehicleById(@PathVariable vehicleId: UUID): ResponseEntity<ProductVehicleResponseDto> =
-        try {
-            ResponseEntity.ok(productService.getVehicleById(vehicleId).toDto())
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @PostMapping("/vehicles/new-vehicle")
-    fun createVehicle(@RequestBody createVehicleDto: CreateProductVehicleDto): ResponseEntity<ProductVehicleResponseDto> =
-        ResponseEntity.status(HttpStatus.CREATED)
-            .body(productService.createVehicle(createVehicleDto).toDto())
-
-    @PutMapping("/vehicles/{vehicleId}")
-    fun updateVehicle(
-        @PathVariable vehicleId: UUID,
-        @RequestBody vehicle: CreateProductVehicleDto
-    ): ResponseEntity<ProductVehicleResponseDto> {
-        return try {
-            ResponseEntity.ok(productService.updateVehicle(vehicleId, vehicle).toDto())
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-    }
-
-    @DeleteMapping("/vehicles/{vehicleId}")
-    fun deleteVehicle(@PathVariable vehicleId: UUID): ResponseEntity<Unit> =
-        try {
-            productService.deleteVehicle(vehicleId)
-            ResponseEntity.noContent().build()
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @GetMapping("/vehicles/{vehicleId}/with-products")
-    fun getVehicleWithProducts(@PathVariable vehicleId: UUID): ResponseEntity<ProductVehicleResponseDto> =
-        try {
-            ResponseEntity.ok(productService.getVehicleWithProducts(vehicleId).toDto())
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @GetMapping("/vehicles/search")
-    fun getVehiclesByMakeAndModel(
+    @GetMapping("/vehicle-compatibility")
+    fun getProductsForVehicle(
         @RequestParam make: String,
-        @RequestParam model: String
-    ): ResponseEntity<List<ProductVehicleResponseDto>> =
-        ResponseEntity.ok(productService.getVehiclesByMakeAndModel(make, model).map { it.toDto() })
+        @RequestParam(required = false) model: String?
+    ): ResponseEntity<List<ProductResponseDto>> =
+        ResponseEntity.ok(productService.getProductsForVehicle(make, model))
 
-    @GetMapping("/by-vehicle/{vehicleId}") //TODO() fix this
-    fun getProductsByVehicle(@PathVariable vehicleId: UUID): ResponseEntity<List<ProductResponseDto>> =
-        ResponseEntity.ok(productService.getProductsByVehicleId(vehicleId).map { it.toDto() })
-
-    // Relationship Management Operations
-    @PostMapping("/{productId}/categories/{categoryId}")
-    fun addCategoryToProduct(
-        @PathVariable productId: UUID,
-        @PathVariable categoryId: UUID
-    ): ResponseEntity<Unit> =
+    @PutMapping("/{id}/stock")
+    fun updateStock(
+        @PathVariable id: UUID,
+        @RequestParam newStock: Int,
+        @RequestParam(required = false, defaultValue = "Manual adjustment") reason: String
+    ): ResponseEntity<ProductResponseDto> =
         try {
-            productService.addCategoryToProduct(productId, categoryId)
-            ResponseEntity.ok().build()
+            ResponseEntity.ok(productService.updateStock(id, newStock, reason))
         } catch (e: EntityNotFoundException) {
             ResponseEntity.notFound().build()
         }
-
-    @DeleteMapping("/{productId}/categories/{categoryId}")
-    fun removeCategoryFromProduct(
-        @PathVariable productId: UUID,
-        @PathVariable categoryId: UUID
-    ): ResponseEntity<Unit> =
-        try {
-            productService.removeCategoryFromProduct(productId, categoryId)
-            ResponseEntity.noContent().build()
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @PostMapping("/{productId}/vehicles/{vehicleId}")
-    fun addVehicleToProduct(
-        @PathVariable productId: UUID,
-        @PathVariable vehicleId: UUID
-    ): ResponseEntity<Unit> =
-        try {
-            productService.addVehicleToProduct(productId, vehicleId)
-            ResponseEntity.ok().build()
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    @DeleteMapping("/{productId}/vehicles/{vehicleId}")
-    fun removeVehicleFromProduct(
-        @PathVariable productId: UUID,
-        @PathVariable vehicleId: UUID
-    ): ResponseEntity<Unit> =
-        try {
-            productService.removeVehicleFromProduct(productId, vehicleId)
-            ResponseEntity.noContent().build()
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.notFound().build()
-        }
-
-    // Error Handling
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgument(e: IllegalArgumentException): ResponseEntity<String> =
-        ResponseEntity.badRequest().body(e.message)
-
-    @ExceptionHandler(Exception::class)
-    fun handleGenericError(e: Exception): ResponseEntity<String> =
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("An unexpected error occurred")
 }

@@ -1,3 +1,4 @@
+/*
 package org.prodacc.webapi.services.dataTransferObjects
 
 import org.prodacc.webapi.models.products.Product
@@ -7,6 +8,7 @@ import java.util.*
 
 
 // DTOs
+@Deprecated("Create Product Deprecated update to the new one")
 data class CreateProductDto(
     val partNumber: String,
     val partName: String,
@@ -18,6 +20,7 @@ data class CreateProductDto(
     val storageLocation: String
 )
 
+@Deprecated("Product Response Deprecated, update to the new one")
 data class ProductResponseDto(
     val id: UUID,
     val partNumber: String,
@@ -144,4 +147,4 @@ fun ProductVehicle.toDtoWithProducts() = ProductVehicleWithProductsResponseDto(
     model = model,
     year = year,
     products = productReference.map { it.productId.toDto() }
-)
+)*/

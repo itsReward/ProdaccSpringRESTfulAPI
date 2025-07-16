@@ -50,6 +50,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-function-adapter-aws:3.2.1")
 
 
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
 }
 

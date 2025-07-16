@@ -3,6 +3,7 @@ package org.prodacc.webapi.models.products
 import jakarta.persistence.*
 import java.util.UUID
 
+@Deprecated("Use ProductCategoryReference instead")
 @Entity
 @Table(name = "product_category")
 data class ProductCategory (

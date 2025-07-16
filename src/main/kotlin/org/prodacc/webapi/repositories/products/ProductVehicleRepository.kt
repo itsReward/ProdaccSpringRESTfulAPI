@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import java.util.*
 
+@Deprecated("Use updated ProductVehicle Repository")
 interface ProductVehicleRepository : JpaRepository<ProductVehicle, UUID> {
     fun findByMakeAndModel(make: String, model: String): List<ProductVehicle>
 
