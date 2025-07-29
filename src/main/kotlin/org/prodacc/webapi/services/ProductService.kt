@@ -6,6 +6,8 @@ import org.prodacc.webapi.models.ProductCategory
 import org.prodacc.webapi.models.TransactionType
 import org.prodacc.webapi.repositories.ProductCategoryRepository
 import org.prodacc.webapi.repositories.ProductRepository
+import org.prodacc.webapi.repositories.ProductVehicleReferenceRepository
+import org.prodacc.webapi.repositories.ProductVehicleRepository
 import org.prodacc.webapi.repositories.SupplierRepository
 import org.prodacc.webapi.services.dataTransferObjects.CreateInventoryTransactionDto
 import org.prodacc.webapi.services.dataTransferObjects.CreateProductDto
@@ -22,6 +24,8 @@ import java.util.*
 class ProductService(
     private val productRepository: ProductRepository,
     private val productCategoryRepository: ProductCategoryRepository,
+    private val productVehicleReferenceRepository: ProductVehicleReferenceRepository,
+    private val productVehicleRepository: ProductVehicleRepository,
     private val supplierRepository: SupplierRepository,
     private val inventoryTransactionService: InventoryTransactionService
 ) {
@@ -143,7 +147,11 @@ class ProductService(
 
     fun getProductsForVehicle(make: String, model: String?): List<ProductResponseDto> {
         logger.info("Fetching products for vehicle: $make $model")
-        return productRepository.findProductsForVehicle(make, model).map { it.toDto() }
+        val vehicles = productVehicleRepository.findByVehicleMakeIgnoreCaseAndVehicleModelIgnoreCase(make, model?:"")
+            .map { it.id!! }
+
+        return productVehicleReferenceRepository.findByVehicleIds(vehicles).map { it.product }.map { it!!.toDto() }
+
     }
 
     fun updateStock(productId: UUID, newStock: Int, reason: String): ProductResponseDto {

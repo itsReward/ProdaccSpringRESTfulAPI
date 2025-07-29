@@ -17,7 +17,7 @@ import java.util.UUID
 
 
 @Entity
-@Table(name = "product_vehicles")
+@Table(name = "product_vehicle")
 data class ProductVehicle(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,22 +25,13 @@ data class ProductVehicle(
     @Column(name = "id", nullable = false)
     val id: UUID? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
-    val product: Product,
+    @Column(name = "make", nullable = false)
+    val vehicleMake: String = "undefined",
 
-    @Column(name = "vehicle_make", nullable = false)
-    val vehicleMake: String,
-
-    @Column(name = "vehicle_model")
+    @Column(name = "model")
     val vehicleModel: String? = null,
 
-    @Column(name = "year_from")
-    val yearFrom: Int? = null,
+    @Column(name = "year")
+    val year: Int = 1,
 
-    @Column(name = "year_to")
-    val yearTo: Int? = null,
-
-    @Column(name = "created_at")
-    val createdAt: LocalDateTime = LocalDateTime.now()
 )

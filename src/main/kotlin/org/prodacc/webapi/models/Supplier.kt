@@ -15,7 +15,7 @@ data class Supplier(
     val supplierId: UUID? = null,
 
     @Column(name = "supplier_name", nullable = false)
-    val supplierName: String,
+    val supplierName: String = "undefined",
 
     @Column(name = "company_name")
     val companyName: String? = null,

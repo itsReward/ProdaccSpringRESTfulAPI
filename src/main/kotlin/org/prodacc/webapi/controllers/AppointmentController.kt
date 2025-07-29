@@ -1,5 +1,7 @@
 package org.prodacc.webapi.controllers
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.persistence.EntityNotFoundException
 import org.prodacc.webapi.models.AppointmentStatus
 import org.prodacc.webapi.services.AppointmentService
@@ -23,19 +25,23 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/appointments")
 @CrossOrigin(origins = ["*"])
+@Tag(name = "appointments-controller")
 class AppointmentController(
     private val appointmentService: AppointmentService
 ) {
 
     @GetMapping("/all")
+    @Operation(summary = "Get all appointments")
     fun getAllAppointments(): ResponseEntity<List<AppointmentResponseDto>> =
         ResponseEntity.ok(appointmentService.getAllAppointments())
 
     @GetMapping("/upcoming")
+    @Operation(summary = "Get upcoming appointments")
     fun getUpcomingAppointments(): ResponseEntity<List<AppointmentResponseDto>> =
         ResponseEntity.ok(appointmentService.getUpcomingAppointments())
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get appointment")
     fun getAppointment(@PathVariable id: UUID): ResponseEntity<AppointmentResponseDto> =
         try {
             ResponseEntity.ok(appointmentService.getAppointmentById(id))

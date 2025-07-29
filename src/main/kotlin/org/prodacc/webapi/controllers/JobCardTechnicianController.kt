@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/job-card-technicians")
+@RequestMapping("/api/job-card-technicians")
 class JobCardTechnicianController (
     private val jobCardTechniciansServices: JobCardTechniciansServices
 ) {

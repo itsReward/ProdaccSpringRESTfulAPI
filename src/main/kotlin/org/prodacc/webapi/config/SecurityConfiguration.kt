@@ -44,6 +44,10 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
+                    .requestMatchers("/api-docs")
+                    .permitAll()
+                    .requestMatchers("swagger-ui/**", "swagger-ui.html")
+                    .permitAll()
                     .requestMatchers("/websocket/**")
                     .permitAll()
                     .requestMatchers( "/auth", "/auth/refresh", "/error")

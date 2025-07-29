@@ -23,7 +23,7 @@ data class ProductCategory(
     val categoryId: UUID? = null,
 
     @Column(name = "category_name", nullable = false, unique = true)
-    val categoryName: String,
+    val categoryName: String = "undefined",
 
     @Column(name = "description", columnDefinition = "TEXT")
     val description: String? = null,

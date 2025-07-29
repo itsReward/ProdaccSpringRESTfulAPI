@@ -1,6 +1,7 @@
 package org.prodacc.webapi.services.dataTransferObjects
 
 import org.prodacc.webapi.models.Product
+import org.prodacc.webapi.models.ProductVehicle
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.UUID
@@ -42,11 +43,15 @@ data class ProductResponseDto(
 )
 
 data class CreateProductVehicleDto(
-    val productId: UUID,
     val vehicleMake: String,
-    val vehicleModel: String? = null,
-    val yearFrom: Int? = null,
-    val yearTo: Int? = null
+    val vehicleModel: String,
+    val year: Int,
+)
+
+fun CreateProductVehicleDto.toEntity(): ProductVehicle = ProductVehicle(
+    vehicleMake = this.vehicleMake,
+    vehicleModel = this.vehicleModel,
+    year = this.year,
 )
 
 fun Product.toDto(): ProductResponseDto = ProductResponseDto(

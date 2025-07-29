@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/jobCards/")
+@RequestMapping("/api/jobCards/")
 class JobCardController(
     private val jobCardService: JobCardService
 ) {

@@ -25,10 +25,10 @@ data class Product(
     val productId: UUID? = null,
 
     @Column(name = "product_code", nullable = false, unique = true)
-    val productCode: String,
+    val productCode: String = "undefined",
 
     @Column(name = "product_name", nullable = false)
-    val productName: String,
+    val productName: String = "undefined",
 
     @Column(name = "description", columnDefinition = "TEXT")
     val description: String? = null,
@@ -74,8 +74,8 @@ data class Product(
     @Column(name = "updated_at")
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 
-    @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val vehicleCompatibility: List<ProductVehicle> = emptyList(),
+    /*@OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val vehicleCompatibility: List<ProductVehicle> = emptyList(),*/
 
     @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val inventoryTransactions: List<InventoryTransaction> = emptyList()

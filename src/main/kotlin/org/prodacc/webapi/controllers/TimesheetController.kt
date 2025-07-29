@@ -9,7 +9,7 @@ import java.util.*
 
 
 @RestController
-@RequestMapping("/timesheets")
+@RequestMapping("/api/timesheets")
 class TimesheetController (
     private val timeSheetService: TimeSheetService
 ) {
