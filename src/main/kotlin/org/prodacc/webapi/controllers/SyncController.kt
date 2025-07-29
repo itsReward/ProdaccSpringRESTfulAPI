@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/sync")
+@RequestMapping("/sync")
 class SyncController(private val syncService: SyncService) {
 
     @PostMapping("/entity")

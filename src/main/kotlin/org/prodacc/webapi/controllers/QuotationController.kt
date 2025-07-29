@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/quotations")
+@RequestMapping("/quotations")
 @CrossOrigin(origins = ["*"])
 class QuotationController(
     private val quotationService: QuotationService

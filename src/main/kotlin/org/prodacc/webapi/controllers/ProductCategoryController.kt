@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/product-categories")
+@RequestMapping("/product-categories")
 @CrossOrigin(origins = ["*"])
 class ProductCategoryController(
     private val productCategoryService: ProductCategoryService

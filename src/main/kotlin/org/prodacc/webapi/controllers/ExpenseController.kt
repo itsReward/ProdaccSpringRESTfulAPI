@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/expenses")
+@RequestMapping("/expenses")
 @CrossOrigin(origins = ["*"])
 class ExpenseController(
     private val expenseService: ExpenseService

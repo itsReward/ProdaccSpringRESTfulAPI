@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/inventory-transactions")
+@RequestMapping("/inventory-transactions")
 @CrossOrigin(origins = ["*"])
 class InventoryTransactionController(
     private val inventoryTransactionService: InventoryTransactionService

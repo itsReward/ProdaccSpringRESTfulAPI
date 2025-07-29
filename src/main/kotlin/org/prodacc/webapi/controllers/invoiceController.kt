@@ -21,7 +21,7 @@ import java.time.LocalDate
 import java.util.*
 
 @RestController
-@RequestMapping("/api/invoices")
+@RequestMapping("/invoices")
 @CrossOrigin(origins = ["*"])
 class InvoiceController(
     private val invoiceService: InvoiceService

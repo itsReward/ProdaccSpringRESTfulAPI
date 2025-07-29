@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/api/job-card-status")
+@RequestMapping("/job-card-status")
 class JobCardStatusController(
     private val jobCardStatusService: JobCardStatusService
 ){

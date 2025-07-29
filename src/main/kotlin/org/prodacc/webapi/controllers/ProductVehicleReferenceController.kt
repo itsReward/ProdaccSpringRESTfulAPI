@@ -31,7 +31,7 @@ data class ProductVehicleReferenceResponseDto(
 )
 
 @RestController
-@RequestMapping("/api/product-vehicle-references")
+@RequestMapping("/product-vehicle-references")
 @CrossOrigin(origins = ["*"])
 class ProductVehicleReferenceController(
     private val productVehicleReferenceService: ProductVehicleReferenceService

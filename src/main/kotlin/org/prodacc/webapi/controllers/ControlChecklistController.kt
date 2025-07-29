@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/api/control-checklist")
+@RequestMapping("/control-checklist")
 class ControlChecklistController(
     private val controlChecklistService: ControlChecklistService
 ) {

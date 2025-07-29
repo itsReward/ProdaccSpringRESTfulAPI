@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/product-vehicles")
+@RequestMapping("/product-vehicles")
 @CrossOrigin(origins = ["*"])
 @Tag(name = "product-vehicles-controller")
 class ProductVehicleController(

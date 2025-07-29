@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/suppliers")
+@RequestMapping("/suppliers")
 @CrossOrigin(origins = ["*"])
 class SupplierController(
     private val supplierService: SupplierService

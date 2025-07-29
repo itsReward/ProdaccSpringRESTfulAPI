@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/appointments")
+@RequestMapping("/appointments")
 @CrossOrigin(origins = ["*"])
 @Tag(name = "appointments-controller")
 class AppointmentController(
