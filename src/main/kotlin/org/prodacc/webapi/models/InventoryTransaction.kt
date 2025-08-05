@@ -26,14 +26,14 @@ data class InventoryTransaction(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    val product: Product,
+    val product: Product? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
-    val transactionType: TransactionType,
+    val transactionType: TransactionType? = null,
 
     @Column(name = "quantity", nullable = false)
-    val quantity: Int,
+    val quantity: Int? = null,
 
     @Column(name = "unit_cost", precision = 12, scale = 2)
     val unitCost: java.math.BigDecimal? = null,

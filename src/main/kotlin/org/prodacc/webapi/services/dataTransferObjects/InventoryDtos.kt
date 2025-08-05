@@ -34,10 +34,10 @@ data class InventoryTransactionResponseDto(
 
 fun InventoryTransaction.toDto(): InventoryTransactionResponseDto = InventoryTransactionResponseDto(
     transactionId = this.transactionId!!,
-    productCode = this.product.productCode,
+    productCode = this.product!!.productCode,
     productName = this.product.productName,
-    transactionType = this.transactionType,
-    quantity = this.quantity,
+    transactionType = this.transactionType!!,
+    quantity = this.quantity!!,
     unitCost = this.unitCost,
     totalAmount = this.totalAmount,
     referenceType = this.referenceType,
