@@ -9,66 +9,44 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-
-/**
- * This class configures Spring Security for the application.
- * It uses a stateless approach with JWT (JSON Web Token) based authentication.
- *
- * The configuration defines the following aspects:
- *
- * 1. Disables CSRF (Cross-Site Request Forgery) protection for simplicity (consider enabling in production).
- * 2. Defines authorization rules for different URL patterns:
-- Endpoints like "/api/v1/auth", "/api/v1/auth/refresh", and "/error" are publicly accessible (`permitAll()`).
-- POST requests to "/api/v1/users/new" and "/error" require the "ROLE_ADMIN" authority.
-- All requests under "/api/v1/users/" (any sub-path under "/api/v1/users") require the "ROLE_ADMIN" authority.
-- Any other request requires authentication (`authenticated()`).
- * 3. Sets session management policy to `STATELESS`, indicating the application won't use traditional session-based authentication.
- * 4. Uses the injected `AuthenticationProvider` for user authentication (likely a custom implementation using JWT tokens).
- * 5. Adds a custom `JwtAuthenticationFilter` before the default `UsernamePasswordAuthenticationFilter`.
-- This ensures JWT token-based authentication is checked first.
- * 6. Builds and returns the configured `DefaultSecurityFilterChain` bean.
-*/
+import org.springframework.web.cors.CorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration(
     private val authenticationProvider: AuthenticationProvider,
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val corsConfigurationSource: CorsConfigurationSource
 ) {
 
     @Bean
-    fun securityFilterChain(
-        http: HttpSecurity,
-        jwtAuthenticationFilter: JwtAuthenticationFilter
-    ): DefaultSecurityFilterChain =
+    fun securityFilterChain(http: HttpSecurity): DefaultSecurityFilterChain {
         http
             .csrf { it.disable() }
-            .authorizeHttpRequests {
-                it
-                    .requestMatchers("/api-docs")
-                    .permitAll()
-                    .requestMatchers("swagger-ui/**", "swagger-ui.html")
-                    .permitAll()
-                    .requestMatchers("/websocket/**")
-                    .permitAll()
-                    .requestMatchers( "/auth", "/auth/refresh", "/error")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/users/findByUserName/**")
-                    .authenticated()
-                    .requestMatchers(HttpMethod.POST, "/users/new", "/error")
-                    .hasAuthority("ROLE_ADMIN")
-                    .requestMatchers("/users/**")
-                    .hasAuthority("ROLE_ADMIN")
-                    .anyRequest()
-                    .authenticated()
-
-
+            .cors { it.configurationSource(corsConfigurationSource) } // Enable CORS
+            .authorizeHttpRequests { auth ->
+                auth
+                    // Allow OPTIONS requests for CORS preflight
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Allow authentication endpoints
+                    .requestMatchers(
+                        "/api/v1/auth",
+                        "/api/v1/auth/refresh",
+                        "/error",
+                        "/websocket/**"
+                    ).permitAll()
+                    // Admin endpoints
+                    .requestMatchers(HttpMethod.POST, "/api/v1/users/new").hasRole("ADMIN")
+                    .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
+                    // All other requests require authentication
+                    .anyRequest().authenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .build()
 
+        return http.build()
+    }
 }
-
