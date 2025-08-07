@@ -15,12 +15,14 @@ import org.springframework.web.cors.CorsConfigurationSource
 @EnableWebSecurity
 class SecurityConfiguration(
     private val authenticationProvider: AuthenticationProvider,
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val corsConfigurationSource: CorsConfigurationSource
 ) {
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): DefaultSecurityFilterChain {
+    fun securityFilterChain(
+        http: HttpSecurity,
+        jwtAuthenticationFilter: JwtAuthenticationFilter
+    ): DefaultSecurityFilterChain =
         http
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource) } // Enable CORS
@@ -28,16 +30,27 @@ class SecurityConfiguration(
                 auth
                     // Allow OPTIONS requests for CORS preflight
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // Allow authentication endpoints
-                    .requestMatchers(
-                        "/api/v1/auth",
-                        "/api/v1/auth/refresh",
-                        "/error",
-                        "/websocket/**"
-                    ).permitAll()
-                    // Admin endpoints
-                    .requestMatchers(HttpMethod.POST, "/api/v1/users/new").hasRole("ADMIN")
-                    .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
+
+                    // Allow WebSocket connections
+                    .requestMatchers("/websocket/**").permitAll()
+
+                    // IMPORTANT: Allow authentication endpoints WITHOUT /api prefix
+                    .requestMatchers("/auth", "/auth/refresh", "/error").permitAll()
+
+                    // Also allow with /api prefix (in case your frontend uses it)
+                    .requestMatchers("/api/auth", "/api/auth/refresh", "/api/error").permitAll()
+                    .requestMatchers("/api/v1/auth", "/api/v1/auth/refresh", "/api/v1/error").permitAll()
+
+                    // User management endpoints
+                    .requestMatchers(HttpMethod.GET, "/users/findByUserName/**").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/users/new", "/error").hasAuthority("ROLE_ADMIN")
+                    .requestMatchers("/users/**").hasAuthority("ROLE_ADMIN")
+
+                    // Also allow user endpoints with /api prefix
+                    .requestMatchers(HttpMethod.GET, "/api/users/findByUserName/**").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/users/new").hasAuthority("ROLE_ADMIN")
+                    .requestMatchers("/api/users/**").hasAuthority("ROLE_ADMIN")
+
                     // All other requests require authentication
                     .anyRequest().authenticated()
             }
@@ -46,7 +59,5 @@ class SecurityConfiguration(
             }
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-
-        return http.build()
-    }
+            .build()
 }
