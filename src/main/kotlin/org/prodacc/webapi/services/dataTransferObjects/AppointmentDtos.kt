@@ -48,12 +48,12 @@ data class RescheduleAppointmentDto(
 
 fun Appointment.toDto(): AppointmentResponseDto = AppointmentResponseDto(
     appointmentId = this.appointmentId!!,
-    clientName = this.client.clientName ?: "",
-    clientSurname = this.client.clientSurname ?: "",
-    clientPhone = this.client.phone,
-    vehicleInfo = "${this.vehicle.make} ${this.vehicle.model} (${this.vehicle.regNumber})",
-    appointmentDate = this.appointmentDate,
-    appointmentTime = this.appointmentTime,
+    clientName = this.client?.clientName ?: "",
+    clientSurname = this.client?.clientSurname ?: "",
+    clientPhone = this.client?.phone,
+    vehicleInfo = "${this.vehicle?.make} ${this.vehicle?.model} (${this.vehicle?.regNumber})",
+    appointmentDate = this.appointmentDate!!,
+    appointmentTime = this.appointmentTime!!,
     durationMinutes = this.durationMinutes,
     serviceType = this.serviceType,
     description = this.description,

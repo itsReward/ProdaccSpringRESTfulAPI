@@ -58,6 +58,25 @@ class JobCardService(
     }
 
 
+    fun getJobCardsByVehicleId(vehicleId: UUID): Iterable<ResponseJobCard> {
+        logger.info("Fetching vehicle job cards using vehicle Id $vehicleId")
+        val vehicle = try {
+            vehicleRepository.findById(vehicleId).orElseThrow { EntityNotFoundException("Vehicle with Id: $vehicleId not found") }
+        } catch (e: Exception){
+            logger.error(e.message)
+            throw e
+        }
+
+        try {
+            return jobCardRepository.getJobCardsByVehicleReference(vehicle).map { it.toViewJobCard() }
+
+        } catch (e:Exception){
+            logger.error(e.message)
+            throw e
+        }
+    }
+
+
     @Transactional
     fun newJobCard(@RequestBody newJobCard: NewJobCard): ResponseJobCard {
         logger.info("Creating new job card")

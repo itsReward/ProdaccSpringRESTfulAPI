@@ -12,10 +12,13 @@ import org.prodacc.webapi.services.synchronisation.WebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import kotlin.jvm.java
 
 
 @Service
@@ -59,6 +62,30 @@ class UserService(
             .orElseThrow { EntityNotFoundException("Employee with id: $id not found") }
         return userRepository.findUserByEmployeeId(employee)
             .orElseThrow { EntityNotFoundException("User associated with employee: $id not found") }
+            .toViewUserWithEmployee()
+    }
+
+    /**
+     * Gets the currently authenticated user from the security context
+     * @param authentication The authentication object containing the current user's details
+     * @return ResponseUserWithEmployee The current user's information
+     * @throws EntityNotFoundException if the authenticated user is not found in the database
+     */
+    fun getCurrentUser(authentication: Authentication): ResponseUserWithEmployee {
+        log.info("getting current authenticated user")
+
+        // Extract the username from the authentication principal
+        val username = when (val principal = authentication.principal) {
+            is UserDetails -> principal.username
+            is String -> principal
+            else -> throw IllegalStateException("Unexpected principal type: ${principal::class.java}")
+        }
+
+        log.info("Current authenticated username: $username")
+
+        // Find and return the user
+        return userRepository.findByUsername(username)
+            .orElseThrow { EntityNotFoundException("Current authenticated user not found: $username") }
             .toViewUserWithEmployee()
     }
 

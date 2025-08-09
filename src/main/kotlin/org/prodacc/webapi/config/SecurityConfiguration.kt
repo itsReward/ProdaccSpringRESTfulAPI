@@ -31,6 +31,9 @@ class SecurityConfiguration(
                     // Allow OPTIONS requests for CORS preflight
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                    // Allow swagger endpoints
+                    .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs").permitAll()
+
                     // Allow WebSocket connections
                     .requestMatchers("/websocket/**").permitAll()
 
@@ -43,6 +46,7 @@ class SecurityConfiguration(
 
                     // User management endpoints
                     .requestMatchers(HttpMethod.GET, "/users/findByUserName/**").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
                     .requestMatchers(HttpMethod.POST, "/users/new", "/error").hasAuthority("ROLE_ADMIN")
                     .requestMatchers("/users/**").hasAuthority("ROLE_ADMIN")
 

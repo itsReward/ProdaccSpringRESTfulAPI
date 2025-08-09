@@ -5,6 +5,7 @@ import org.prodacc.webapi.services.dataTransferObjects.NewUser
 import org.prodacc.webapi.services.dataTransferObjects.ResponseUserWithEmployee
 import org.prodacc.webapi.services.dataTransferObjects.UpdateUser
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -22,6 +23,15 @@ class UserController(
     @GetMapping("/findByUserName/{username}")
     fun findUserByUsername(@PathVariable username: String): ResponseUserWithEmployee =
         userService.findUserByUsername(username)
+
+    /**
+     * Gets the currently authenticated user
+     * @param authentication The authentication object from Spring Security context
+     * @return ResponseUserWithEmployee The current user's information
+     */
+    @GetMapping("/me")
+    fun getCurrentUser(authentication: Authentication): ResponseUserWithEmployee =
+        userService.getCurrentUser(authentication)
 
     @GetMapping("/findByEmail/{email}")
     fun findUserByEmail(@PathVariable email: String): ResponseUserWithEmployee =

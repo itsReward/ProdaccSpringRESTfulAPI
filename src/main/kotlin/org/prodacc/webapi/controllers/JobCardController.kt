@@ -18,6 +18,9 @@ class JobCardController(
     @GetMapping("/get/{id}")
     fun getJobCard(@PathVariable id: UUID): ResponseJobCard = jobCardService.getJobCard(id)
 
+    @GetMapping("vehicle/{id}")
+    fun getJobCardsByVehicleId(@PathVariable id: UUID): Iterable<ResponseJobCard> = jobCardService.getJobCardsByVehicleId(id)
+
     @PostMapping("/new")
     fun newJobCard(@RequestBody newJobCard: NewJobCard): ResponseJobCard {
         return jobCardService.newJobCard(newJobCard)

@@ -26,17 +26,17 @@ data class Appointment(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
-    val client: Client,
+    val client: Client? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vehicle_id", nullable = false)
-    val vehicle: Vehicle,
+    val vehicle: Vehicle? = null,
 
     @Column(name = "appointment_date", nullable = false)
-    val appointmentDate: java.time.LocalDate,
+    val appointmentDate: java.time.LocalDate? = null,
 
     @Column(name = "appointment_time", nullable = false)
-    val appointmentTime: java.time.LocalTime,
+    val appointmentTime: java.time.LocalTime? = null,
 
     @Column(name = "duration_minutes")
     val durationMinutes: Int = 60,
