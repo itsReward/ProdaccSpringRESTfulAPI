@@ -93,7 +93,7 @@ interface JobCardPartsRequisitionRepository : JpaRepository<JobCardPartsRequisit
         FROM JobCardPartsRequisition r 
         WHERE r.requestedAt BETWEEN :startDate AND :endDate
         AND r.status IN ('USED', 'PARTIALLY_USED', 'NOT_AVAILABLE')
-    """)
+    """, nativeQuery = true)
     fun getAverageProcessingTimeInHours(@Param("startDate") startDate: LocalDateTime, @Param("endDate") endDate: LocalDateTime): Double?
 
     // ===== INVENTORY IMPACT QUERIES =====
