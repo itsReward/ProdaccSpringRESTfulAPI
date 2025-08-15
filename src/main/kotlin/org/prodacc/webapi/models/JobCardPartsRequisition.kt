@@ -21,18 +21,18 @@ data class JobCardPartsRequisition(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "job_card_id", nullable = false)
-    var jobCard: JobCard,
+    var jobCard: JobCard = JobCard(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    var product: Product,
+    var product: Product = Product(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "requested_by", nullable = false)
-    var requestedBy: Employee,
+    var requestedBy: Employee = Employee(),
 
     @Column(name = "requested_quantity", nullable = false, precision = 10, scale = 2)
-    var requestedQuantity: BigDecimal,
+    var requestedQuantity: BigDecimal = BigDecimal.ZERO,
 
     @Column(name = "approved_quantity", precision = 10, scale = 2)
     var approvedQuantity: BigDecimal = BigDecimal.ZERO,

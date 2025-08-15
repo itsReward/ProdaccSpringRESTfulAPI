@@ -3,11 +3,15 @@ package org.prodacc.webapi.controllers
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.prodacc.webapi.services.JobCardPartsRequisitionService
+import org.prodacc.webapi.services.UserService
 import org.prodacc.webapi.services.dataTransferObjects.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -15,7 +19,8 @@ import java.util.*
 @RequestMapping("/api/jobcards/parts-requisition")
 @CrossOrigin(origins = ["*"])
 class JobCardPartsRequisitionController(
-    private val partsRequisitionService: JobCardPartsRequisitionService
+    private val partsRequisitionService: JobCardPartsRequisitionService,
+    private val userService: UserService
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -27,7 +32,7 @@ class JobCardPartsRequisitionController(
         request: HttpServletRequest
     ): ResponseEntity<PartRequisitionResponseDto> {
         return try {
-            val requesterId = getCurrentEmployeeId(request)
+            val requesterId = getCurrentEmployeeId()
             val requisition = partsRequisitionService.requestParts(requestDto, requesterId)
 
             logger.info("Parts requisition created successfully: ${requisition.requisitionId}")
@@ -46,7 +51,7 @@ class JobCardPartsRequisitionController(
         request: HttpServletRequest
     ): ResponseEntity<PartRequisitionResponseDto> {
         return try {
-            val employeeId = getCurrentEmployeeId(request)
+            val employeeId = getCurrentEmployeeId()
             val requisition = partsRequisitionService.markPartsAsUsed(requisitionId, markAsUsedDto, employeeId)
 
             logger.info("Parts marked as used successfully: $requisitionId")
@@ -61,7 +66,7 @@ class JobCardPartsRequisitionController(
     @PreAuthorize("hasAnyRole('TECHNICIAN', 'SERVICE_ADVISOR', 'ADMIN')")
     fun getMyRequisitions(request: HttpServletRequest): ResponseEntity<List<PartRequisitionResponseDto>> {
         return try {
-            val employeeId = getCurrentEmployeeId(request)
+            val employeeId = getCurrentEmployeeId()
             val requisitions = partsRequisitionService.getRequisitionsByTechnician(employeeId)
 
             ResponseEntity.ok(requisitions)
@@ -93,7 +98,7 @@ class JobCardPartsRequisitionController(
         request: HttpServletRequest
     ): ResponseEntity<PartRequisitionResponseDto> {
         return try {
-            val storesManagerId = getCurrentEmployeeId(request)
+            val storesManagerId = getCurrentEmployeeId()
             val requisition = partsRequisitionService.approveAndDisburseRequisition(
                 requisitionId = requisitionId,
                 approveDto = approveAndDisburseDto.approve,
@@ -117,7 +122,7 @@ class JobCardPartsRequisitionController(
         request: HttpServletRequest
     ): ResponseEntity<PartRequisitionResponseDto> {
         return try {
-            val storesManagerId = getCurrentEmployeeId(request)
+            val storesManagerId = getCurrentEmployeeId()
             val requisition = partsRequisitionService.markAsNotAvailable(requisitionId, notAvailableDto, storesManagerId)
 
             logger.info("Requisition marked as not available: $requisitionId")
@@ -188,10 +193,22 @@ class JobCardPartsRequisitionController(
 
     // ===== HELPER METHODS =====
 
-    private fun getCurrentEmployeeId(request: HttpServletRequest): UUID {
-        val uuid = request.getHeader("token").substringAfter(":")
-        println("Current employee ID: $uuid")
-        return UUID.fromString(uuid)
+    private fun getCurrentEmployeeId(): UUID {
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+            ?: throw IllegalStateException("No authentication context found")
+
+        // Assuming your JWT contains the employee ID as the principal or in claims
+        val employeeIdString = when (val principal = authentication.principal) {
+            is String -> principal // If the principal is directly the employee ID
+            is UserDetails -> principal.username // If using UserDetails
+            else -> authentication.name // Fallback to authentication name
+        }
+
+        return try {
+            userService.findUserByUsername(employeeIdString).employeeId!!
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Invalid employee ID format: $employeeIdString", e)
+        }
     }
 }
 
