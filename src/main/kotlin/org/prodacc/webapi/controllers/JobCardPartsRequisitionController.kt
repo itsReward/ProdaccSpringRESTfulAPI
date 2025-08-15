@@ -189,7 +189,8 @@ class JobCardPartsRequisitionController(
     // ===== HELPER METHODS =====
 
     private fun getCurrentEmployeeId(request: HttpServletRequest): UUID {
-        val uuid = request.getHeader("X-Auth-Employee-Id")
+        val uuid = request.getHeader("token").substringAfter(":")
+        println("Current employee ID: $uuid")
         return UUID.fromString(uuid)
     }
 }
