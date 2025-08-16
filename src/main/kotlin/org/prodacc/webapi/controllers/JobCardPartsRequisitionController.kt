@@ -24,6 +24,19 @@ class JobCardPartsRequisitionController(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    @GetMapping("/all")
+    fun getAllRequisitions(): ResponseEntity<List<PartRequisitionResponseDto>> {
+        return try {
+            val requisitions = partsRequisitionService.getAllRequisitions()
+            ResponseEntity.ok(requisitions)
+        } catch (e: Exception) {
+            logger.error("Error fetching all requisitions: ${e.message}", e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
+
+
+
     // ===== TECHNICIAN OPERATIONS =====
 
     @PostMapping("/request")
@@ -110,6 +123,24 @@ class JobCardPartsRequisitionController(
             ResponseEntity.ok(requisition)
         } catch (e: Exception) {
             logger.error("Error approving and disbursing requisition: ${e.message}", e)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
+        }
+    }
+
+    @PutMapping("/{requisitionId}/approve")
+    fun approveRequisition(
+        @PathVariable requisitionId: UUID,
+        @Valid @RequestBody approveDto: ApprovePartRequisitionDto,
+        request: HttpServletRequest
+    ): ResponseEntity<PartRequisitionResponseDto> {
+        return try {
+            val storesManagerId = getCurrentEmployeeId()
+            val requisition = partsRequisitionService.approveRequisition(requisitionId, approveDto, storesManagerId)
+
+            logger.info("Requisition approved successfully: $requisitionId")
+            ResponseEntity.ok(requisition)
+        } catch (e: Exception) {
+            logger.error("Error approving requisition: ${e.message}", e)
             ResponseEntity.status(HttpStatus.BAD_REQUEST).build()
         }
     }

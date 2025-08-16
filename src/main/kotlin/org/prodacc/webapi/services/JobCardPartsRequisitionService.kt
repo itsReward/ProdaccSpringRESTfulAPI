@@ -30,6 +30,13 @@ class JobCardPartsRequisitionService(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    fun getAllRequisitions(): List<PartRequisitionResponseDto> {
+        logger.info("Fetching all parts requisitions")
+        return partsRequisitionRepository.findAll()
+            .map { it.toResponseDto() }
+    }
+
+
     fun getRequisitionById(requisitionId: UUID): PartRequisitionResponseDto {
         logger.info("Fetching requisition by ID: $requisitionId")
         return partsRequisitionRepository.findById(requisitionId)
@@ -175,6 +182,50 @@ class JobCardPartsRequisitionService(
         )*/
 
         logger.info("Requisition approved and disbursed: $requisitionId")
+        return savedRequisition.toResponseDto()
+    }
+
+
+    fun approveRequisition(
+        requisitionId: UUID,
+        approveDto: ApprovePartRequisitionDto,
+        storesManagerId: UUID
+    ): PartRequisitionResponseDto {
+        logger.info("Approving requisition: $requisitionId")
+
+        val requisition = partsRequisitionRepository.findById(requisitionId)
+            .orElseThrow { EntityNotFoundException("Requisition not found: $requisitionId") }
+        val storesManager = employeeRepository.findById(storesManagerId)
+            .orElseThrow { EntityNotFoundException("Employee not found: $storesManagerId") }
+        // Validate permissions
+        if (!hasStoresPermission(storesManager)) {
+            throw IllegalStateException("Employee does not have stores management permissions")
+        }
+
+        if (!requisition.canApprove()) {
+            throw IllegalStateException("Cannot approve requisition in status: ${requisition.status}")
+        }
+
+        requisition.approve(storesManager, approveDto.approvedQuantity)
+
+        if (approveDto.notes != null) {
+            requisition.notes = if (requisition.notes.isNullOrBlank()) {
+                approveDto.notes
+            } else {
+                "${requisition.notes}\nStores: ${approveDto.notes}"
+            }
+        }
+
+        val savedRequisition = partsRequisitionRepository.save(requisition)
+
+        // Notify technician
+       /* webSocketHandler.broadcastToUser(
+            requisition.requestedBy.employeeId!!,
+            "PARTS_APPROVED",
+            savedRequisition.requisitionId
+        )*/
+
+        logger.info("Requisition approved: $requisitionId")
         return savedRequisition.toResponseDto()
     }
 
