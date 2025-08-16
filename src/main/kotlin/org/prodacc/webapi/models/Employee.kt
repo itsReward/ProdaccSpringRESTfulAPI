@@ -32,6 +32,9 @@ data class Employee(
     @Column(name = "\"home_address\"", nullable = false, length = 500)
     var homeAddress: String = "unassigned",
 
+    @Column(name = "active", nullable = false)
+    var active: Boolean = true,
+
     @Version
     @Column(name = "version", nullable = false)
     var version: Long? = 0,

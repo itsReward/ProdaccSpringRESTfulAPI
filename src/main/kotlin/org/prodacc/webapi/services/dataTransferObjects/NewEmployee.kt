@@ -7,5 +7,6 @@ data class NewEmployee(
     var employeeRole: String? = null,
     var employeeDepartment: String? = null,
     var phoneNumber: String? = null,
-    var homeAddress: String? = null
+    var homeAddress: String? = null,
+    var active: Boolean? = null,
 )

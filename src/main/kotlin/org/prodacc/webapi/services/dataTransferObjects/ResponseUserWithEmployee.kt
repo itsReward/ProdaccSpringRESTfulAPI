@@ -13,5 +13,11 @@ data class ResponseUserWithEmployee(
     val userRole: String,
     var employeeId: UUID?,
     var employeeName: String?,
-    var employeeSurname: String?
+    var employeeSurname: String?,
+    var employeeRole: String?,
+    var rating: Float?,
+    var employeeDepartment: String?,
+    var phoneNumber: String?,
+    var homeAddress: String?,
+    var active: Boolean = true,
 )

@@ -11,6 +11,7 @@ data class ResponseEmployeeWithJobCards (
     val employeeDepartment: String,
     val phoneNumber: String,
     val homeAddress: String,
+    val active: Boolean = true,
     val jobCards: List<JobCardWithIdAndName>
 )
 

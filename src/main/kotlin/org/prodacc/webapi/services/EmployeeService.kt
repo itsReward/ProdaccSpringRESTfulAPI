@@ -61,7 +61,8 @@ class EmployeeService(
             employeeRole = updatedEmployee.employeeRole ?: existingEmployee.employeeRole,
             employeeDepartment = updatedEmployee.employeeDepartment ?: existingEmployee.employeeDepartment,
             phoneNumber = updatedEmployee.phoneNumber ?: existingEmployee.phoneNumber,
-            homeAddress = updatedEmployee.homeAddress ?: existingEmployee.homeAddress
+            homeAddress = updatedEmployee.homeAddress ?: existingEmployee.homeAddress,
+            active = updatedEmployee.active ?: existingEmployee.active
         )
         val newEmployee = employeeRepository.save(updated).toEmployeeWithJobCardIdAndName()
         webSocketHandler.broadcastUpdate("UPDATE_EMPLOYEE", newEmployee.id)
@@ -133,7 +134,8 @@ class EmployeeService(
                 ?: throw NullPointerException("Employee department cannot be empty"),
             phoneNumber = this.phoneNumber ?: throw NullPointerException("Phone number cannot be empty"),
             homeAddress = this.homeAddress ?: throw NullPointerException("Home address cannot be empty"),
-            rating = this.rating ?: 0f
+            rating = this.rating ?: 0f,
+            active = this.active ?: true
         )
     }
 

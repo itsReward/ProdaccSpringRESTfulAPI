@@ -170,7 +170,13 @@ class UserService(
             userRole = this.userRole!!,
             employeeId = employee?.employeeId,
             employeeName = employee?.employeeName,
-            employeeSurname = employee?.employeeSurname
+            employeeSurname = employee?.employeeSurname,
+            employeeRole = employee?.employeeRole,
+            rating = employee?.rating,
+            employeeDepartment = employee?.employeeDepartment,
+            phoneNumber = employee?.phoneNumber,
+            homeAddress = employee?.homeAddress,
+            active = employee?.active ?: true
         )
     }
 
