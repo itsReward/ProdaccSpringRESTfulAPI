@@ -3,13 +3,14 @@ package org.prodacc.webapi.repositories
 import org.prodacc.webapi.models.Role
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.util.Optional
 import java.util.UUID
 
 @Repository
-interface RoleRepository : JpaRepository<Role, UUID> {
+interface RoleRepository : CrudRepository<Role, UUID> {
 
     fun findByName(name: String): Optional<Role>
 

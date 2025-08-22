@@ -1,9 +1,9 @@
 package org.prodacc.webapi.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 import java.util.UUID
 
@@ -19,6 +19,7 @@ data class PermissionAuditLog(
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User? = null,
@@ -32,6 +33,7 @@ data class PermissionAuditLog(
     @Column(name = "permission_identifier", nullable = false)
     val permissionIdentifier: String? = null, // role name or permission name
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "granted_by")
     val grantedBy: User? = null,

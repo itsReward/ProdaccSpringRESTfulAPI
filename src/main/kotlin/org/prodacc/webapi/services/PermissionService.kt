@@ -2,10 +2,12 @@ package org.prodacc.webapi.services
 
 import org.prodacc.webapi.models.*
 import org.prodacc.webapi.repositories.*
+import org.prodacc.webapi.services.dataTransferObjects.*
 import org.prodacc.webapi.services.dataTransferObjects.permission.PermissionCheckResult
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Duration
 import java.time.Instant
 import java.util.*
 
@@ -17,7 +19,7 @@ class PermissionService(
     private val userRoleRepository: UserRoleRepository,
     private val userPermissionRepository: UserPermissionRepository,
     private val permissionAuditLogRepository: PermissionAuditLogRepository,
-    private val userRepository: UserRepository
+    val userRepository: UserRepository // Made public for controller access
 ) {
 
     private val logger = LoggerFactory.getLogger(PermissionService::class.java)
@@ -227,7 +229,7 @@ class PermissionService(
             user = user,
             action = "granted",
             permissionType = "role",
-            permissionIdentifier = role!!.name!!,
+            permissionIdentifier = role.name!!,
             grantedBy = assignedByUser
         )
 
@@ -260,7 +262,7 @@ class PermissionService(
 
         // Log the action
         logPermissionChange(
-            user = userPermission!!.user!!,
+            user = userPermission.user!!,
             action = "revoked",
             permissionType = "direct_permission",
             permissionIdentifier = userPermission.permission!!.name!!,
@@ -311,7 +313,7 @@ class PermissionService(
 
         // Get direct permissions
         val directPermissions = userPermissionRepository.findActivePermissionsByUserId(userId, now)
-        permissions.addAll( directPermissions.map { it.permission!! } )
+        permissions.addAll(directPermissions.map { it.permission!! } )
 
         // Get role-based permissions
         val userRoles = userRoleRepository.findActiveRolesByUserId(userId, now)
@@ -525,5 +527,129 @@ class PermissionService(
 
         permissionAuditLogRepository.save(auditLog)
         logger.info("Logged permission change: $action $permissionType $permissionIdentifier for user ${user.id}")
+    }
+
+    /**
+     * Get comprehensive user permissions as DTOs (safe for JSON serialization)
+     */
+    fun getUserPermissionsDTO(userId: UUID): UserPermissionsDTO {
+        val now = Instant.now()
+
+        val user = userRepository.findById(userId)
+            .orElseThrow { IllegalArgumentException("User not found: $userId") }
+
+        // Get user roles with details
+        val userRoles = userRoleRepository.findActiveRolesByUserId(userId, now)
+        val userRoleDTOs = userRoles.map { userRole ->
+            UserRoleDTO(
+                roleId = userRole.role!!.id!!,
+                roleName = userRole.role.name!!,
+                roleDescription = userRole.role.description,
+                assignedBy = userRole.assignedBy!!.id!!,
+                assignedByUsername = userRole.assignedBy.username,
+                assignedAt = userRole.assignedAt,
+                expiresAt = userRole.expiresAt,
+                isActive = userRole.isActive,
+                isValid = userRole.isValid()
+            )
+        }
+
+        // Get direct permissions
+        val directPermissions = userPermissionRepository.findActivePermissionsByUserId(userId, now)
+        val directPermissionDTOs = directPermissions.map { userPermission ->
+            UserPermissionDTO(
+                permissionId = userPermission.permission!!.id!!,
+                permissionName = userPermission.permission.name!!,
+                permissionDescription = userPermission.permission.description,
+                resource = userPermission.permission.resource!!,
+                action = userPermission.permission.action!!,
+                grantedBy = userPermission.grantedBy!!.id!!,
+                grantedByUsername = userPermission.grantedBy.username,
+                grantedAt = userPermission.grantedAt,
+                expiresAt = userPermission.expiresAt,
+                isActive = userPermission.isActive,
+                isValid = userPermission.isValid(),
+                contextData = userPermission.contextData
+            )
+        }
+
+        // Get all unique permissions
+        val allPermissions = getUserPermissions(userId)
+        val allPermissionDTOs = allPermissions.map { permission ->
+            PermissionDTO(
+                id = permission.id!!,
+                name = permission.name!!,
+                description = permission.description,
+                resource = permission.resource!!,
+                action = permission.action!!,
+                createdAt = permission.createdAt
+            )
+        }
+
+        // Create summary
+        val activeRoles = userRoleDTOs.count { it.isValid }
+        val activeDirectPermissions = directPermissionDTOs.count { it.isValid }
+        val hasExpiring = directPermissionDTOs.any {
+            it.expiresAt != null && it.expiresAt.isBefore(now.plus(Duration.ofDays(7)))
+        }
+
+        val summary = PermissionSummaryDTO(
+            totalRoles = userRoleDTOs.size,
+            activeRoles = activeRoles,
+            totalDirectPermissions = directPermissionDTOs.size,
+            activeDirectPermissions = activeDirectPermissions,
+            totalUniquePermissions = allPermissionDTOs.size,
+            hasExpiring = hasExpiring,
+            highestRole = getHighestRoleLevel(userId)
+        )
+
+        return UserPermissionsDTO(
+            userId = userId,
+            username = user.username,
+            roles = userRoleDTOs,
+            directPermissions = directPermissionDTOs,
+            allPermissions = allPermissionDTOs,
+            permissionSummary = summary
+        )
+    }
+
+    /**
+     * Get permission audit trail as DTOs
+     */
+    fun getPermissionAuditTrailDTO(userId: UUID): List<PermissionAuditLogDTO> {
+        val auditLogs = permissionAuditLogRepository.findByUserIdOrderByCreatedAtDesc(userId)
+
+        return auditLogs.map { log ->
+            PermissionAuditLogDTO(
+                id = log.id!!,
+                userId = log.user!!.id!!,
+                username = log.user.username,
+                action = log.action!!,
+                permissionType = log.permissionType!!,
+                permissionIdentifier = log.permissionIdentifier!!,
+                grantedBy = log.grantedBy?.id,
+                grantedByUsername = log.grantedBy?.username,
+                contextData = log.contextData,
+                createdAt = log.createdAt
+            )
+        }
+    }
+
+    /**
+     * Get the highest role level for a user (for display purposes)
+     */
+    private fun getHighestRoleLevel(userId: UUID): String {
+        val roles = getUserRoles(userId)
+        val roleNames = roles.map { it.name }
+
+        return when {
+            "Admin" in roleNames -> "Admin"
+            "Manager" in roleNames -> "Manager"
+            "Service Advisor" in roleNames -> "Service Advisor"
+            "Technician" in roleNames -> "Technician"
+            "Stores" in roleNames -> "Stores"
+            "Client" in roleNames -> "Client"
+            else -> "Unknown"
+        }
     }
 }

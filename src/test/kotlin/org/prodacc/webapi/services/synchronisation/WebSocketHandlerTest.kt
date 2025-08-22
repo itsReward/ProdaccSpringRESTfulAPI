@@ -20,7 +20,7 @@ class WebSocketHandlerTest {
 
         val updateType = "NEW_JOB_CARD"
         val entity = mapOf("id" to "123", "name" to "Test Job Card")
-        val update = WebSocketUpdate(updateType, entity)
+        val update = WebSocketUpdate(updateType, entity.toString())
         val json = ObjectMapper().writeValueAsString(update)
 
         webSocketHandler.broadcastUpdate(updateType, entity)

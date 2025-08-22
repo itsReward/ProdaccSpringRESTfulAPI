@@ -1,5 +1,6 @@
 package org.prodacc.webapi.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
@@ -16,16 +17,19 @@ data class UserPermission(
     @EmbeddedId
     val id: UserPermissionId,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     val user: User? = null,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("permissionId")
     @JoinColumn(name = "permission_id")
     val permission: Permission? = null,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "granted_by", nullable = false)
     val grantedBy: User? = null,

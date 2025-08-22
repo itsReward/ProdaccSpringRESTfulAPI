@@ -1,5 +1,6 @@
 package org.prodacc.webapi.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
@@ -36,12 +37,15 @@ data class Permission(
     @Column(name = "version", nullable = false)
     var version: Long = 0
 ) {
+    @JsonIgnore
     @ManyToMany(mappedBy = "permissions")
     val permissionGroups: Set<PermissionGroup> = mutableSetOf()
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "permissions")
     val roles: Set<Role> = mutableSetOf()
 
+    @JsonIgnore
     @OneToMany(mappedBy = "permission", cascade = [CascadeType.ALL])
     val userPermissions: Set<UserPermission> = mutableSetOf()
 }

@@ -28,6 +28,7 @@ class JobCardServiceTest {
         mock(JobCardStatusRepository::class.java),
         mock(JobCardReportsRepository::class.java),
         mock(JobCardTechniciansRepository::class.java),
+        mock(CommentsRepository::class.java),
         webSocketHandler
     )
 

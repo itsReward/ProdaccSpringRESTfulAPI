@@ -1,5 +1,6 @@
 package org.prodacc.webapi.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.JoinColumn
@@ -40,6 +41,7 @@ data class Role(
     @Column(name = "version", nullable = false)
     var version: Long = 0
 ) {
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "role_permission_groups",
@@ -48,6 +50,7 @@ data class Role(
     )
     val permissionGroups: Set<PermissionGroup> = mutableSetOf()
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "role_permissions",
@@ -56,6 +59,7 @@ data class Role(
     )
     val permissions: Set<Permission> = mutableSetOf()
 
+    @JsonIgnore
     @OneToMany(mappedBy = "role", cascade = [CascadeType.ALL])
     val userRoles: Set<UserRole> = mutableSetOf()
 }

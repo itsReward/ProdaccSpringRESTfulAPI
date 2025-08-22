@@ -1,17 +1,10 @@
 package org.prodacc.webapi.models
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.JoinTable
-import jakarta.persistence.ManyToMany
-import java.util.UUID
-
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
 import java.time.Instant
 import java.util.*
+
 /**
  * Permission Group Entity
  * Groups related permissions together for easier management
@@ -36,6 +29,7 @@ data class PermissionGroup(
     @Column(name = "version", nullable = false)
     var version: Long = 0
 ) {
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "permission_group_permissions",
@@ -44,6 +38,7 @@ data class PermissionGroup(
     )
     val permissions: Set<Permission> = mutableSetOf()
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "permissionGroups")
     val roles: Set<Role> = mutableSetOf()
 }

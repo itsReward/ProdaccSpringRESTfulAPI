@@ -3,12 +3,13 @@ package org.prodacc.webapi.repositories
 import org.prodacc.webapi.models.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface PermissionRepository : JpaRepository<Permission, UUID> {
+interface PermissionRepository : CrudRepository<Permission, UUID> {
 
     fun findByName(name: String): Optional<Permission>
 

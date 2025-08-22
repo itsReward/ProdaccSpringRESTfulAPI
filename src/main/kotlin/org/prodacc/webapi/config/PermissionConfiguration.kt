@@ -13,13 +13,15 @@ import java.util.UUID
  */
 @Configuration
 @EnableScheduling
-class PermissionConfiguration {
+class PermissionConfiguration(
+    private val permissionService: PermissionService
+) {
 
     /**
      * Initialize permission system on startup
      */
     @Bean
-    fun permissionSystemInitializer(permissionService: PermissionService): CommandLineRunner {
+    fun permissionSystemInitializer(): CommandLineRunner {
         return CommandLineRunner {
             try {
                 // Migrate all users to new permission system on startup
@@ -37,7 +39,7 @@ class PermissionConfiguration {
      * Runs every day at 2 AM
      */
     @Scheduled(cron = "0 0 2 * * *")
-    fun scheduledPermissionCleanup(permissionService: PermissionService) {
+    fun scheduledPermissionCleanup() {
         try {
             permissionService.cleanupExpiredPermissions()
             println("✅ Scheduled permission cleanup completed")

@@ -1,5 +1,6 @@
 package org.prodacc.webapi.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 import java.time.Instant
 import java.util.*
@@ -12,18 +13,21 @@ import java.util.*
 @Table(name = "user_roles")
 data class UserRole(
     @EmbeddedId
-    val id: UserRoleId,
+    val id: UserRoleId? = null,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     val user: User? = null,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("roleId")
     @JoinColumn(name = "role_id")
     val role: Role? = null,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_by", nullable = false)
     val assignedBy: User? = null,
@@ -56,8 +60,8 @@ data class UserRole(
 @Embeddable
 data class UserRoleId(
     @Column(name = "user_id")
-    val userId: UUID,
+    val userId: UUID? = null,
 
     @Column(name = "role_id")
-    val roleId: UUID
+    val roleId: UUID? = null
 ) : java.io.Serializable
