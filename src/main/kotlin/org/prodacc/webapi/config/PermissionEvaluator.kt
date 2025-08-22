@@ -1,5 +1,7 @@
 package org.prodacc.webapi.config
 
+import org.prodacc.webapi.services.JobCardService
+import org.prodacc.webapi.services.JobCardTechniciansServices
 import org.prodacc.webapi.services.PermissionService
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
@@ -11,7 +13,9 @@ import java.util.UUID
  */
 @Component("permissionEvaluator")
 class PermissionEvaluator(
-    private val permissionService: PermissionService
+    private val permissionService: PermissionService,
+    private val jobCardTechniciansServices: JobCardTechniciansServices,
+    private val jobCardService: JobCardService
 ) {
 
     /**
@@ -136,14 +140,19 @@ class PermissionEvaluator(
 
     // You'll need to implement these methods based on your JobCard repository
     private fun isJobCardOwnedByUser(jobCardId: UUID, userId: UUID): Boolean {
+        val jobCard = jobCardService.getJobCard(jobCardId)
+        return when {
+            jobCard.serviceAdvisorId == userId -> true
+            else -> false
+        }
         // Implement logic to check if job card is created by this user (service advisor)
         // This would typically involve checking the JobCard's serviceAdvisor field
-        return false // Placeholder
     }
 
     private fun isJobCardAssignedToUser(jobCardId: UUID, userId: UUID): Boolean {
-        // Implement logic to check if job card is assigned to this user (technician)
-        // This would typically involve checking the JobCardTechnicians table
-        return false // Placeholder
+        val jobCardTechnicianIds = jobCardTechniciansServices.getJobCardTechniciansByJobCardId(jobCardId)
+        return if (jobCardTechnicianIds.any { it == userId }) {
+            return true
+        } else false
     }
 }
