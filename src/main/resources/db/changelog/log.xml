@@ -1,664 +1,822 @@
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
 
 
-    <changeSet id="1" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="employees"/>
-            </not>
-        </preConditions>
-        <createTable tableName="employees">
-            <column name="employee_id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="employee_name" type="varchar(50)" defaultValue="unknown">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_surname" type="varchar(50)" defaultValue="unknown">
-                <constraints nullable="false"/>
-            </column>
-            <column name="rating" type="real" defaultValueNumeric="0.0">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_role" type="varchar(50)" defaultValue="unassigned">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_department" type="varchar(80)" defaultValue="department">
-                <constraints nullable="false"/>
-            </column>
-            <column name="phone_number" type="varchar(500)" defaultValue=""/>
-            <column name="home_address" type="varchar(500)" defaultValue="home address">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <!-- Phase 2: Seed Default Permissions and Permission Groups -->
+
+    <!-- Seed Core Permissions -->
+    <changeSet id="seed-permissions-001" author="phase2-migration">
+        <comment>Seed all granular permissions based on current system requirements</comment>
+
+        <!-- User Management Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440001"/>
+            <column name="name" value="user.create"/>
+            <column name="description" value="Create new user accounts"/>
+            <column name="resource" value="user"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440002"/>
+            <column name="name" value="user.read"/>
+            <column name="description" value="View user accounts"/>
+            <column name="resource" value="user"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440003"/>
+            <column name="name" value="user.update"/>
+            <column name="description" value="Update user accounts"/>
+            <column name="resource" value="user"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440004"/>
+            <column name="name" value="user.delete"/>
+            <column name="description" value="Delete user accounts"/>
+            <column name="resource" value="user"/>
+            <column name="action" value="delete"/>
+        </insert>
+
+        <!-- Employee Management Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440011"/>
+            <column name="name" value="employee.create"/>
+            <column name="description" value="Create new employee records"/>
+            <column name="resource" value="employee"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440012"/>
+            <column name="name" value="employee.read"/>
+            <column name="description" value="View employee records"/>
+            <column name="resource" value="employee"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440013"/>
+            <column name="name" value="employee.update"/>
+            <column name="description" value="Update employee records"/>
+            <column name="resource" value="employee"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440014"/>
+            <column name="name" value="employee.delete"/>
+            <column name="description" value="Delete employee records"/>
+            <column name="resource" value="employee"/>
+            <column name="action" value="delete"/>
+        </insert>
+
+        <!-- Client Management Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440021"/>
+            <column name="name" value="client.create"/>
+            <column name="description" value="Create new client records"/>
+            <column name="resource" value="client"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440022"/>
+            <column name="name" value="client.read"/>
+            <column name="description" value="View client records"/>
+            <column name="resource" value="client"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440023"/>
+            <column name="name" value="client.update"/>
+            <column name="description" value="Update client records"/>
+            <column name="resource" value="client"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440024"/>
+            <column name="name" value="client.delete"/>
+            <column name="description" value="Delete client records"/>
+            <column name="resource" value="client"/>
+            <column name="action" value="delete"/>
+        </insert>
+
+        <!-- Vehicle Management Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440031"/>
+            <column name="name" value="vehicle.create"/>
+            <column name="description" value="Register new vehicles"/>
+            <column name="resource" value="vehicle"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440032"/>
+            <column name="name" value="vehicle.read"/>
+            <column name="description" value="View vehicle records"/>
+            <column name="resource" value="vehicle"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440033"/>
+            <column name="name" value="vehicle.update"/>
+            <column name="description" value="Update vehicle records"/>
+            <column name="resource" value="vehicle"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440034"/>
+            <column name="name" value="vehicle.delete"/>
+            <column name="description" value="Delete vehicle records"/>
+            <column name="resource" value="vehicle"/>
+            <column name="action" value="delete"/>
+        </insert>
+
+        <!-- JobCard Management Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440041"/>
+            <column name="name" value="jobcard.create"/>
+            <column name="description" value="Create new job cards"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440042"/>
+            <column name="name" value="jobcard.read"/>
+            <column name="description" value="View job cards"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440043"/>
+            <column name="name" value="jobcard.update"/>
+            <column name="description" value="Update job cards"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440044"/>
+            <column name="name" value="jobcard.delete"/>
+            <column name="description" value="Delete job cards"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="delete"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440045"/>
+            <column name="name" value="jobcard.read.all"/>
+            <column name="description" value="View all job cards system-wide"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="read.all"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440046"/>
+            <column name="name" value="jobcard.read.own"/>
+            <column name="description" value="View only own job cards"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="read.own"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440047"/>
+            <column name="name" value="jobcard.read.assigned"/>
+            <column name="description" value="View only assigned job cards"/>
+            <column name="resource" value="jobcard"/>
+            <column name="action" value="read.assigned"/>
+        </insert>
+
+        <!-- Timesheet Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440051"/>
+            <column name="name" value="timesheet.create"/>
+            <column name="description" value="Create timesheets"/>
+            <column name="resource" value="timesheet"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440052"/>
+            <column name="name" value="timesheet.read"/>
+            <column name="description" value="View timesheets"/>
+            <column name="resource" value="timesheet"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440053"/>
+            <column name="name" value="timesheet.update"/>
+            <column name="description" value="Update timesheets"/>
+            <column name="resource" value="timesheet"/>
+            <column name="action" value="update"/>
+        </insert>
+
+        <!-- Inventory/Parts Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440061"/>
+            <column name="name" value="inventory.create"/>
+            <column name="description" value="Add new inventory items"/>
+            <column name="resource" value="inventory"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440062"/>
+            <column name="name" value="inventory.read"/>
+            <column name="description" value="View inventory items"/>
+            <column name="resource" value="inventory"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440063"/>
+            <column name="name" value="inventory.update"/>
+            <column name="description" value="Update inventory items"/>
+            <column name="resource" value="inventory"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440064"/>
+            <column name="name" value="inventory.delete"/>
+            <column name="description" value="Delete inventory items"/>
+            <column name="resource" value="inventory"/>
+            <column name="action" value="delete"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440065"/>
+            <column name="name" value="parts.request"/>
+            <column name="description" value="Request parts for job cards"/>
+            <column name="resource" value="parts"/>
+            <column name="action" value="request"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440066"/>
+            <column name="name" value="parts.approve"/>
+            <column name="description" value="Approve parts requisitions"/>
+            <column name="resource" value="parts"/>
+            <column name="action" value="approve"/>
+        </insert>
+
+        <!-- Financial Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440071"/>
+            <column name="name" value="invoice.create"/>
+            <column name="description" value="Create invoices"/>
+            <column name="resource" value="invoice"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440072"/>
+            <column name="name" value="invoice.read"/>
+            <column name="description" value="View invoices"/>
+            <column name="resource" value="invoice"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440073"/>
+            <column name="name" value="invoice.update"/>
+            <column name="description" value="Update invoices"/>
+            <column name="resource" value="invoice"/>
+            <column name="action" value="update"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440074"/>
+            <column name="name" value="quotation.create"/>
+            <column name="description" value="Create quotations"/>
+            <column name="resource" value="quotation"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440075"/>
+            <column name="name" value="quotation.read"/>
+            <column name="description" value="View quotations"/>
+            <column name="resource" value="quotation"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440076"/>
+            <column name="name" value="quotation.update"/>
+            <column name="description" value="Update quotations"/>
+            <column name="resource" value="quotation"/>
+            <column name="action" value="update"/>
+        </insert>
+
+        <!-- Appointment Permissions -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440081"/>
+            <column name="name" value="appointment.create"/>
+            <column name="description" value="Create appointments"/>
+            <column name="resource" value="appointment"/>
+            <column name="action" value="create"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440082"/>
+            <column name="name" value="appointment.read"/>
+            <column name="description" value="View appointments"/>
+            <column name="resource" value="appointment"/>
+            <column name="action" value="read"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440083"/>
+            <column name="name" value="appointment.update"/>
+            <column name="description" value="Update appointments"/>
+            <column name="resource" value="appointment"/>
+            <column name="action" value="update"/>
+        </insert>
+
+        <!-- Profile Management -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440091"/>
+            <column name="name" value="profile.read.own"/>
+            <column name="description" value="View own profile"/>
+            <column name="resource" value="profile"/>
+            <column name="action" value="read.own"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440092"/>
+            <column name="name" value="profile.update.own"/>
+            <column name="description" value="Update own profile"/>
+            <column name="resource" value="profile"/>
+            <column name="action" value="update.own"/>
+        </insert>
+
+        <!-- System Administration -->
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440101"/>
+            <column name="name" value="system.configure"/>
+            <column name="description" value="System configuration and settings"/>
+            <column name="resource" value="system"/>
+            <column name="action" value="configure"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440102"/>
+            <column name="name" value="permissions.grant"/>
+            <column name="description" value="Grant permissions to users"/>
+            <column name="resource" value="permissions"/>
+            <column name="action" value="grant"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440103"/>
+            <column name="name" value="permissions.revoke"/>
+            <column name="description" value="Revoke permissions from users"/>
+            <column name="resource" value="permissions"/>
+            <column name="action" value="revoke"/>
+        </insert>
     </changeSet>
 
+    <!-- Seed Permission Groups -->
+    <changeSet id="seed-permissions-002" author="phase2-migration">
+        <comment>Create permission groups that logically group related permissions</comment>
 
+        <!-- Core User Management Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440001"/>
+            <column name="name" value="user_management"/>
+            <column name="description" value="Complete user account management capabilities"/>
+        </insert>
 
+        <!-- Employee Management Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440002"/>
+            <column name="name" value="employee_management"/>
+            <column name="description" value="Employee record management capabilities"/>
+        </insert>
 
-    <changeSet id="2" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="users"/>
-            </not>
-        </preConditions>
-        <createTable tableName="users">
-            <column name="id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="username" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="password" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email" type="varchar(100)"/>
-            <column name="user_role" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_id" type="uuid">
-                <constraints
-                        foreignKeyName="employee_id"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="true"
-                        deleteCascade="true"
-                />
-            </column>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <!-- Client Management Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="name" value="client_management"/>
+            <column name="description" value="Client and vehicle management capabilities"/>
+        </insert>
+
+        <!-- Job Card Operations Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440004"/>
+            <column name="name" value="jobcard_full_access"/>
+            <column name="description" value="Full job card management across all jobs"/>
+        </insert>
+
+        <!-- Service Advisor Job Card Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440005"/>
+            <column name="name" value="jobcard_own_access"/>
+            <column name="description" value="Manage only own job cards"/>
+        </insert>
+
+        <!-- Technician Job Card Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440006"/>
+            <column name="name" value="jobcard_assigned_access"/>
+            <column name="description" value="Access only assigned job cards"/>
+        </insert>
+
+        <!-- Inventory Management Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440007"/>
+            <column name="name" value="inventory_management"/>
+            <column name="description" value="Complete inventory and parts management"/>
+        </insert>
+
+        <!-- Parts Requisition Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440008"/>
+            <column name="name" value="parts_operations"/>
+            <column name="description" value="Parts requisition and approval capabilities"/>
+        </insert>
+
+        <!-- Financial Operations Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="name" value="financial_operations"/>
+            <column name="description" value="Invoice, quotation and financial management"/>
+        </insert>
+
+        <!-- Basic Profile Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440010"/>
+            <column name="name" value="basic_profile"/>
+            <column name="description" value="Basic profile management"/>
+        </insert>
+
+        <!-- System Administration Group -->
+        <insert tableName="permission_groups">
+            <column name="id" value="650e8400-e29b-41d4-a716-446655440011"/>
+            <column name="name" value="system_administration"/>
+            <column name="description" value="System configuration and permission management"/>
+        </insert>
     </changeSet>
 
+    <!-- Map Permissions to Permission Groups -->
+    <changeSet id="seed-permissions-003" author="phase2-migration">
+        <comment>Map individual permissions to logical groups</comment>
 
+        <!-- User Management Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440001"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440002"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440003"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440004"/>
+        </insert>
 
+        <!-- Employee Management Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440011"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440012"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440013"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440014"/>
+        </insert>
 
+        <!-- Client Management Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440021"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440022"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440023"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440024"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440031"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440032"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440033"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440034"/>
+        </insert>
 
+        <!-- Job Card Full Access Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440004"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440041"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440004"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440045"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440004"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440043"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440004"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440044"/>
+        </insert>
 
-    <changeSet id="3" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="clients"/>
-            </not>
-        </preConditions>
-        <createTable tableName="clients">
-            <column name="client_id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="client_name" type="varchar(100)" defaultValue=""/>
-            <column name="client_surname" type="varchar(100)" defaultValue=""/>
-            <column name="gender" type="varchar(100)" defaultValue=""/>
-            <column name="job_title" type="varchar(100)" defaultValue=""/>
-            <column name="company" type="varchar(100)" defaultValue=""/>
-            <column name="phone" type="varchar(100)" defaultValue=""/>
-            <column name="email" type="varchar(100)" defaultValue=""/>
-            <column name="address" type="varchar(100)" defaultValue=""/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <!-- Service Advisor Job Card Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440005"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440041"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440005"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440046"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440005"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440043"/>
+        </insert>
+
+        <!-- Technician Job Card Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440006"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440047"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440006"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440051"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440006"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440052"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440006"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440053"/>
+        </insert>
+
+        <!-- Inventory Management Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440007"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440061"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440007"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440062"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440007"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440063"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440007"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440064"/>
+        </insert>
+
+        <!-- Parts Operations Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440008"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440065"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440008"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440066"/>
+        </insert>
+
+        <!-- Financial Operations Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440071"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440072"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440073"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440074"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440075"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440076"/>
+        </insert>
+
+        <!-- Basic Profile Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440091"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440092"/>
+        </insert>
+
+        <!-- System Administration Group Mappings -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440011"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440101"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440011"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440102"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440011"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440103"/>
+        </insert>
+
+        <!-- Add appointments to client management -->
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440081"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440082"/>
+        </insert>
+        <insert tableName="permission_group_permissions">
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440083"/>
+        </insert>
     </changeSet>
 
+    <!-- Create Roles based on current system roles -->
+    <changeSet id="seed-permissions-004" author="phase2-migration">
+        <comment>Create roles that mirror current user_role values</comment>
 
+        <!-- Admin Role -->
+        <insert tableName="roles">
+            <column name="id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="name" value="Admin"/>
+            <column name="description" value="Full system access with all capabilities"/>
+            <column name="is_system_role" value="true"/>
+        </insert>
 
+        <!-- Manager Role -->
+        <insert tableName="roles">
+            <column name="id" value="750e8400-e29b-41d4-a716-446655440002"/>
+            <column name="name" value="Manager"/>
+            <column name="description" value="Operational oversight without financial access"/>
+            <column name="is_system_role" value="true"/>
+        </insert>
 
+        <!-- Service Advisor Role -->
+        <insert tableName="roles">
+            <column name="id" value="750e8400-e29b-41d4-a716-446655440003"/>
+            <column name="name" value="Service Advisor"/>
+            <column name="description" value="Manage own job cards and client interactions"/>
+            <column name="is_system_role" value="true"/>
+        </insert>
 
-    <changeSet id="4" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="vehicles"/>
-            </not>
-        </preConditions>
-        <createTable tableName="vehicles">
-            <column name="vehicle_id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="model" type="varchar(100)"/>
-            <column name="reg_number" type="varchar(100)"/>
-            <column name="chassis_number" type="varchar(100)"/>
-            <column name="color" type="varchar(100)"/>
-            <column name="make" type="varchar(100)"/>
-            <column name="client_reference_id" type="uuid">
-                <constraints
-                        foreignKeyName="client_reference_id"
-                        referencedTableName="clients"
-                        referencedColumnNames="client_id"
-                        nullable="false"
-                        deleteCascade="true"
-                />
-            </column>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
+        <!-- Technician Role -->
+        <insert tableName="roles">
+            <column name="id" value="750e8400-e29b-41d4-a716-446655440004"/>
+            <column name="name" value="Technician"/>
+            <column name="description" value="Work on assigned job cards and track time"/>
+            <column name="is_system_role" value="true"/>
+        </insert>
 
-        </createTable>
+        <!-- Stores Role -->
+        <insert tableName="roles">
+            <column name="id" value="750e8400-e29b-41d4-a716-446655440005"/>
+            <column name="name" value="Stores"/>
+            <column name="description" value="Inventory management and parts approval"/>
+            <column name="is_system_role" value="true"/>
+        </insert>
+
+        <!-- Client Role -->
+        <insert tableName="roles">
+            <column name="id" value="750e8400-e29b-41d4-a716-446655440006"/>
+            <column name="name" value="Client"/>
+            <column name="description" value="Customer portal access"/>
+            <column name="is_system_role" value="true"/>
+        </insert>
     </changeSet>
 
+    <!-- Map Roles to Permission Groups -->
+    <changeSet id="seed-permissions-005" author="phase2-migration">
+        <comment>Assign permission groups to roles based on current role capabilities</comment>
 
+        <!-- Admin Role - Gets ALL permission groups -->
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440001"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440002"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440003"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440004"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440007"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440008"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440009"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440001"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440011"/>
+        </insert>
 
+        <!-- Manager Role - Everything except user management, client management, and financial operations -->
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440004"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+        </insert>
+        <!-- Manager can only READ employees, not full management -->
+        <insert tableName="role_permissions">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440002"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440012"/>
+        </insert>
 
+        <!-- Service Advisor Role - Own job cards, client appointments, parts requests -->
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440005"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+        </insert>
+        <!-- Service Advisor can request parts but not approve -->
+        <insert tableName="role_permissions">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440081"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440074"/>
+        </insert>
+        <insert tableName="role_permissions">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440003"/>
+            <column name="permission_id" value="550e8400-e29b-41d4-a716-446655440071"/>
+        </insert>
 
+        <!-- Technician Role - Assigned job cards and time tracking -->
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440004"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440006"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440004"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+        </insert>
 
+        <!-- Stores Role - Inventory management and parts approval -->
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440005"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440007"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440005"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440008"/>
+        </insert>
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440005"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+        </insert>
 
-    <changeSet id="5" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="jobcards"/>
-            </not>
-        </preConditions>
-        <createTable tableName="jobcards">
-
-            <column name="job_id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-
-            <column name="vehicle_reference_id" type="uuid">
-                <constraints
-                        foreignKeyName="vehicle_reference_id"
-                        referencedTableName="vehicles"
-                        referencedColumnNames="vehicle_id"
-                        nullable="false"
-                />
-            </column>
-
-            <column name="customer_reference_id" type="uuid">
-                <constraints
-                        foreignKeyName="customer_reference_id"
-                        referencedTableName="clients"
-                        referencedColumnNames="client_id"
-                        nullable="false"
-                />
-            </column>
-
-            <column name="service_advisor" type="uuid">
-                <constraints
-                        foreignKeyName="service_advisor"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="false"
-                />
-            </column>
-
-            <column name="supervisor" type="uuid">
-                <constraints
-                        foreignKeyName="supervisor"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="true"
-                />
-            </column>
-            <column name="date_and_time_in" type="datetime"/>
-            <column name="estimated_time_of_completion" type="datetime"/>
-            <column name="job_card_deadline" type="datetime"/>
-            <column name="date_and_time_frozen" type="datetime"/>
-            <column name="date_and_time_closed" type="datetime"/>
-            <column name="job_card_name" type="varchar"/>
-            <column name="job_card_number" type="int" autoIncrement="true"/>
-            <column name="priority" type="boolean" defaultValue="false"/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-
-        </createTable>
-
+        <!-- Client Role - Basic profile only (customer portal) -->
+        <insert tableName="role_permission_groups">
+            <column name="role_id" value="750e8400-e29b-41d4-a716-446655440006"/>
+            <column name="permission_group_id" value="650e8400-e29b-41d4-a716-446655440010"/>
+        </insert>
     </changeSet>
 
-
-
-
-
-    <changeSet id="6" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="vehicle_service_checklists"/>
-            </not>
-        </preConditions>
-        <createTable tableName="vehicle_service_checklists">
-            <column name="id" type="uuid" defaultValue="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="job_card_id" type="uuid">
-                <constraints
-                        foreignKeyName="job_card_id"
-                        referencedTableName="jobcards"
-                        referencedColumnNames="job_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="technician" type="uuid">
-                <constraints
-                        foreignKeyName="technician"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="created" type="datetime"/>
-            <column name="checklist" type="jsonb"/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-
-
-
-
-
-    <changeSet id="7" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="vehicle_control_checklists"/>
-            </not>
-        </preConditions>
-        <createTable tableName="vehicle_control_checklists">
-            <column name="id" type="uuid">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="job_card_id" type="uuid">
-                <constraints
-                        foreignKeyName="job_card_id"
-                        referencedTableName="jobcards"
-                        referencedColumnNames="job_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="technician" type="uuid">
-                <constraints
-                        foreignKeyName="technician"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="created" type="datetime"/>
-            <column name="checklist" type="jsonb"/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-
-
-
-
-    <changeSet id="8" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="vehicle_state_checklists"/>
-            </not>
-        </preConditions>
-        <createTable tableName="vehicle_state_checklists">
-            <column name="id" type="uuid">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="job_card_id" type="uuid">
-                <constraints
-                        foreignKeyName="job_card_id"
-                        referencedTableName="jobcards"
-                        referencedColumnNames="job_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="technician" type="uuid">
-                <constraints
-                        foreignKeyName="technician"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="millage_in" type="varchar(50)"/>
-            <column name="millage_out" type="varchar(50)"/>
-            <column name="fuel_level_in" type="varchar(20)"/>
-            <column name="fuel_level_out" type="varchar(20)"/>
-            <column name="created" type="datetime"/>
-            <column name="checklist" type="jsonb"/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-
-
-
-
-    <changeSet id="9" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="timesheets"/>
-            </not>
-        </preConditions>
-        <createTable tableName="timesheets">
-            <column name="timesheet_id" type="uuid">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="job_card_id" type="uuid">
-                <constraints
-                        foreignKeyName="job_card_id"
-                        referencedTableName="jobcards"
-                        referencedColumnNames="job_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="employee_id" type="uuid">
-                <constraints
-                        foreignKeyName="employee_id"
-                        referencedTableName="employees"
-                        referencedColumnNames="employee_id"
-                        nullable="false"
-                />
-            </column>
-            <column name="clock_in_date_and_time" type="datetime"/>
-            <column name="clock_out_date_and_time" type="datetime"/>
-            <column name="sheet_title" type="varchar(500)"/>
-            <column name="report" type="varchar"/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="10" author="itsReward">
-        <createTable tableName="job_card_technicians">
-            <column name="job_card_id" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_job_card_technicians"/>
-            </column>
-            <column name="employee_id" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_job_card_technicians"/>
-            </column>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="job_card_technicians"
-                                 baseColumnNames="job_card_id"
-                                 constraintName="fk_job_card_technicians_job_card"
-                                 referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"
-                                 onDelete="CASCADE"
-        />
-        <addForeignKeyConstraint baseTableName="job_card_technicians"
-                                 baseColumnNames="employee_id"
-                                 constraintName="fk_job_card_technicians_employee"
-                                 referencedTableName="employees"
-                                 referencedColumnNames="employee_id"
-                                 onDelete="CASCADE"
-        />
-    </changeSet>
-
-    <changeSet id="11" author="itsReward">
-        <createTable tableName="job_card_status">
-            <column name="job_card_status_id" type="UUID">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="job_card_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="status" type="VARCHAR(255)"/>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="job_card_status"
-                                 baseColumnNames="job_card_id"
-                                 constraintName="fk_job_card_status_job_card"
-                                 referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"
-                                 onDelete="CASCADE"
-        />
-    </changeSet>
-
-
-    <changeSet id="12" author="itsReward">
-        <createTable tableName="job_card_reports">
-            <column name="job_card_report_id" type="UUID" >
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="type_of_report" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="job_report" type="TEXT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="job_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="job_card_reports"
-                                 baseColumnNames="employee_id"
-                                 constraintName="fk_job_card_reports_employee"
-                                 referencedTableName="employees"
-                                 referencedColumnNames="employee_id"/>
-        <addForeignKeyConstraint baseTableName="job_card_reports"
-                                 baseColumnNames="job_id"
-                                 constraintName="fk_job_card_reports_job_card"
-                                 referencedTableName="jobcards"
-                                 referencedColumnNames="job_id"
-                                 onDelete="CASCADE"
-        />
-    </changeSet>
-
-    <changeSet id="13" author="itsReward">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="job_card_comments"/>
-            </not>
-        </preConditions>
-        <createTable tableName="job_card_comments">
-            <column name="job_card_comment_id" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="comment" type="text">
-                <constraints nullable="false"/>
-            </column>
-            <column name="employee_id" type="uuid">
-                <constraints nullable="false" foreignKeyName="fk_job_card_comments_employee" referencedTableName="employees" referencedColumnNames="employee_id"/>
-            </column>
-            <column name="job_id" type="uuid">
-                <constraints nullable="false" foreignKeyName="fk_job_card_comments_job_card" referencedTableName="jobcards" referencedColumnNames="job_id" />
-            </column>
-            <column name="version" type="bigint" defaultValueNumeric="0">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
-        </createTable>
-    </changeSet>
-
-
-    <changeSet id="14" author="system">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="product_category"/>
-            </not>
-        </preConditions>
-
-        <createTable tableName="product_category">
-            <column name="id" type="uuid" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="varchar(100)">
-                <constraints nullable="true"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="15" author="system">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="product_vehicle"/>
-            </not>
-        </preConditions>
-
-        <createTable tableName="product_vehicle">
-            <column name="id" type="uuid">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="make" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="model" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="year" type="int">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="16" author="system">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="product"/>
-            </not>
-        </preConditions>
-
-        <createTable tableName="product">
-            <column name="productId" type="uuid">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="partNumber" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="partName" type="varchar(100)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="varchar(100)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="inStock" type="float">
-                <constraints nullable="false"/>
-            </column>
-            <column name="healthyNumber" type="float">
-                <constraints nullable="false"/>
-            </column>
-            <column name="arrivalPrice" type="float">
-                <constraints nullable="false"/>
-            </column>
-            <column name="sellingPrice" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="storageLocation" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="version" type="bigint" defaultValue="0">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <!-- Junction tables for many-to-many relationships -->
-    <changeSet id="17" author="system">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="product_vehicle_reference"/>
-            </not>
-        </preConditions>
-
-        <createTable tableName="product_vehicle_reference">
-            <column name="product_id" type="uuid">
-                <constraints nullable="false"/>
-            </column>
-            <column name="vehicle_id" type="uuid">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey
-                tableName="product_vehicle_reference"
-                columnNames="product_id, vehicle_id"/>
-
-        <addForeignKeyConstraint
-                baseTableName="product_vehicle_reference"
-                baseColumnNames="product_id"
-                constraintName="fk_pvr_product"
-                referencedTableName="product"
-                referencedColumnNames="productId"/>
-
-        <addForeignKeyConstraint
-                baseTableName="product_vehicle_reference"
-                baseColumnNames="vehicle_id"
-                constraintName="fk_pvr_vehicle"
-                referencedTableName="product_vehicle"
-                referencedColumnNames="id"/>
-    </changeSet>
-
-
-    <changeSet id="18" author="system">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="product_category_reference"/>
-            </not>
-        </preConditions>
-
-        <createTable tableName="product_category_reference">
-            <column name="product_id" type="uuid">
-                <constraints nullable="false"/>
-            </column>
-            <column name="category_id" type="uuid">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey
-                tableName="product_category_reference"
-                columnNames="product_id, category_id"/>
-
-        <addForeignKeyConstraint
-                baseTableName="product_category_reference"
-                baseColumnNames="product_id"
-                constraintName="fk_pcr_product"
-                referencedTableName="product"
-                referencedColumnNames="productId"/>
-
-        <addForeignKeyConstraint
-                baseTableName="product_category_reference"
-                baseColumnNames="category_id"
-                constraintName="fk_pcr_category"
-                referencedTableName="product_category"
-                referencedColumnNames="id"/>
-    </changeSet>
-
-    <!-- Add indexes for better query performance -->
-    <changeSet id="19" author="system">
-        <createIndex indexName="idx_product_part_number"
-                     tableName="product">
-            <column name="partNumber"/>
-        </createIndex>
-
-        <createIndex indexName="idx_product_vehicle_make_model"
-                     tableName="product_vehicle">
-            <column name="make"/>
-            <column name="model"/>
-        </createIndex>
-
-        <createIndex indexName="idx_product_category_name"
-                     tableName="product_category">
-            <column name="name"/>
-        </createIndex>
-    </changeSet>
 </databaseChangeLog>
