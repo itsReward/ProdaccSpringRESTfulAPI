@@ -3,38 +3,30 @@
  */
 package org.prodacc.webapi.services
 
-import org.prodacc.webapi.repositories.UserRepository
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
-
 /**
- * Updated User Details Service that supports both old and new permission systems
- * During transition period, this will work with both systems
+ * Updated Custom User Details Service to work with new permission system
  */
 @Service
 class UpdatedCustomUserDetailsService(
-    private val userRepository: UserRepository,
+    private val userRepository: org.prodacc.webapi.repositories.UserRepository,
     private val permissionService: PermissionService
-) : UserDetailsService {
+) : org.springframework.security.core.userdetails.UserDetailsService {
 
-    override fun loadUserByUsername(username: String): UserDetails {
+    override fun loadUserByUsername(username: String): org.springframework.security.core.userdetails.UserDetails {
         val user = userRepository.findByUsername(username)
-            .orElseThrow { UsernameNotFoundException("User with username: $username not found") }
+            .orElseThrow { org.springframework.security.core.userdetails.UsernameNotFoundException("User with username: $username not found") }
 
         return user.mapToUserDetails()
     }
 
-    private fun ApplicationUser.mapToUserDetails(): UserDetails {
-        val authorities = mutableListOf<SimpleGrantedAuthority>()
+    private fun org.prodacc.webapi.models.User.mapToUserDetails(): org.springframework.security.core.userdetails.UserDetails {
+        val authorities = mutableListOf<org.springframework.security.core.authority.SimpleGrantedAuthority>()
 
         // Add legacy role authority for backward compatibility
         this.userRole?.let { role ->
-            authorities.add(SimpleGrantedAuthority("ROLE_${role.uppercase()}"))
+            authorities.add(org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_${role.uppercase()}"))
         }
 
         // Add new permission-based authorities if user is migrated
@@ -42,12 +34,12 @@ class UpdatedCustomUserDetailsService(
             try {
                 val permissions = permissionService.getUserPermissions(userId)
                 permissions.forEach { permission ->
-                    authorities.add(SimpleGrantedAuthority("PERM_${permission.name!!.uppercase()}"))
+                    authorities.add(org.springframework.security.core.authority.SimpleGrantedAuthority("PERM_${permission.name!!.uppercase()}"))
                 }
 
                 val roles = permissionService.getUserRoles(userId)
                 roles.forEach { role ->
-                    authorities.add(SimpleGrantedAuthority("ROLE_${role.name!!.uppercase()}"))
+                    authorities.add(org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_${role.name!!.uppercase()}"))
                 }
             } catch (e: Exception) {
                 // If new permission system fails, fall back to legacy role
@@ -56,7 +48,7 @@ class UpdatedCustomUserDetailsService(
             }
         }
 
-        return User.builder()
+        return org.springframework.security.core.userdetails.User.builder()
             .username(this.username)
             .password(this.password)
             .authorities(authorities)

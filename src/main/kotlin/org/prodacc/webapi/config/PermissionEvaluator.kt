@@ -1,11 +1,9 @@
 package org.prodacc.webapi.config
 
-import org.prodacc.webapi.services.JobCardService
-import org.prodacc.webapi.services.JobCardTechniciansServices
 import org.prodacc.webapi.services.PermissionService
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
-import java.util.UUID
+import java.util.*
 
 /**
  * Permission Evaluator Bean for use in @PreAuthorize annotations
@@ -13,26 +11,37 @@ import java.util.UUID
  */
 @Component("permissionEvaluator")
 class PermissionEvaluator(
-    private val permissionService: PermissionService,
-    private val jobCardTechniciansServices: JobCardTechniciansServices,
-    private val jobCardService: JobCardService
+    private val permissionService: PermissionService
 ) {
 
     /**
      * Main permission check method for use in @PreAuthorize
+     * This is the method that @PreAuthorize will call
      */
     fun hasPermission(
         authentication: Authentication,
         resource: String,
+        action: String
+    ): Boolean {
+        val userId = extractUserIdFromAuthentication(authentication)
+        return permissionService.hasPermission(userId, resource, action, null)
+    }
+
+    /**
+     * Permission check with context for things like amount limits
+     */
+    fun hasPermissionWithContext(
+        authentication: Authentication,
+        resource: String,
         action: String,
-        context: Map<String, Any>? = null
+        context: Map<String, Any>
     ): Boolean {
         val userId = extractUserIdFromAuthentication(authentication)
         return permissionService.hasPermission(userId, resource, action, context)
     }
 
     /**
-     * Check permission with context for things like amount limits
+     * Check permission with context for things like amount limits (single key-value)
      */
     fun hasPermissionWithContext(
         authentication: Authentication,
@@ -42,7 +51,8 @@ class PermissionEvaluator(
         contextValue: Any
     ): Boolean {
         val context = mapOf(contextKey to contextValue)
-        return hasPermission(authentication, resource, action, context)
+        val userId = extractUserIdFromAuthentication(authentication)
+        return permissionService.hasPermission(userId, resource, action, context)
     }
 
     /**
@@ -125,34 +135,27 @@ class PermissionEvaluator(
     }
 
     private fun extractUserIdFromAuthentication(authentication: Authentication): UUID {
-        // This depends on how you store user information in your JWT/Authentication
-        // You might need to adjust this based on your actual authentication setup
-        return when (val principal = authentication.principal) {
-            is org.springframework.security.core.userdetails.User -> {
-                // If you store user ID in the username or need to look it up
-                UUID.fromString(principal.username) // Adjust this based on your setup
-            }
-            is UUID -> principal
-            is String -> UUID.fromString(principal)
-            else -> throw IllegalArgumentException("Cannot extract user ID from authentication: $principal")
+        return try {
+            // First try to parse the username as UUID
+            UUID.fromString(authentication.name)
+        } catch (e: IllegalArgumentException) {
+            // If username is not UUID, find user by username
+            val user = permissionService.userRepository.findByUsername(authentication.name)
+                .orElseThrow { IllegalArgumentException("User not found: ${authentication.name}") }
+            user.id ?: throw IllegalArgumentException("User ID is null for user: ${authentication.name}")
         }
     }
 
     // You'll need to implement these methods based on your JobCard repository
     private fun isJobCardOwnedByUser(jobCardId: UUID, userId: UUID): Boolean {
-        val jobCard = jobCardService.getJobCard(jobCardId)
-        return when {
-            jobCard.serviceAdvisorId == userId -> true
-            else -> false
-        }
         // Implement logic to check if job card is created by this user (service advisor)
         // This would typically involve checking the JobCard's serviceAdvisor field
+        return false // Placeholder - implement based on your JobCard entity
     }
 
     private fun isJobCardAssignedToUser(jobCardId: UUID, userId: UUID): Boolean {
-        val jobCardTechnicianIds = jobCardTechniciansServices.getJobCardTechniciansByJobCardId(jobCardId)
-        return if (jobCardTechnicianIds.any { it == userId }) {
-            return true
-        } else false
+        // Implement logic to check if job card is assigned to this user (technician)
+        // This would typically involve checking the JobCardTechnicians table
+        return false // Placeholder - implement based on your JobCard entity
     }
 }
